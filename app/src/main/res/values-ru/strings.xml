@@ -665,6 +665,9 @@
     <string name="select_instance_title">Выбрать экземпляр</string>
     <string name="filter_all">Все</string>
     <string name="filter_custom">Пользовательские</string>
+    <string name="filter_arch64">Фильтр : 64-битные</string>
+    <string name="filter_arch32">Фильтр : 32-битные</string>
+    <string name="filter_arch_unknown">Фильтр : неизвестно</string>
     <string name="sort_version_newest">Версия (новейшая)</string>
     <string name="tag_installed">Установлено</string>
     <string name="tag_custom">Пользовательская</string>

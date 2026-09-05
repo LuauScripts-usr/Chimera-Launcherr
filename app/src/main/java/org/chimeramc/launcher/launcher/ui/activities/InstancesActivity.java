@@ -54,6 +54,9 @@ public class InstancesActivity extends BaseActivity {
 
     private static final int FILTER_ALL = 0;
     private static final int FILTER_CUSTOM = 1;
+    private static final int FILTER_ARCH64 = 2;
+    private static final int FILTER_ARCH32 =  3;
+    private static final int FILTER_ARCH_UNKNOWN = 4;
     private static final int ARCH_ARM64 = 0;
     private static final int ARCH_ARM32 =  1;
     private static final int ARCH_X86_64 =  2;
@@ -71,7 +74,7 @@ public class InstancesActivity extends BaseActivity {
     private VersionManager versionManager;
     private RecyclerView recyclerView;
     private InstanceCardAdapter adapter;
-    private TextView filterAll, filterCustom;
+    private TextView filterAll, filterCustom, filterArch64, filterArch32, filterArchUnknown;
     private TextView instanceCountBadge;
     private EditText searchInput;
     private int currentFilter = FILTER_ALL;
@@ -140,6 +143,9 @@ public class InstancesActivity extends BaseActivity {
         recyclerView = findViewById(R.id.instances_recycler);
         filterAll = findViewById(R.id.filter_all);
         filterCustom = findViewById(R.id.filter_custom);
+        filterArch64 = findViewById(R.id.filter_arch64);
+        filterArch32 = findViewById(R.id.filter_arch32);
+        filterArchUnknown = findViewById(R.id.filter_arch_unknown);
         instanceCountBadge = findViewById(R.id.instance_count_badge);
         searchInput = findViewById(R.id.search_input);
 
@@ -157,10 +163,10 @@ public class InstancesActivity extends BaseActivity {
         recyclerView.setAdapter(adapter);
         layoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
             @Override
-            public int getSpanSize(int position() {
+            public int getSpanSize(int position) {
                 return adapter.isHeader(position) ? spanCount : 1;
             }
-        }});
+        });
 
         adapter.setOnItemClickListener(version -> {
             versionManager.selectVersion(version);
@@ -233,12 +239,27 @@ public class InstancesActivity extends BaseActivity {
             updateFilterUI();
             applyFilters();
         });
+        filterArch64.setOnClickListener(v -> {
+            currentFilter = FILTER_ARCH64;
+            updateFilterUI();
+            applyFilters();
+        });
+        filterArch32.setOnClickListener(v -> {
+            currentFilter = FILTER_ARCH32;
+            updateFilterUI();
+            applyFilters();
+        });
+        filterArchUnknown.setOnClickListener(v -> {
+            currentFilter = FILTER_ARCH_UNKNOWN;
+            updateFilterUI();
+            applyFilters();
+        });
     }
 
     private void updateFilterUI() {
         PersonalizationManager pm = new PersonalizationManager(this);
         int accent = pm.getAccentColor();
-        TextView[] tabs = {filterAll, filterCustom};
+        TextView[] tabs = {filterAll, filterCustom, filterArch64, filterArch32, filterArchUnknown};
         for (int i = 0; i < tabs.length; i++) {
             boolean selected = (i == currentFilter);
             tabs[i].setSelected(selected);
@@ -787,6 +808,11 @@ public class InstancesActivity extends BaseActivity {
 
         for (GameVersion v : allVersions) {
             if (currentFilter == FILTER_CUSTOM && v.isInstalled) continue;
+            if (currentFilter == FILTER_ARCH64 && getArchGroup(v) != ARCH_ARM64
+                    && getArchGroup(v) != ARCH_X86_64) continue;
+            if (currentFilter == FILTER_ARCH32 && getArchGroup(v) != ARCH_ARM32
+                    && getArchGroup(v) != ARCH_X86) continue;
+            if (currentFilter == FILTER_ARCH_UNKNOWN && getArchGroup(v) != ARCH_UNKNOWN) continue;
 
             if (!query.isEmpty()) {
                 String name = v.displayName != null ? v.displayName.toLowerCase() : "";
@@ -815,10 +841,10 @@ public class InstancesActivity extends BaseActivity {
             if (bucket.isEmpty()) continue;
             String header = String.format(Locale.getDefault(), getString(R.string.instances_section_count),
                     getArchLabel(group), bucket.size());
-            flat.add(header;
-            flat.addAll(bucket;
+            flat.add(header);
+            flat.addAll(bucket);
         }
-        adapter.updateData(flat;
+        adapter.updateData(flat);
         visibleInstanceCount = filtered.size();
         updateCount();
     }
@@ -898,19 +924,19 @@ public class InstancesActivity extends BaseActivity {
         private final int spanCount;
         private final int spacing;
 
-        GridSpacingDecoration(int spanCount, int spacing() {
+        GridSpacingDecoration(int spanCount, int spacing) {
             this.spanCount = spanCount;
             this.spacing = spacing;
         }
 
         @Override
         public void getItemOffsets(@NonNull Rect outRect, @NonNull View view,
-                                   @NonNull RecyclerView parent, @NonNull RecyclerView.State state() {
+                                   @NonNull RecyclerView parent, @NonNull RecyclerView.State state) {
             int position = parent.getChildAdapterPosition(view);
             GridLayoutManager.SpanSizeLookup spanLookup =
                     ((GridLayoutManager) parent.getLayoutManager()).getSpanSizeLookup();
-            int spanSize = spanLookup.getSpanSize(position;
-            if (spanSize >= spanCount() {
+            int spanSize = spanLookup.getSpanSize(position);
+            if (spanSize >= spanCount) {
                 outRect.left =  0;
                 outRect.right =  0;
                 outRect.top =  0;
@@ -918,8 +944,8 @@ public class InstancesActivity extends BaseActivity {
             }
             int spanIndex = spanLookup.getSpanIndex(position, spanCount);
             outRect.left = spacing - spanIndex * spacing / spanCount;
-            outRect.right = (spanIndex + spanSize() * spacing / spanCount;
-            if (spanIndex ==  0 && position !=  0() {
+            outRect.right = (spanIndex + spanSize) * spacing / spanCount;
+            if (spanIndex ==  0 && position !=  0) {
                 outRect.top = spacing;
             }
         }
@@ -963,12 +989,12 @@ public class InstancesActivity extends BaseActivity {
             notifyDataSetChanged();
         }
 
-        boolean isHeader(int position() {
+        boolean isHeader(int position) {
             return position >= 0 && position < items.size() && items.get(position) instanceof String;
         }
 
         @Override
-        public int getItemViewType(int position() {
+        public int getItemViewType(int position) {
             return isHeader(position) ? TYPE_HEADER : TYPE_ITEM;
         }
 
@@ -984,18 +1010,19 @@ public class InstancesActivity extends BaseActivity {
         }
 
         @Override
-        public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position() {
+        public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
             Object item = items.get(position);
             if (isHeader(position)) {
                 ((HeaderVH) holder).title.setText((String) item);
                 return;
             }
             GameVersion v = (GameVersion) item;
+            VH vh = (VH) holder;
             boolean isSelected = selectedVersion != null
                     && selectedVersion.directoryName != null
-                    && selectedVersion.directoryName.equals(v.directoryName;
+                    && selectedVersion.directoryName.equals(v.directoryName);
 
-            holder.itemView.setActivated(isSelected;
+            holder.itemView.setActivated(isSelected);
 
             PersonalizationManager pm = new PersonalizationManager(holder.itemView.getContext());
             int accent = pm.getAccentColor();
@@ -1034,33 +1061,33 @@ public class InstancesActivity extends BaseActivity {
 
             holder.itemView.setBackground(gd);
 
-            holder.versionCode.setText(v.versionCode != null ? v.versionCode : v.directoryName);
-            holder.versionCode.setTextColor(primaryTextColor);
-            holder.displayName.setTextColor(secondaryTextColor);
-            holder.settingsIcon.setImageTintList(ColorStateList.valueOf(secondaryTextColor));
+            vh.versionCode.setText(v.versionCode != null ? v.versionCode : v.directoryName);
+            vh.versionCode.setTextColor(primaryTextColor);
+            vh.displayName.setTextColor(secondaryTextColor);
+            vh.settingsIcon.setImageTintList(ColorStateList.valueOf(secondaryTextColor));
 
             if (v.isInstalled) {
-                holder.typeTag.setText(R.string.tag_installed);
+                vh.typeTag.setText(R.string.tag_installed);
                 int tagColor = accent != 0 ? accent : holder.itemView.getContext().getResources().getColor(R.color.primary, holder.itemView.getContext().getTheme());
-                holder.typeTag.setTextColor(tagColor);
+                vh.typeTag.setTextColor(tagColor);
                 if (hasBackgroundImage) {
-                    holder.typeTag.setBackground(makeTagBackground(holder.itemView.getContext(), tagColor));
+                    vh.typeTag.setBackground(makeTagBackground(holder.itemView.getContext(), tagColor));
                 } else {
-                    holder.typeTag.setBackgroundResource(R.drawable.bg_release_tag);
+                    vh.typeTag.setBackgroundResource(R.drawable.bg_release_tag);
                 }
             } else {
-                holder.typeTag.setText(R.string.tag_custom);
+                vh.typeTag.setText(R.string.tag_custom);
                 int tagColor = hasBackgroundImage
                         ? secondaryTextColor
                         : holder.itemView.getContext().getResources().getColor(R.color.text_secondary, holder.itemView.getContext().getTheme());
-                holder.typeTag.setTextColor(tagColor);
+                vh.typeTag.setTextColor(tagColor);
                 if (hasBackgroundImage) {
-                    holder.typeTag.setBackground(makeTagBackground(holder.itemView.getContext(), tagColor));
+                    vh.typeTag.setBackground(makeTagBackground(holder.itemView.getContext(), tagColor));
                 } else {
-                    holder.typeTag.setBackgroundResource(R.drawable.bg_preview_tag);
+                    vh.typeTag.setBackgroundResource(R.drawable.bg_preview_tag);
                 }
             }
-            holder.typeTag.setVisibility(View.VISIBLE;
+            vh.typeTag.setVisibility(View.VISIBLE);
 
             String displayLabel;
             if (v.displayName != null && !v.displayName.isEmpty()) {
@@ -1068,17 +1095,17 @@ public class InstancesActivity extends BaseActivity {
             } else {
                 displayLabel = holder.itemView.getContext().getString(R.string.vanilla_prefix, v.versionCode != null ? v.versionCode : "");
             }
-            holder.displayName.setText(displayLabel);
+            vh.displayName.setText(displayLabel);
 
-            holder.settingsIcon.setOnClickListener(iv -> {
-                if (settingsListener != null) settingsListener.onClick(v;
+            vh.settingsIcon.setOnClickListener(iv -> {
+                if (settingsListener != null) settingsListener.onClick(v);
             });
 
             holder.itemView.setOnClickListener(iv -> {
-                if (listener != null) listener.onClick(v;
+                if (listener != null) listener.onClick(v);
             });
 
-            DynamicAnim.applyPressScale(holder.itemView;
+            DynamicAnim.applyPressScale(holder.itemView);
         }
 
         private static boolean isDarkMode(Context context) {
@@ -1087,7 +1114,7 @@ public class InstancesActivity extends BaseActivity {
             return nightModeFlags == Configuration.UI_MODE_NIGHT_YES;
         }
 
-        private static GradientDrawable makeTagBackground(Context context, int color() {
+        private static GradientDrawable makeTagBackground(Context context, int color) {
             GradientDrawable tagBg = new GradientDrawable();
             tagBg.setShape(GradientDrawable.RECTANGLE);
             tagBg.setColor(Color.argb(28, Color.red(color), Color.green(color), Color.blue(color)));
@@ -1113,12 +1140,14 @@ public class InstancesActivity extends BaseActivity {
             TextView versionCode, typeTag, displayName;
             ImageView settingsIcon;
 
-            VH(View v)) {
+            VH(View v) {
                 super(v);
-                versionCode = v.findViewById(R.id.card_version_code;
-                typeTag = v.findViewById(R.id.card_type_tag;
-                displayName = v.findViewById(R.id.card_display_name;
-                settingsIcon = v.findViewById(R.id.card_settings_icon;
+                versionCode = v.findViewById(R.id.card_version_code);
+                typeTag = v.findViewById(R.id.card_type_tag);
+                displayName = v.findViewById(R.id.card_display_name);
+                settingsIcon = v.findViewById(R.id.card_settings_icon);
             }
         }
     }
+
+}

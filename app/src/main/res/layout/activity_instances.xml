@@ -67,6 +67,51 @@
                     android:background="@drawable/bg_filter_chip"
                     android:clickable="true"
                     android:focusable="true" />
+
+                <TextView
+                    android:id="@+id/filter_arch64"
+                    android:layout_width="wrap_content"
+                    android:layout_height="32dp"
+                    android:layout_marginStart="8dp"
+                    android:paddingHorizontal="16dp"
+                    android:gravity="center"
+                    android:text="@string/filter_arch64"
+                    android:fontFamily="@font/misans"
+                    android:textSize="12sp"
+                    android:textColor="@color/on_surface"
+                    android:background="@drawable/bg_filter_chip"
+                    android:clickable="true"
+                    android:focusable="true" />
+
+                <TextView
+                    android:id="@+id/filter_arch32"
+                    android:layout_width="wrap_content"
+                    android:layout_height="32dp"
+                    android:layout_marginStart="8dp"
+                    android:paddingHorizontal="16dp"
+                    android:gravity="center"
+                    android:text="@string/filter_arch32"
+                    android:fontFamily="@font/misans"
+                    android:textSize="12sp"
+                    android:textColor="@color/on_surface"
+                    android:background="@drawable/bg_filter_chip"
+                    android:clickable="true"
+                    android:focusable="true" />
+
+                <TextView
+                    android:id="@+id/filter_arch_unknown"
+                    android:layout_width="wrap_content"
+                    android:layout_height="32dp"
+                    android:layout_marginStart="8dp"
+                    android:paddingHorizontal="16dp"
+                    android:gravity="center"
+                    android:text="@string/filter_arch_unknown"
+                    android:fontFamily="@font/misans"
+                    android:textSize="12sp"
+                    android:textColor="@color/on_surface"
+                    android:background="@drawable/bg_filter_chip"
+                    android:clickable="true"
+                    android:focusable="true" />
             </LinearLayout>
 
             <LinearLayout
