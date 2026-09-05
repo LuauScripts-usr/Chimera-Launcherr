@@ -116,6 +116,9 @@ public class VersionProfileMetadataStore {
                 if (!object.has("launchVertically")) {
                     metadata.launchVertically = defaults.launchVertically;
                 }
+                if (!object.has("shaderCompatEnabled")) {
+                    metadata.shaderCompatEnabled = false;
+                }
                 if (!object.has("installed")) {
                     metadata.installed = defaults.installed;
                 }
@@ -201,6 +204,7 @@ public class VersionProfileMetadataStore {
                 || !object.has("displayName")
                 || !object.has("versionIsolation")
                 || !object.has("launchVertically")
+                || !object.has("shaderCompatEnabled")
                 || !object.has("installed")
                 || !object.has("packageName")
                 || !object.has("updatedAt");

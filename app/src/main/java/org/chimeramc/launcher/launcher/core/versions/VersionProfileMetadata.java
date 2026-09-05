@@ -10,6 +10,7 @@ public class VersionProfileMetadata {
     public String displayName;
     public boolean versionIsolation;
     public boolean launchVertically;
+    public boolean shaderCompatEnabled;
     public boolean installed;
     public String packageName;
     public long updatedAt;
