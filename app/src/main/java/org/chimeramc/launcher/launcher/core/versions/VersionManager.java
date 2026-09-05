@@ -376,6 +376,7 @@ public class VersionManager {
             gv.abiList = inferAbiFromNativeLibDir(pi.applicationInfo.nativeLibraryDir, gv);
             gv.versionIsolation = metadata.versionIsolation;
             gv.launchVertically = metadata.launchVertically;
+            gv.shaderCompatEnabled = metadata.shaderCompatEnabled;
 
             installedVersions.add(gv);
         } catch (PackageManager.NameNotFoundException ignored) {
@@ -422,6 +423,7 @@ public class VersionManager {
                         metadata.versionName = current.versionName;
                         metadata.installed = current.installed;
                         metadata.packageName = current.packageName;
+                        metadata.shaderCompatEnabled = current.shaderCompatEnabled;
                     }
             );
         } catch (IOException ignored) {
@@ -500,6 +502,7 @@ public class VersionManager {
         gv.abiList = inferAbiFromNativeLibDir(null, gv);
         gv.versionIsolation = metadata.versionIsolation;
         gv.launchVertically = metadata.launchVertically;
+        gv.shaderCompatEnabled = metadata.shaderCompatEnabled;
 
         return gv;
     }
