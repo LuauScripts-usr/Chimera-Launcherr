@@ -1,13 +1,13 @@
-package org.levimc.launcher.core.minecraft
+package org.chimeramc.launcher.core.minecraft
 
 import android.app.Application
 import android.content.Context
 import android.content.SharedPreferences
 import androidx.preference.PreferenceManager
-import org.levimc.launcher.core.crash.CrashReporter
-import org.levimc.launcher.core.news.NewsNotificationHelper
-import org.levimc.launcher.settings.FeatureSettings
-import org.levimc.launcher.ui.dialogs.LogcatOverlayManager
+import org.chimeramc.launcher.core.crash.CrashReporter
+import org.chimeramc.launcher.core.news.NewsNotificationHelper
+import org.chimeramc.launcher.settings.FeatureSettings
+import org.chimeramc.launcher.ui.dialogs.LogcatOverlayManager
 
 class LauncherApplication : Application() {
 

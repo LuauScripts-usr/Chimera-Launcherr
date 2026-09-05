@@ -8,12 +8,13 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 
 import com.microsoft.identity.client.AcquireTokenParameters;
-import com.microsoft.identity.client.IAuthenticationCallback;
-import com.microsoft.identity.client.ICurrentAccount;
-import com.microsoft.identity.client.ILifecycleCallback;
 import com.microsoft.identity.client.IMultipleAccountPublicClientApplication;
+import com.microsoft.identity.client.IAccount;
+import com.microsoft.identity.client.IPublicClientApplication;
+import com.microsoft.identity.client.AuthenticationCallback;
 import com.microsoft.identity.client.ISingleAccountPublicClientApplication;
 import com.microsoft.identity.client.PublicClientApplication;
+import com.microsoft.identity.client.exception.MsalClientException;
 import com.microsoft.identity.client.exception.MsalException;
 import com.microsoft.identity.client.exception.MsalUiRequiredException;
 
@@ -64,8 +65,8 @@ public class MicrosoftOAuthManager {
             
             PublicClientApplication.createMultipleAccountPublicClientApplication(
                 context,
-                configFile.getAbsolutePath(),
-                new IMultipleAccountPublicClientApplication.IMultipleAccountApplicationCreatedListener() {
+                configFile,
+                new IPublicClientApplication.IMultipleAccountApplicationCreatedListener() {
                     @Override
                     public void onCreated(IMultipleAccountPublicClientApplication application) {
                         multiAccountApp = application;
@@ -129,15 +130,15 @@ public class MicrosoftOAuthManager {
      */
     public void signIn(@NonNull Activity activity, @NonNull MicrosoftAuthCallback callback) {
         if (!isInitialized) {
-            callback.onError(new IllegalStateException("MSAL not initialized. Call initialize() first."));
+            callback.onError(new MsalClientException("msal_not_initialized"));
             return;
         }
         
         AcquireTokenParameters parameters = new AcquireTokenParameters.Builder()
                 .startAuthorizationFromActivity(activity)
-                .loginHint("")
-                .withScopes(Arrays.asList(DEFAULT_SCOPES))
-                .withCallback(new IAuthenticationCallback() {
+                .withLoginHint("")
+                .withOtherScopesToAuthorize(Arrays.asList(DEFAULT_SCOPES))
+                .withCallback(new AuthenticationCallback() {
                     @Override
                     public void onSuccess(com.microsoft.identity.client.IAuthenticationResult authenticationResult) {
                         Log.i(TAG, "Successfully authenticated: " + authenticationResult.getAccount().getUsername());
@@ -167,41 +168,33 @@ public class MicrosoftOAuthManager {
      */
     public void signInSilently(@NonNull MicrosoftAuthCallback callback) {
         if (!isInitialized) {
-            callback.onError(new IllegalStateException("MSAL not initialized"));
+            callback.onError(new MsalClientException("msal_not_initialized"));
             return;
         }
         
-        multiAccountApp.getCurrentAccountAsync(new ISingleAccountPublicClientApplication.CurrentAccountCallback() {
+        multiAccountApp.getAccounts(new IPublicClientApplication.LoadAccountsCallback() {
             @Override
-            public void onAccountLoaded(ICurrentAccount activeAccount) {
-                if (activeAccount != null) {
-                    acquireTokenSilent(activeAccount, callback);
+            public void onTaskCompleted(List<IAccount> accounts) {
+                if (accounts != null && !accounts.isEmpty()) {
+                    acquireTokenSilent(accounts.get(0), callback);
                 } else {
                     callback.onError(new MsalUiRequiredException("no_account", "No account found"));
                 }
             }
-            
+
             @Override
-            public void onAccountChanged(@NonNull ICurrentAccount priorAccount, @NonNull ICurrentAccount currentAccount) {
-                if (currentAccount != null) {
-                    acquireTokenSilent(currentAccount, callback);
-                }
-            }
-            
-            @Override
-            public void onAccountRemoved(@NonNull ICurrentAccount removedAccount) {
-                callback.onError(new MsalUiRequiredException("account_removed", "Account was removed"));
+            public void onError(MsalException exception) {
+                callback.onError(exception);
             }
         });
     }
     
-    private void acquireTokenSilent(ICurrentAccount account, MicrosoftAuthCallback callback) {
+    private void acquireTokenSilent(IAccount account, MicrosoftAuthCallback callback) {
         multiAccountApp.acquireTokenSilentAsync(
-            Arrays.asList(DEFAULT_SCOPES),
-            account.getAccountIdentifier(),
-            null,
-            false,
-            new IAuthenticationCallback() {
+            DEFAULT_SCOPES,
+            account,
+            account.getAuthority(),
+            new AuthenticationCallback() {
                 @Override
                 public void onSuccess(com.microsoft.identity.client.IAuthenticationResult authenticationResult) {
                     callback.onSuccess(authenticationResult);
@@ -225,35 +218,37 @@ public class MicrosoftOAuthManager {
      */
     public void signOut(@NonNull MicrosoftAuthCallback callback) {
         if (!isInitialized) {
-            callback.onError(new IllegalStateException("MSAL not initialized"));
+            callback.onError(new MsalClientException("msal_not_initialized"));
             return;
         }
         
-        multiAccountApp.getCurrentAccountAsync(new ISingleAccountPublicClientApplication.CurrentAccountCallback() {
+        multiAccountApp.getAccounts(new IPublicClientApplication.LoadAccountsCallback() {
             @Override
-            public void onAccountLoaded(ICurrentAccount activeAccount) {
-                if (activeAccount != null) {
-                    multiAccountApp.removeAccountAsync(activeAccount.getAccountIdentifier(), 
-                        new ISingleAccountPublicClientApplication.RemoveAccountCallback() {
+            public void onTaskCompleted(List<IAccount> accounts) {
+                if (accounts != null && !accounts.isEmpty()) {
+                    IAccount account = accounts.get(0);
+                    multiAccountApp.removeAccount(account,
+                        new IMultipleAccountPublicClientApplication.RemoveAccountCallback() {
                             @Override
                             public void onRemoved() {
                                 Log.i(TAG, "Account removed successfully");
                                 callback.onSuccess(null);
                             }
-                            
+
                             @Override
                             public void onError(MsalException exception) {
                                 callback.onError(exception);
                             }
                         });
+                } else {
+                    callback.onError(new MsalUiRequiredException("no_account", "No account found"));
                 }
             }
-            
+
             @Override
-            public void onAccountChanged(@NonNull ICurrentAccount priorAccount, @NonNull ICurrentAccount currentAccount) {}
-            
-            @Override
-            public void onAccountRemoved(@NonNull ICurrentAccount removedAccount) {}
+            public void onError(MsalException exception) {
+                callback.onError(exception);
+            }
         });
     }
     
@@ -262,16 +257,16 @@ public class MicrosoftOAuthManager {
      */
     public void getAccounts(@NonNull AccountsCallback callback) {
         if (!isInitialized) {
-            callback.onError(new IllegalStateException("MSAL not initialized"));
+            callback.onError(new MsalClientException("msal_not_initialized"));
             return;
         }
         
-        multiAccountApp.getAccountsAsync(new ISingleAccountPublicClientApplication.GetAccountsCallback() {
+        multiAccountApp.getAccounts(new IPublicClientApplication.LoadAccountsCallback() {
             @Override
-            public void onTaskCompleted(List<ICurrentAccount> resultList) {
+            public void onTaskCompleted(List<IAccount> resultList) {
                 callback.onSuccess(resultList);
             }
-            
+
             @Override
             public void onError(MsalException exception) {
                 callback.onError(exception);
@@ -285,7 +280,7 @@ public class MicrosoftOAuthManager {
     public void isSignedIn(@NonNull IsSignedInCallback callback) {
         getAccounts(new AccountsCallback() {
             @Override
-            public void onSuccess(List<ICurrentAccount> accounts) {
+            public void onSuccess(List<IAccount> accounts) {
                 callback.onResult(!accounts.isEmpty());
             }
             
@@ -309,7 +304,7 @@ public class MicrosoftOAuthManager {
      * Callback interface for account list
      */
     public interface AccountsCallback {
-        void onSuccess(List<ICurrentAccount> accounts);
+        void onSuccess(List<IAccount> accounts);
         void onError(MsalException exception);
     }
     

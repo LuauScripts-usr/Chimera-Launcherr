@@ -1,4 +1,4 @@
-package org.levimc.launcher.core.minecraft
+package org.chimeramc.launcher.core.minecraft
 
 import android.app.Activity
 import android.content.Context
@@ -19,13 +19,13 @@ import android.view.inputmethod.InputConnectionWrapper
 import android.view.inputmethod.InputMethodManager
 import androidx.appcompat.widget.AppCompatEditText
 import com.mojang.minecraftpe.MainActivity
-import org.levimc.launcher.core.crash.CrashReporter
-import org.levimc.launcher.core.mods.ModManager
-import org.levimc.launcher.core.mods.inbuilt.nativemod.PojavControlsMod
-import org.levimc.launcher.core.mods.inbuilt.overlay.InbuiltOverlayManager
-import org.levimc.launcher.preloader.PreloaderInput
-import org.levimc.pojavcontrols.PojavControls
-import org.levimc.pojavcontrols.PojavControlsHost
+import org.chimeramc.launcher.core.crash.CrashReporter
+import org.chimeramc.launcher.core.mods.ModManager
+import org.chimeramc.launcher.core.mods.inbuilt.nativemod.PojavControlsMod
+import org.chimeramc.launcher.core.mods.inbuilt.overlay.InbuiltOverlayManager
+import org.chimeramc.launcher.preloader.PreloaderInput
+import org.chimeramc.pojavcontrols.PojavControls
+import org.chimeramc.pojavcontrols.PojavControlsHost
 import java.io.File
 import java.io.FileOutputStream
 
@@ -196,7 +196,7 @@ class MinecraftActivity : MainActivity(), PojavControlsHost {
             handlePreloaderDocumentResult(resultCode, data)
             return
         }
-        if (org.levimc.launcher.core.mods.inbuilt.overlay.MoreButtonsEditor.onActivityResult(requestCode, resultCode, data)) return
+        if (org.chimeramc.launcher.core.mods.inbuilt.overlay.MoreButtonsEditor.onActivityResult(requestCode, resultCode, data)) return
         if (PojavControls.onActivityResult(requestCode, resultCode, data)) return
         super.onActivityResult(requestCode, resultCode, data)
     }
@@ -246,7 +246,7 @@ class MinecraftActivity : MainActivity(), PojavControlsHost {
     }
 
     override fun onBackPressed() {
-        if (org.levimc.launcher.core.mods.inbuilt.overlay.MoreButtonsEditor.closeEditor()) return
+        if (org.chimeramc.launcher.core.mods.inbuilt.overlay.MoreButtonsEditor.closeEditor()) return
         if (PojavControls.closeEditor()) return
         super.onBackPressed()
     }
@@ -258,7 +258,7 @@ class MinecraftActivity : MainActivity(), PojavControlsHost {
             normalExitRestartScheduled = false
         }
         MinecraftActivityState.onResumed(this)
-        org.levimc.launcher.core.mods.inbuilt.overlay.MoreButtonsEditor.onResume()
+        org.chimeramc.launcher.core.mods.inbuilt.overlay.MoreButtonsEditor.onResume()
 
         if (overlayManager == null) {
             startInbuiltModServices()
@@ -303,13 +303,13 @@ class MinecraftActivity : MainActivity(), PojavControlsHost {
 
         val unicodeChar = event.unicodeChar
         if (event.action == KeyEvent.ACTION_UP) {
-            if (org.levimc.launcher.preloader.PreloaderInput.onKeyEvent(event.keyCode, unicodeChar, false)) {
+            if (org.chimeramc.launcher.preloader.PreloaderInput.onKeyEvent(event.keyCode, unicodeChar, false)) {
                 return true
             }
         }
 
         if (event.action == KeyEvent.ACTION_DOWN) {
-            if (org.levimc.launcher.preloader.PreloaderInput.onKeyEvent(event.keyCode, unicodeChar, true)) {
+            if (org.chimeramc.launcher.preloader.PreloaderInput.onKeyEvent(event.keyCode, unicodeChar, true)) {
                 return true
             }
         }
@@ -327,8 +327,8 @@ class MinecraftActivity : MainActivity(), PojavControlsHost {
             return true
         }
 
-        if (org.levimc.launcher.core.mods.inbuilt.overlay.VirtualCursorMod.isActive()) {
-            org.levimc.launcher.core.mods.inbuilt.overlay.VirtualCursorMod.processTouchEvent(event, this)
+        if (org.chimeramc.launcher.core.mods.inbuilt.overlay.VirtualCursorMod.isActive()) {
+            org.chimeramc.launcher.core.mods.inbuilt.overlay.VirtualCursorMod.processTouchEvent(event, this)
             return true
         }
 
@@ -337,7 +337,7 @@ class MinecraftActivity : MainActivity(), PojavControlsHost {
         }
 
         val actionIndex = event.actionIndex
-        if (org.levimc.launcher.preloader.PreloaderInput.onTouch(
+        if (org.chimeramc.launcher.preloader.PreloaderInput.onTouch(
                 event.actionMasked,
                 event.getPointerId(actionIndex),
                 event.getX(actionIndex),

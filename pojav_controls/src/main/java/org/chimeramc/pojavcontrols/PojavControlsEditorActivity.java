@@ -1,16 +1,18 @@
-package org.levimc.pojavcontrols;
+package org.chimeramc.pojavcontrols;
 
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
+import android.os.Bundle;
 import android.view.Gravity;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
-import android.widget.FrameLayout;
 import android.widget.HorizontalScrollView;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
@@ -18,7 +20,9 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
 
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -26,45 +30,96 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-final class PojavControlsEditorView extends FrameLayout {
-    static final int REQUEST_IMPORT = 4101;
-    static final int REQUEST_EXPORT = 4102;
+public class PojavControlsEditorActivity extends AppCompatActivity {
+    private static final int REQUEST_IMPORT = 4101;
+    private static final int REQUEST_EXPORT = 4102;
 
-    private final Activity activity;
-    private final Runnable closeAction;
-    private final ControlRepository repository;
+    private ControlRepository repository;
     private CustomControls profile;
     private String profileName;
-    private final ControlEditorCanvas canvas;
-    private final Spinner profileSpinner;
+    private ControlEditorCanvas canvas;
+    private Spinner profileSpinner;
     private boolean profileSpinnerBusy;
 
-    PojavControlsEditorView(Activity activity, Runnable closeAction) {
-        super(activity);
-        this.activity = activity;
-        this.closeAction = closeAction;
-        repository = new ControlRepository(activity);
+    @Override
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        getWindow().getDecorView().setSystemUiVisibility(
+                View.SYSTEM_UI_FLAG_FULLSCREEN |
+                        View.SYSTEM_UI_FLAG_HIDE_NAVIGATION |
+                        View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY |
+                        View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION |
+                        View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN |
+                        View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
+        repository = new ControlRepository(this);
         profileName = repository.activeName();
         profile = repository.load(profileName);
-        setClickable(true);
-        setFocusable(true);
+        setContentView(buildContent());
+        reloadProfileSpinner(profileName);
+    }
 
-        canvas = new ControlEditorCanvas(activity, this::showProperties);
-        canvas.setProfile(profile);
-        addView(canvas, new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
+    @Override
+    protected void onPause() {
+        saveCurrent(false);
+        super.onPause();
+    }
 
+    @Override
+    public void onBackPressed() {
+        saveCurrent(false);
+        super.onBackPressed();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode != Activity.RESULT_OK || data == null || data.getData() == null) return;
+        Uri uri = data.getData();
+        try {
+            if (requestCode == REQUEST_IMPORT) {
+                String requested = uri.getLastPathSegment();
+                if (requested != null && requested.endsWith(".json")) requested = requested.substring(0, requested.length() - 5);
+                try (InputStream input = getContentResolver().openInputStream(uri)) {
+                    if (input == null) throw new IllegalStateException();
+                    profileName = repository.importProfile(requested, input);
+                }
+                repository.setActive(profileName);
+                profile = repository.load(profileName);
+                canvas.setProfile(profile);
+                reloadProfileSpinner(profileName);
+                notifyProfileChanged();
+                Toast.makeText(this, R.string.pojav_controls_imported, Toast.LENGTH_SHORT).show();
+            } else if (requestCode == REQUEST_EXPORT) {
+                saveCurrent(false);
+                try (OutputStream output = getContentResolver().openOutputStream(uri, "wt")) {
+                    if (output == null) throw new IllegalStateException();
+                    repository.exportProfile(profileName, output);
+                }
+            }
+        } catch (Exception exception) {
+            Toast.makeText(this, R.string.pojav_controls_invalid, Toast.LENGTH_LONG).show();
+        }
+    }
+
+    private View buildContent() {
         float density = getResources().getDisplayMetrics().density;
-        HorizontalScrollView toolbarScroll = new HorizontalScrollView(activity);
+        LinearLayout root = new LinearLayout(this);
+        root.setOrientation(LinearLayout.VERTICAL);
+        root.setBackgroundColor(0xFF101316);
+
+        HorizontalScrollView toolbarScroll = new HorizontalScrollView(this);
         toolbarScroll.setHorizontalScrollBarEnabled(false);
         toolbarScroll.setFillViewport(true);
-        toolbarScroll.setBackgroundColor(0xE6202428);
-        LinearLayout toolbar = new LinearLayout(activity);
+        toolbarScroll.setBackgroundColor(0xFF202428);
+        LinearLayout toolbar = new LinearLayout(this);
         toolbar.setOrientation(LinearLayout.HORIZONTAL);
         toolbar.setGravity(Gravity.CENTER_VERTICAL);
         toolbar.setPadding(Math.round(8 * density), Math.round(4 * density),
                 Math.round(8 * density), Math.round(4 * density));
 
-        TextView title = new TextView(activity);
+        TextView title = new TextView(this);
         title.setText(R.string.pojav_controls_editor);
         title.setTextColor(Color.WHITE);
         title.setTextSize(18);
@@ -72,7 +127,7 @@ final class PojavControlsEditorView extends FrameLayout {
         toolbar.addView(title, new LinearLayout.LayoutParams(Math.round(160 * density),
                 Math.round(48 * density)));
 
-        profileSpinner = new Spinner(activity);
+        profileSpinner = new Spinner(this);
         toolbar.addView(profileSpinner, new LinearLayout.LayoutParams(Math.round(180 * density),
                 Math.round(48 * density)));
         profileSpinner.setOnItemSelectedListener(new android.widget.AdapterView.OnItemSelectedListener() {
@@ -95,80 +150,29 @@ final class PojavControlsEditorView extends FrameLayout {
         });
 
         toolbar.addView(toolbarButton(R.string.pojav_controls_profiles, view -> showProfilesDialog()));
-        Button hide = toolbarButton(R.string.pojav_controls_hide_toolbar, null);
-        toolbar.addView(hide);
         toolbar.addView(toolbarButton(R.string.pojav_controls_add, view -> showAddDialog()));
         toolbar.addView(toolbarButton(R.string.pojav_controls_save, view -> saveCurrent(true)));
         toolbar.addView(toolbarButton(R.string.pojav_controls_import, view -> startImport()));
         toolbar.addView(toolbarButton(R.string.pojav_controls_export, view -> startExport()));
-        toolbar.addView(toolbarButton(R.string.pojav_controls_close, view -> close()));
+        toolbar.addView(toolbarButton(R.string.pojav_controls_close, view -> {
+            saveCurrent(false);
+            finish();
+        }));
 
         toolbarScroll.addView(toolbar, new HorizontalScrollView.LayoutParams(
                 HorizontalScrollView.LayoutParams.WRAP_CONTENT, Math.round(56 * density)));
-        LayoutParams toolbarParams = new LayoutParams(LayoutParams.MATCH_PARENT, Math.round(56 * density));
-        toolbarParams.gravity = Gravity.TOP;
-        addView(toolbarScroll, toolbarParams);
+        root.addView(toolbarScroll, new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT, Math.round(56 * density)));
 
-        Button showToolbar = toolbarButton(R.string.pojav_controls_show_toolbar, null);
-        showToolbar.setSingleLine(true);
-        showToolbar.setGravity(Gravity.CENTER);
-        showToolbar.setPadding(Math.round(8 * density), 0, Math.round(8 * density), 0);
-        showToolbar.setVisibility(GONE);
-        showToolbar.setBackgroundColor(0xCC202428);
-        LayoutParams showParams = new LayoutParams(Math.round(120 * density), Math.round(48 * density));
-        showParams.gravity = Gravity.TOP | Gravity.CENTER_HORIZONTAL;
-        addView(showToolbar, showParams);
-        hide.setOnClickListener(view -> {
-            toolbarScroll.setVisibility(GONE);
-            showToolbar.setVisibility(VISIBLE);
-        });
-        showToolbar.setOnClickListener(view -> {
-            showToolbar.setVisibility(GONE);
-            toolbarScroll.setVisibility(VISIBLE);
-        });
-        reloadProfileSpinner(profileName);
-    }
-
-    void close() {
-        saveCurrent(false);
-        closeAction.run();
-    }
-
-    boolean handleActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode != REQUEST_IMPORT && requestCode != REQUEST_EXPORT) return false;
-        if (resultCode != Activity.RESULT_OK || data == null || data.getData() == null) return true;
-        Uri uri = data.getData();
-        try {
-            if (requestCode == REQUEST_IMPORT) {
-                String requested = uri.getLastPathSegment();
-                if (requested != null && requested.endsWith(".json")) {
-                    requested = requested.substring(0, requested.length() - 5);
-                }
-                try (InputStream input = activity.getContentResolver().openInputStream(uri)) {
-                    if (input == null) throw new IllegalStateException();
-                    profileName = repository.importProfile(requested, input);
-                }
-                repository.setActive(profileName);
-                profile = repository.load(profileName);
-                canvas.setProfile(profile);
-                reloadProfileSpinner(profileName);
-                notifyProfileChanged();
-                Toast.makeText(activity, R.string.pojav_controls_imported, Toast.LENGTH_SHORT).show();
-            } else {
-                saveCurrent(false);
-                try (OutputStream output = activity.getContentResolver().openOutputStream(uri, "wt")) {
-                    if (output == null) throw new IllegalStateException();
-                    repository.exportProfile(profileName, output);
-                }
-            }
-        } catch (Exception exception) {
-            Toast.makeText(activity, R.string.pojav_controls_invalid, Toast.LENGTH_LONG).show();
-        }
-        return true;
+        canvas = new ControlEditorCanvas(this, this::showProperties);
+        canvas.setProfile(profile);
+        root.addView(canvas, new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT, 0, 1f));
+        return root;
     }
 
     private Button toolbarButton(int text, View.OnClickListener listener) {
-        Button button = new Button(activity);
+        Button button = new Button(this);
         button.setText(text);
         button.setTextColor(Color.WHITE);
         button.setTextSize(12);
@@ -178,18 +182,16 @@ final class PojavControlsEditorView extends FrameLayout {
     }
 
     private void showAddDialog() {
-        String[] entries = new String[]{activity.getString(R.string.pojav_controls_button),
-                activity.getString(R.string.pojav_controls_joystick),
-                activity.getString(R.string.pojav_controls_drawer)};
-        new AlertDialog.Builder(activity)
+        String[] entries = new String[]{getString(R.string.pojav_controls_button),
+                getString(R.string.pojav_controls_joystick), getString(R.string.pojav_controls_drawer)};
+        new AlertDialog.Builder(this)
                 .setTitle(R.string.pojav_controls_add)
                 .setItems(entries, (dialog, which) -> {
                     if (which == 0) profile.mControlDataList.add(new ControlData());
                     else if (which == 1) profile.mJoystickDataList.add(new ControlJoystickData());
                     else {
                         ControlDrawerData drawer = new ControlDrawerData();
-                        drawer.buttonProperties.add(new ControlData("Button",
-                                new int[]{KeyMapper.GLFW_KEY_SPACE},
+                        drawer.buttonProperties.add(new ControlData("Button", new int[]{KeyMapper.GLFW_KEY_SPACE},
                                 "0.5 * ${screen_width}", "0.5 * ${screen_height}", 50, 50));
                         profile.mDrawerDataList.add(drawer);
                     }
@@ -200,9 +202,9 @@ final class PojavControlsEditorView extends FrameLayout {
 
     private void showProfilesDialog() {
         List<String> profiles = repository.listProfiles();
-        String[] actions = new String[]{activity.getString(R.string.pojav_controls_new_profile),
-                activity.getString(R.string.pojav_controls_delete)};
-        new AlertDialog.Builder(activity)
+        String[] actions = new String[]{getString(R.string.pojav_controls_new_profile),
+                getString(R.string.pojav_controls_delete)};
+        new AlertDialog.Builder(this)
                 .setTitle(R.string.pojav_controls_profiles)
                 .setItems(actions, (dialog, which) -> {
                     if (which == 0) showNewProfileDialog();
@@ -212,15 +214,15 @@ final class PojavControlsEditorView extends FrameLayout {
     }
 
     private void showNewProfileDialog() {
-        EditText input = new EditText(activity);
+        EditText input = new EditText(this);
         input.setHint(R.string.pojav_controls_profile_name);
         input.setSingleLine(true);
         int padding = Math.round(20 * getResources().getDisplayMetrics().density);
-        LinearLayout wrapper = new LinearLayout(activity);
+        LinearLayout wrapper = new LinearLayout(this);
         wrapper.setPadding(padding, 0, padding, 0);
         wrapper.addView(input, new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
-        new AlertDialog.Builder(activity)
+        new AlertDialog.Builder(this)
                 .setTitle(R.string.pojav_controls_new_profile)
                 .setView(wrapper)
                 .setPositiveButton(android.R.string.ok, (dialog, which) -> {
@@ -241,7 +243,7 @@ final class PojavControlsEditorView extends FrameLayout {
     private void showDeleteProfileDialog(List<String> profiles) {
         ArrayList<String> deletable = new ArrayList<>(profiles);
         deletable.remove("default");
-        new AlertDialog.Builder(activity)
+        new AlertDialog.Builder(this)
                 .setTitle(R.string.pojav_controls_delete)
                 .setItems(deletable.toArray(new String[0]), (dialog, which) -> {
                     String selected = deletable.get(which);
@@ -259,14 +261,14 @@ final class PojavControlsEditorView extends FrameLayout {
 
     private void showProperties(ControlEditorCanvas.EditorTarget target) {
         float density = getResources().getDisplayMetrics().density;
-        ScrollView scroll = new ScrollView(activity);
-        LinearLayout form = new LinearLayout(activity);
+        ScrollView scroll = new ScrollView(this);
+        LinearLayout form = new LinearLayout(this);
         form.setOrientation(LinearLayout.VERTICAL);
         int padding = Math.round(16 * density);
         form.setPadding(padding, padding, padding, padding);
 
         EditText name = field(form, R.string.pojav_controls_name, target.data.name);
-        Button mapping = new Button(activity);
+        Button mapping = new Button(this);
         mapping.setText(mappingText(target.data.keycodes));
         mapping.setAllCaps(false);
         int[] selectedCodes = Arrays.copyOf(target.data.keycodes, 1);
@@ -307,13 +309,13 @@ final class PojavControlsEditorView extends FrameLayout {
         Spinner orientation = null;
         if (target.type == ControlEditorCanvas.EditorTarget.DRAWER) {
             addLabel(form, R.string.pojav_controls_orientation);
-            orientation = new Spinner(activity);
-            ArrayAdapter<ControlDrawerData.Orientation> adapter = new ArrayAdapter<>(activity,
+            orientation = new Spinner(this);
+            ArrayAdapter<ControlDrawerData.Orientation> adapter = new ArrayAdapter<>(this,
                     android.R.layout.simple_spinner_dropdown_item, ControlDrawerData.Orientation.values());
             orientation.setAdapter(adapter);
             orientation.setSelection(target.drawer.orientation.ordinal());
             form.addView(orientation);
-            Button addDrawerButton = new Button(activity);
+            Button addDrawerButton = new Button(this);
             addDrawerButton.setText(R.string.pojav_controls_button);
             addDrawerButton.setOnClickListener(view -> {
                 target.drawer.buttonProperties.add(new ControlData());
@@ -322,11 +324,11 @@ final class PojavControlsEditorView extends FrameLayout {
             form.addView(addDrawerButton);
         }
 
-        LinearLayout actions = new LinearLayout(activity);
+        LinearLayout actions = new LinearLayout(this);
         actions.setOrientation(LinearLayout.HORIZONTAL);
-        Button clone = new Button(activity);
+        Button clone = new Button(this);
         clone.setText(R.string.pojav_controls_clone);
-        Button delete = new Button(activity);
+        Button delete = new Button(this);
         delete.setText(R.string.pojav_controls_delete);
         actions.addView(clone, new LinearLayout.LayoutParams(0,
                 LinearLayout.LayoutParams.WRAP_CONTENT, 1f));
@@ -338,7 +340,7 @@ final class PojavControlsEditorView extends FrameLayout {
         CheckBox finalJoystickAbsolute = joystickAbsolute;
         CheckBox finalForwardLock = forwardLock;
         Spinner finalOrientation = orientation;
-        AlertDialog dialog = new AlertDialog.Builder(activity)
+        AlertDialog dialog = new AlertDialog.Builder(this)
                 .setTitle(R.string.pojav_controls_properties)
                 .setView(scroll)
                 .setPositiveButton(android.R.string.ok, (ignored, which) -> {
@@ -363,8 +365,7 @@ final class PojavControlsEditorView extends FrameLayout {
                         target.joystick.forwardLock = finalForwardLock.isChecked();
                     }
                     if (finalOrientation != null) {
-                        target.drawer.orientation =
-                                (ControlDrawerData.Orientation) finalOrientation.getSelectedItem();
+                        target.drawer.orientation = (ControlDrawerData.Orientation) finalOrientation.getSelectedItem();
                     }
                     target.data.normalize();
                     canvas.rebuild();
@@ -391,7 +392,7 @@ final class PojavControlsEditorView extends FrameLayout {
             if (selectedCodes.length > 0 && selectedCodes[0] == entries.get(i).glfwCode) selected = i;
         }
         int[] selectedIndex = new int[]{selected};
-        new AlertDialog.Builder(activity)
+        new AlertDialog.Builder(this)
                 .setTitle(R.string.pojav_controls_mapping)
                 .setSingleChoiceItems(names, selected, (dialog, which) -> selectedIndex[0] = which)
                 .setPositiveButton(android.R.string.ok, (dialog, which) -> {
@@ -406,12 +407,12 @@ final class PojavControlsEditorView extends FrameLayout {
         int code = keycodes == null || keycodes.length == 0
                 ? KeyMapper.GLFW_KEY_UNKNOWN : keycodes[0];
         return code == KeyMapper.GLFW_KEY_UNKNOWN
-                ? activity.getString(R.string.pojav_controls_mapping) : KeyMapper.nameOf(code);
+                ? getString(R.string.pojav_controls_mapping) : KeyMapper.nameOf(code);
     }
 
     private EditText field(LinearLayout form, int label, String value) {
         addLabel(form, label);
-        EditText input = new EditText(activity);
+        EditText input = new EditText(this);
         input.setText(value == null ? "" : value);
         input.setSingleLine(true);
         form.addView(input, new LinearLayout.LayoutParams(
@@ -420,7 +421,7 @@ final class PojavControlsEditorView extends FrameLayout {
     }
 
     private void addLabel(LinearLayout form, int label) {
-        TextView view = new TextView(activity);
+        TextView view = new TextView(this);
         view.setText(label);
         view.setTextColor(0xFFB8C0C8);
         view.setTextSize(12);
@@ -429,7 +430,7 @@ final class PojavControlsEditorView extends FrameLayout {
     }
 
     private CheckBox check(LinearLayout form, int label, boolean checked) {
-        CheckBox box = new CheckBox(activity);
+        CheckBox box = new CheckBox(this);
         box.setText(label);
         box.setChecked(checked);
         form.addView(box);
@@ -456,19 +457,21 @@ final class PojavControlsEditorView extends FrameLayout {
     }
 
     private void saveCurrent(boolean toast) {
+        if (repository == null || profile == null || profileName == null) return;
         repository.save(profileName, profile);
         repository.setActive(profileName);
         notifyProfileChanged();
-        if (toast) Toast.makeText(activity, R.string.pojav_controls_saved, Toast.LENGTH_SHORT).show();
+        if (toast) Toast.makeText(this, R.string.pojav_controls_saved, Toast.LENGTH_SHORT).show();
     }
 
     private void reloadProfileSpinner(String selected) {
         profileSpinnerBusy = true;
         List<String> profiles = repository.listProfiles();
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(activity,
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
                 android.R.layout.simple_spinner_dropdown_item, profiles);
         profileSpinner.setAdapter(adapter);
-        profileSpinner.setSelection(Math.max(0, profiles.indexOf(selected)));
+        int index = profiles.indexOf(selected);
+        profileSpinner.setSelection(Math.max(0, index));
         profileSpinnerBusy = false;
     }
 
@@ -476,7 +479,7 @@ final class PojavControlsEditorView extends FrameLayout {
         Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
         intent.addCategory(Intent.CATEGORY_OPENABLE);
         intent.setType("application/json");
-        activity.startActivityForResult(intent, REQUEST_IMPORT);
+        startActivityForResult(intent, REQUEST_IMPORT);
     }
 
     private void startExport() {
@@ -484,12 +487,12 @@ final class PojavControlsEditorView extends FrameLayout {
         intent.addCategory(Intent.CATEGORY_OPENABLE);
         intent.setType("application/json");
         intent.putExtra(Intent.EXTRA_TITLE, profileName + ".json");
-        activity.startActivityForResult(intent, REQUEST_EXPORT);
+        startActivityForResult(intent, REQUEST_EXPORT);
     }
 
     private void notifyProfileChanged() {
         Intent intent = new Intent(PojavControls.ACTION_PROFILE_CHANGED);
-        intent.setPackage(activity.getPackageName());
-        activity.sendBroadcast(intent);
+        intent.setPackage(getPackageName());
+        sendBroadcast(intent);
     }
 }

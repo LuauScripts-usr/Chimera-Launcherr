@@ -1,4 +1,4 @@
-package org.levimc.pojavcontrols;
+package org.chimeramc.pojavcontrols;
 
 import android.content.Context;
 import android.graphics.Canvas;

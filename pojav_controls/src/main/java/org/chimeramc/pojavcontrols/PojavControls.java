@@ -1,4 +1,4 @@
-package org.levimc.pojavcontrols;
+package org.chimeramc.pojavcontrols;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -8,7 +8,7 @@ import android.view.ViewGroup;
 import java.lang.ref.WeakReference;
 
 public final class PojavControls {
-    public static final String ACTION_PROFILE_CHANGED = "org.levimc.pojavcontrols.PROFILE_CHANGED";
+    public static final String ACTION_PROFILE_CHANGED = "org.chimeramc.pojavcontrols.PROFILE_CHANGED";
 
     private static WeakReference<Activity> attachedActivity = new WeakReference<>(null);
     private static PojavControlOverlay overlay;

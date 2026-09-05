@@ -1,4 +1,4 @@
-package org.levimc.launcher.ui.activities
+package org.chimeramc.launcher.ui.activities
 
 import android.content.Intent
 import android.os.Bundle
@@ -7,9 +7,9 @@ import android.os.Looper
 import android.widget.Button
 import android.widget.TextView
 import androidx.core.content.FileProvider
-import org.levimc.launcher.R
-import org.levimc.launcher.core.crash.CrashReporter
-import org.levimc.launcher.ui.animation.DynamicAnim
+import org.chimeramc.launcher.R
+import org.chimeramc.launcher.core.crash.CrashReporter
+import org.chimeramc.launcher.ui.animation.DynamicAnim
 import java.io.File
 import java.util.concurrent.Executors
 

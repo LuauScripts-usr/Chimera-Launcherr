@@ -9,6 +9,7 @@
 *.a
 *.out
 build/
+.cxx/
 target/
 
 # Dependencies
@@ -39,6 +40,7 @@ htmlcov/
 .env
 .env.local
 *.env.*
+local.properties
 
 # System
 .DS_Store
