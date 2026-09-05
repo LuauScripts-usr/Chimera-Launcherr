@@ -47,12 +47,18 @@ import org.chimeramc.launcher.util.InstanceBackupManager;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 
 public class InstancesActivity extends BaseActivity {
     public static final String EXTRA_RESTORE_BACKUP_ON_OPEN = "restore_backup_on_open";
 
     private static final int FILTER_ALL = 0;
     private static final int FILTER_CUSTOM = 1;
+    private static final int ARCH_ARM64 = 0;
+    private static final int ARCH_ARM32 =  1;
+    private static final int ARCH_X86_64 =  2;
+    private static final int ARCH_X86 =  3;
+    private static final int ARCH_UNKNOWN =  4;
     private static final int REQUEST_BATCH_BACKUP_STORAGE = 4301;
     private static final int CARD_GLASS_ALPHA_LIGHT = 48;
     private static final int CARD_GLASS_ALPHA_DARK = 58;
@@ -69,6 +75,7 @@ public class InstancesActivity extends BaseActivity {
     private TextView instanceCountBadge;
     private EditText searchInput;
     private int currentFilter = FILTER_ALL;
+    private int visibleInstanceCount;
     private List<GameVersion> allVersions = new ArrayList<>();
 
     private ApkImportManager apkImportManager;
@@ -146,8 +153,14 @@ public class InstancesActivity extends BaseActivity {
         loadVersions();
 
         GameVersion selectedVersion = versionManager.getSelectedVersion();
-        adapter = new InstanceCardAdapter(allVersions, selectedVersion);
+        adapter = new InstanceCardAdapter(selectedVersion);
         recyclerView.setAdapter(adapter);
+        layoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
+            @Override
+            public int getSpanSize(int position() {
+                return adapter.isHeader(position) ? spanCount : 1;
+            }
+        }});
 
         adapter.setOnItemClickListener(version -> {
             versionManager.selectVersion(version);
@@ -170,6 +183,7 @@ public class InstancesActivity extends BaseActivity {
         setupImportButton();
         setupBackupImportButton();
         setupBatchBackupButton();
+        applyFilters();
         updateCount();
         handleBackupOpenIntent(getIntent());
 
@@ -786,13 +800,64 @@ public class InstancesActivity extends BaseActivity {
             filtered.add(v);
         }
 
-        adapter.updateData(filtered);
+        List<GameVersion>[] buckets = new List[5];
+        for (int i = 0; i < buckets.length; i++) {
+            buckets[i] = new ArrayList<>();
+        }
+        for (GameVersion v : filtered) {
+            buckets[getArchGroup(v)].add(v);
+        }
+
+        List<Object> flat = new ArrayList<>();
+        int[] order = {ARCH_ARM64, ARCH_ARM32, ARCH_X86_64, ARCH_X86, ARCH_UNKNOWN};
+        for (int group : order) {
+            List<GameVersion> bucket = buckets[group];
+            if (bucket.isEmpty()) continue;
+            String header = String.format(Locale.getDefault(), getString(R.string.instances_section_count),
+                    getArchLabel(group), bucket.size());
+            flat.add(header;
+            flat.addAll(bucket;
+        }
+        adapter.updateData(flat;
+        visibleInstanceCount = filtered.size();
         updateCount();
     }
 
+    private int getArchGroup(GameVersion v) {
+        String abi = v != null ? v.abiList : null;
+        if (abi == null) return ARCH_UNKNOWN;
+        switch (abi) {
+            case "arm64-v8a":
+                return ARCH_ARM64;
+            case "armeabi-v7a":
+                return ARCH_ARM32;
+            case "x86_64":
+                return ARCH_X86_64;
+            case "x86":
+                return ARCH_X86;
+            default:
+                return ARCH_UNKNOWN;
+        }
+    }
+
+    private String getArchLabel(int group) {
+        switch (group) {
+            case ARCH_ARM64:
+                return getString(R.string.instances_section_arm64);
+            case ARCH_ARM32:
+                return getString(R.string.instances_section_arm32);
+            case ARCH_X86_64:
+                return getString(R.string.instances_section_x86_64);
+            case ARCH_X86:
+                return getString(R.string.instances_section_x86);
+            default:
+                return getString(R.string.instances_section_unknown);
+        }
+    }
+
     private void updateCount() {
-        if (instanceCountBadge != null && adapter != null) {
-            instanceCountBadge.setText(String.valueOf(adapter.getItemCount()));
+        if (instanceCountBadge != null) {
+            instanceCountBadge.setText(String.valueOf(visibleInstanceCount));
         }
     }
 
@@ -833,26 +898,38 @@ public class InstancesActivity extends BaseActivity {
         private final int spanCount;
         private final int spacing;
 
-        GridSpacingDecoration(int spanCount, int spacing) {
+        GridSpacingDecoration(int spanCount, int spacing() {
             this.spanCount = spanCount;
             this.spacing = spacing;
         }
 
         @Override
         public void getItemOffsets(@NonNull Rect outRect, @NonNull View view,
-                                   @NonNull RecyclerView parent, @NonNull RecyclerView.State state) {
+                                   @NonNull RecyclerView parent, @NonNull RecyclerView.State state() {
             int position = parent.getChildAdapterPosition(view);
-            int column = position % spanCount;
-            outRect.left = spacing - column * spacing / spanCount;
-            outRect.right = (column + 1) * spacing / spanCount;
-            if (position >= spanCount) {
+            GridLayoutManager.SpanSizeLookup spanLookup =
+                    ((GridLayoutManager) parent.getLayoutManager()).getSpanSizeLookup();
+            int spanSize = spanLookup.getSpanSize(position;
+            if (spanSize >= spanCount() {
+                outRect.left =  0;
+                outRect.right =  0;
+                outRect.top =  0;
+                return;
+            }
+            int spanIndex = spanLookup.getSpanIndex(position, spanCount);
+            outRect.left = spacing - spanIndex * spacing / spanCount;
+            outRect.right = (spanIndex + spanSize() * spacing / spanCount;
+            if (spanIndex ==  0 && position !=  0() {
                 outRect.top = spacing;
             }
         }
     }
 
-    private static class InstanceCardAdapter extends RecyclerView.Adapter<InstanceCardAdapter.VH> {
-        private List<GameVersion> versions;
+    private static class InstanceCardAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+        static final int TYPE_HEADER = 0;
+        static final int TYPE_ITEM = 1;
+
+        private List<Object> items = new ArrayList<>();
         private GameVersion selectedVersion;
         private OnItemClickListener listener;
         private OnSettingsClickListener settingsListener;
@@ -873,8 +950,7 @@ public class InstancesActivity extends BaseActivity {
             this.settingsListener = l;
         }
 
-        InstanceCardAdapter(List<GameVersion> versions, GameVersion selected) {
-            this.versions = new ArrayList<>(versions);
+        InstanceCardAdapter(GameVersion selected) {
             this.selectedVersion = selected;
         }
 
@@ -882,32 +958,50 @@ public class InstancesActivity extends BaseActivity {
             this.selectedVersion = v;
         }
 
-        void updateData(List<GameVersion> newVersions) {
-            this.versions = new ArrayList<>(newVersions);
+        void updateData(List<Object> newItems) {
+            this.items = new ArrayList<>(newItems);
             notifyDataSetChanged();
+        }
+
+        boolean isHeader(int position() {
+            return position >= 0 && position < items.size() && items.get(position) instanceof String;
+        }
+
+        @Override
+        public int getItemViewType(int position() {
+            return isHeader(position) ? TYPE_HEADER : TYPE_ITEM;
         }
 
         @NonNull
         @Override
-        public VH onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+            if (viewType == TYPE_HEADER) {
+                View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_instance_section_header, parent, false);
+                return new HeaderVH(v);
+            }
             View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_instance_card, parent, false);
             return new VH(v);
         }
 
         @Override
-        public void onBindViewHolder(@NonNull VH holder, int position) {
-            GameVersion v = versions.get(position);
+        public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position() {
+            Object item = items.get(position);
+            if (isHeader(position)) {
+                ((HeaderVH) holder).title.setText((String) item);
+                return;
+            }
+            GameVersion v = (GameVersion) item;
             boolean isSelected = selectedVersion != null
                     && selectedVersion.directoryName != null
-                    && selectedVersion.directoryName.equals(v.directoryName);
+                    && selectedVersion.directoryName.equals(v.directoryName;
 
-            holder.itemView.setActivated(isSelected);
+            holder.itemView.setActivated(isSelected;
 
             PersonalizationManager pm = new PersonalizationManager(holder.itemView.getContext());
             int accent = pm.getAccentColor();
             boolean hasBackgroundImage = pm.hasBackgroundImage();
             boolean isDark = isDarkMode(holder.itemView.getContext());
-            
+
             int bgColor;
             int primaryTextColor;
             int secondaryTextColor;
@@ -926,18 +1020,18 @@ public class InstancesActivity extends BaseActivity {
                 secondaryTextColor = androidx.core.content.ContextCompat.getColor(holder.itemView.getContext(), R.color.text_secondary);
                 outlineColor = androidx.core.content.ContextCompat.getColor(holder.itemView.getContext(), R.color.outline);
             }
-            
+
             GradientDrawable gd = new GradientDrawable();
             gd.setShape(GradientDrawable.RECTANGLE);
             gd.setCornerRadius(12 * holder.itemView.getContext().getResources().getDisplayMetrics().density);
             gd.setColor(bgColor);
-            
+
             if (isSelected && accent != 0) {
                 gd.setStroke((int)(2 * holder.itemView.getContext().getResources().getDisplayMetrics().density), accent);
             } else {
                 gd.setStroke((int)(1 * holder.itemView.getContext().getResources().getDisplayMetrics().density), outlineColor);
             }
-            
+
             holder.itemView.setBackground(gd);
 
             holder.versionCode.setText(v.versionCode != null ? v.versionCode : v.directoryName);
@@ -966,7 +1060,7 @@ public class InstancesActivity extends BaseActivity {
                     holder.typeTag.setBackgroundResource(R.drawable.bg_preview_tag);
                 }
             }
-            holder.typeTag.setVisibility(View.VISIBLE);
+            holder.typeTag.setVisibility(View.VISIBLE;
 
             String displayLabel;
             if (v.displayName != null && !v.displayName.isEmpty()) {
@@ -977,14 +1071,14 @@ public class InstancesActivity extends BaseActivity {
             holder.displayName.setText(displayLabel);
 
             holder.settingsIcon.setOnClickListener(iv -> {
-                if (settingsListener != null) settingsListener.onClick(v);
+                if (settingsListener != null) settingsListener.onClick(v;
             });
 
             holder.itemView.setOnClickListener(iv -> {
-                if (listener != null) listener.onClick(v);
+                if (listener != null) listener.onClick(v;
             });
 
-            DynamicAnim.applyPressScale(holder.itemView);
+            DynamicAnim.applyPressScale(holder.itemView;
         }
 
         private static boolean isDarkMode(Context context) {
@@ -993,7 +1087,7 @@ public class InstancesActivity extends BaseActivity {
             return nightModeFlags == Configuration.UI_MODE_NIGHT_YES;
         }
 
-        private static GradientDrawable makeTagBackground(Context context, int color) {
+        private static GradientDrawable makeTagBackground(Context context, int color() {
             GradientDrawable tagBg = new GradientDrawable();
             tagBg.setShape(GradientDrawable.RECTANGLE);
             tagBg.setColor(Color.argb(28, Color.red(color), Color.green(color), Color.blue(color)));
@@ -1003,20 +1097,28 @@ public class InstancesActivity extends BaseActivity {
 
         @Override
         public int getItemCount() {
-            return versions.size();
+            return items.size();
+        }
+
+        static class HeaderVH extends RecyclerView.ViewHolder {
+            TextView title;
+
+            HeaderVH(View v) {
+                super(v);
+                title = v.findViewById(R.id.instance_section_title);
+            }
         }
 
         static class VH extends RecyclerView.ViewHolder {
             TextView versionCode, typeTag, displayName;
             ImageView settingsIcon;
 
-            VH(View v) {
+            VH(View v)) {
                 super(v);
-                versionCode = v.findViewById(R.id.card_version_code);
-                typeTag = v.findViewById(R.id.card_type_tag);
-                displayName = v.findViewById(R.id.card_display_name);
-                settingsIcon = v.findViewById(R.id.card_settings_icon);
+                versionCode = v.findViewById(R.id.card_version_code;
+                typeTag = v.findViewById(R.id.card_type_tag;
+                displayName = v.findViewById(R.id.card_display_name;
+                settingsIcon = v.findViewById(R.id.card_settings_icon;
             }
         }
     }
-}
