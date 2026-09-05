@@ -1,5 +1,5 @@
 <div align="center">
-
+https://static.wikia.nocookie.net/hunterxhunter/images/7/7c/ShidoreAv.png/revision/latest?cb=20140620234033
 ![Chimera Launcher Logo](https://avatars.githubusercontent.com/u/78095377?s=200&v=4)
 
 # Chimera Launcher
