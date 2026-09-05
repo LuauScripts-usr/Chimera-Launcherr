@@ -764,6 +764,9 @@
     <string name="select_instance_title">选择实例</string>
     <string name="filter_all">全部</string>
     <string name="filter_custom">自定义</string>
+    <string name="filter_arch64">筛选：64 位</string>
+    <string name="filter_arch32">筛选：32 位</string>
+    <string name="filter_arch_unknown">筛选：未知</string>
     <string name="sort_version_newest">版本（最新）</string>
     <string name="tag_installed">已安装</string>
     <string name="tag_custom">自定义</string>

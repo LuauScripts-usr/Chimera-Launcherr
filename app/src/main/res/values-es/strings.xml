@@ -638,6 +638,9 @@ La migración debe completarse antes de continuar con LeviLauncher.</string>
     <string name="select_instance_title">Seleccionar Instancia</string>
     <string name="filter_all">Todas</string>
     <string name="filter_custom">Personalizadas</string>
+    <string name="filter_arch64">Filtro: 64 bits</string>
+    <string name="filter_arch32">Filtro: 32 bits</string>
+    <string name="filter_arch_unknown">Filtro: Desconocido</string>
     <string name="sort_version_newest">Versión (Más Reciente)</string>
     <string name="tag_installed">Instalada</string>
     <string name="tag_custom">Personalizada</string>
