@@ -1,4 +1,4 @@
-package org.levimc.launcher.core.minecraft
+package org.chimeramc.launcher.core.minecraft
 
 import android.animation.ValueAnimator
 import android.content.Intent
@@ -21,10 +21,10 @@ import android.widget.ProgressBar
 import android.widget.ScrollView
 import android.widget.TextView
 import androidx.core.content.ContextCompat
-import org.levimc.launcher.R
-import org.levimc.launcher.ui.activities.BaseActivity
-import org.levimc.launcher.ui.dialogs.CustomAlertDialog
-import org.levimc.launcher.util.PersonalizationManager
+import org.chimeramc.launcher.R
+import org.chimeramc.launcher.ui.activities.BaseActivity
+import org.chimeramc.launcher.ui.dialogs.CustomAlertDialog
+import org.chimeramc.launcher.util.PersonalizationManager
 import java.text.SimpleDateFormat
 import java.util.ArrayDeque
 import java.util.Date

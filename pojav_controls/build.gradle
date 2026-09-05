@@ -3,7 +3,7 @@ plugins {
 }
 
 android {
-    namespace 'org.levimc.pojavcontrols'
+    namespace 'org.chimeramc.pojavcontrols'
     compileSdkVersion 36
 
     defaultConfig {

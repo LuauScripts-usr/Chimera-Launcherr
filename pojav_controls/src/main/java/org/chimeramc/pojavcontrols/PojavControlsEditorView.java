@@ -1,4 +1,4 @@
-package org.levimc.pojavcontrols;
+package org.chimeramc.pojavcontrols;
 
 import android.app.Activity;
 import android.content.Intent;

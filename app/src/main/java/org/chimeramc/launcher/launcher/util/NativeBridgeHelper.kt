@@ -1,15 +1,15 @@
-package org.levimc.launcher.util
+package org.chimeramc.launcher.util
 
 import android.content.Context
 import android.content.SharedPreferences
 import android.os.Handler
 import android.os.Looper
 import org.json.JSONObject
-import org.levimc.launcher.core.minecraft.LauncherApplication
+import org.chimeramc.launcher.core.minecraft.LauncherApplication
 import androidx.core.content.edit
 import android.widget.Toast
 import android.view.Gravity
-import org.levimc.launcher.R
+import org.chimeramc.launcher.R
 
 object NativeBridgeHelper {
     @Volatile

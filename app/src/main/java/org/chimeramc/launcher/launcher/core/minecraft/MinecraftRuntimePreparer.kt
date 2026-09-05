@@ -1,16 +1,18 @@
-package org.levimc.launcher.core.minecraft
+package org.chimeramc.launcher.core.minecraft
 
 import android.content.Context
 import android.content.Intent
 import android.content.pm.ApplicationInfo
 import android.os.Build
-import org.levimc.launcher.core.mods.Mod
-import org.levimc.launcher.core.mods.ModManager
-import org.levimc.launcher.core.mods.ModNativeLoader
-import org.levimc.launcher.core.versions.GameVersion
-import org.levimc.launcher.preloader.PreloaderInput
-import org.levimc.launcher.preloader.PreloaderSignatureRulesManager
-import org.levimc.launcher.util.LauncherStorage
+import org.chimeramc.launcher.core.mods.Mod
+import org.chimeramc.launcher.core.mods.ModManager
+import org.chimeramc.launcher.core.mods.ModNativeLoader
+import org.chimeramc.launcher.core.minecraft.MinecraftLauncher
+import org.chimeramc.launcher.core.versions.GameVersion
+import io.bambosan.mbloader.launcherUtils.LibBindings
+import org.chimeramc.launcher.preloader.PreloaderInput
+import org.chimeramc.launcher.preloader.PreloaderSignatureRulesManager
+import org.chimeramc.launcher.util.LauncherStorage
 import java.io.File
 
 object MinecraftRuntimePreparer {
@@ -80,12 +82,14 @@ object MinecraftRuntimePreparer {
         listener.onLog("Loading native libraries")
         loadMinecraftLibraries(gameManager, version, listener, trace)
 
+        applyShaderCompatFixer(version, listener, trace)
+
         listener.onProgress(78, "Loading enabled mods")
         listener.onLog("Loading native mods")
 
         try {
-            org.levimc.launcher.core.mods.inbuilt.nativemod.InbuiltModsNative.loadLibrary()
-            org.levimc.launcher.core.mods.inbuilt.nativemod.GyroMod.nativePreResolve()
+            org.chimeramc.launcher.core.mods.inbuilt.nativemod.InbuiltModsNative.loadLibrary()
+            org.chimeramc.launcher.core.mods.inbuilt.nativemod.GyroMod.nativePreResolve()
         } catch (_: Throwable) {}
 
         //nativeSetupRuntime(modManager.currentVersion?.modsDir?.absolutePath.toString())
@@ -358,6 +362,35 @@ object MinecraftRuntimePreparer {
             ?.replace(Regex("[^A-Za-z0-9._-]"), "_")
             ?: "default"
         return File(context.cacheDir, "native_mods/$versionDirName").also { it.mkdirs() }
+    }
+
+    private fun applyShaderCompatFixer(version: GameVersion, listener: ProgressListener, trace: LaunchTrace) {
+        if (version == null) return
+        if (!version.shaderCompatEnabled) return
+        val is64BitInstance = version.abiList?.takeIf { it.isNotBlank() }?.let { abi ->
+            abi == "arm64-v8a" || abi == "x86_64"
+        } ?: false
+        if (!is64BitInstance) {
+            listener.onLog("Skipping shader compatibility fixer: requires a 64-bit instance")
+            trace.mark("Shader compatibility fixer skipped", "non-64-bit instance")
+            return
+        }
+        if (Build.SUPPORTED_64_BIT_ABIS.none { it.contains("arm64-v8a") || it.contains("x86_64") }) {
+            listener.onLog("Skipping shader compatibility fixer: device does not support 64-bit native code")
+            trace.mark("Shader compatibility fixer skipped", "32-bit device")
+            return
+        }
+        listener.onLog("Loading shader compatibility fixer (mtbinloader2)")
+        trace.mark("Shader compatibility fixer load started")
+        try {
+            LibBindings.setLightmapAutofixer(true)
+            LibBindings.setTextureLodAutofixer(true)
+            listener.onLog("Shader compatibility fixer loaded")
+            trace.mark("Shader compatibility fixer load finished")
+        } catch (throwable: Throwable) {
+            listener.onLog("Failed to load shader compatibility fixer: ${throwable.message ?: throwable.javaClass.simpleName}")
+            trace.error("Shader compatibility fixer load failed", throwable.message ?: throwable.javaClass.simpleName)
+        }
     }
 
     private fun shouldLoadMaesdk(version: GameVersion): Boolean {

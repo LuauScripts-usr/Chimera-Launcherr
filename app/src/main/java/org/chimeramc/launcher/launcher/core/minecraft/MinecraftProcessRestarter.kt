@@ -1,4 +1,4 @@
-package org.levimc.launcher.core.minecraft
+package org.chimeramc.launcher.core.minecraft
 
 import android.app.AlarmManager
 import android.app.PendingIntent
@@ -26,17 +26,17 @@ import android.widget.LinearLayout
 import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.core.content.ContextCompat.RECEIVER_NOT_EXPORTED
-import org.levimc.launcher.R
-import org.levimc.launcher.ui.activities.BaseActivity
-import org.levimc.launcher.ui.activities.MainActivity
-import org.levimc.launcher.util.PersonalizationManager
+import org.chimeramc.launcher.R
+import org.chimeramc.launcher.ui.activities.BaseActivity
+import org.chimeramc.launcher.ui.activities.MainActivity
+import org.chimeramc.launcher.util.PersonalizationManager
 import kotlin.system.exitProcess
 
-private const val EXTRA_OLD_MAIN_PROCESS_PID = "org.levimc.launcher.extra.OLD_MAIN_PROCESS_PID"
+private const val EXTRA_OLD_MAIN_PROCESS_PID = "org.chimeramc.launcher.extra.OLD_MAIN_PROCESS_PID"
 const val EXTRA_CLOSE_RESTART_ACTIVITY_ON_FIRST_DRAW =
-    "org.levimc.launcher.extra.CLOSE_RESTART_ACTIVITY_ON_FIRST_DRAW"
+    "org.chimeramc.launcher.extra.CLOSE_RESTART_ACTIVITY_ON_FIRST_DRAW"
 const val ACTION_MAIN_ACTIVITY_FIRST_DRAWN =
-    "org.levimc.launcher.action.MAIN_ACTIVITY_FIRST_DRAWN"
+    "org.chimeramc.launcher.action.MAIN_ACTIVITY_FIRST_DRAWN"
 private const val LEGACY_LAUNCHER_RESTART_REQUEST_CODE = 0x1E72
 private const val KILL_OLD_PROCESS_DELAY_MS = 300L
 private const val RELAUNCH_AFTER_KILL_DELAY_MS = 700L

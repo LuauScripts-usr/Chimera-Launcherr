@@ -1,4 +1,4 @@
-package org.levimc.launcher.core.minecraft
+package org.chimeramc.launcher.core.minecraft
 
 object MinecraftLaunchSession {
     @Volatile
