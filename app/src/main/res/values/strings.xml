@@ -857,6 +857,12 @@ Migration must complete before Chimera Launcher can continue.</string>
     <string name="select_instance_title">Select Instance</string>
     <string name="filter_all">All</string>
     <string name="filter_custom">Custom</string>
+    <string name="instances_section_arm64">ARM64</string>
+    <string name="instances_section_arm32">ARM (32-bit)</string>
+    <string name="instances_section_x86_64">x86_64</string>
+    <string name="instances_section_x86">x86</string>
+    <string name="instances_section_unknown">Unknown architecture</string>
+    <string name="instances_section_count">%1$s (%2$d)</string>
     <string name="sort_version_newest">Version (Newest)</string>
     <string name="tag_installed">Installed</string>
     <string name="tag_custom">Custom</string>
