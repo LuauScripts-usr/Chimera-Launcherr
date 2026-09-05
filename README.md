@@ -1,6 +1,7 @@
-<div align="center">
-   
-![Chimera Launcher Logo](https://avatars.githubusercontent.com/u/78095377?s=200&v=4)
+<p align="center">
+  <img src="https://raw.githubusercontent.com/LuauScripts-usr/Logoz/main/ShidoreAv.webp" width="150" height="150" alt="Profile Avatar">
+</p>
+
 
 # Chimera Launcher
 
@@ -40,10 +41,10 @@ Chimera Launcher enables you to import your official Minecraft APK and run it di
 Before installing Chimera Launcher, ensure your device meets the following minimum specifications:
 
 - **Operating System:** Android 9.0 (API 28) or higher
-- **Device Architecture:** ARM64 (v8a)
+- **Device Architecture:** 64bit - 32bit
 - **RAM:** Minimum 1 GB available RAM (2 GB or more recommended)
 - **Storage:** At least 2 GB of available storage for Minecraft and game data
-- **License Requirement:** You must own a licensed copy of Minecraft Bedrock Edition purchased from Google Play
+- **License Requirement:** You must have Minecraft installed on you're device for chimera launcher too work
 
 > **Note:** For optimal performance and stability, we recommend Android 9.0 or higher with at least 3 GB of available RAM and 5 GB of free storage.
 
@@ -64,7 +65,7 @@ Before proceeding with Chimera Launcher installation, ensure that you have the o
 5. Grant the necessary permissions when prompted during installation
 6. Once installed, open Chimera Launcher from your application drawer
 
-> **Important:** Chimera Launcher requires a legitimate, licensed copy of Minecraft Bedrock Edition. Do not use this launcher with pirated or unauthorized versions of the game. Ensure your Minecraft license is valid and properly linked to your Microsoft account.
+> **Important:** Chimera Launcher requires a legitimate, licensed copy of Minecraft Bedrock Edition. Do not use this launcher with pirated or unauthorized versions of the game. Ensure your Minecraft license is valid and properly linked to your Microsoft accoun
 
 ---
 
