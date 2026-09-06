@@ -1,4 +1,4 @@
-package org.levimc.launcher.core.versions;
+package org.chimeramc.launcher.core.versions;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -14,7 +14,7 @@ import java.nio.file.Files;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
-import org.levimc.launcher.util.LauncherStorage;
+import org.chimeramc.launcher.util.LauncherStorage;
 
 public class VersionProfileMetadataStoreTest {
     @Rule

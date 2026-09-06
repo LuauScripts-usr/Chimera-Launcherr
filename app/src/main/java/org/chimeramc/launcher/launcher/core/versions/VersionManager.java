@@ -209,7 +209,7 @@ public class VersionManager {
                     ApplicationInfo appInfo = context.getPackageManager().getApplicationInfo(version.packageName, 0);
                     apkFile = new File(appInfo.sourceDir);
                 } else {
-                    apkFile = new File(versionDir, "base.apk.levi");
+                    apkFile = new File(versionDir, "base.apk.chimera");
                 }
 
                 String dataDirName = isExtractFalse ? version.directoryName : dirName;
@@ -228,7 +228,7 @@ public class VersionManager {
                 if (!isExtractFalse) {
                     File splitsDir = new File(versionDir, "splits");
                     if (splitsDir.exists() && splitsDir.isDirectory()) {
-                        File[] splitApks = splitsDir.listFiles((dir, name) -> name.endsWith(".apk.levi"));
+                        File[] splitApks = splitsDir.listFiles((dir, name) -> name.endsWith(".apk.chimera"));
                         if (splitApks != null) {
                             for (File splitApk : splitApks) {
                                 apkFiles.add(splitApk);
@@ -386,7 +386,7 @@ public class VersionManager {
 
         if (dirs != null) {
             for (File dir : dirs) {
-                File apk = new File(dir, "base.apk.levi");
+                File apk = new File(dir, "base.apk.chimera");
                 if (!apk.exists()) continue;
 
                 GameVersion gv = getGameVersion(dir);
@@ -465,7 +465,7 @@ public class VersionManager {
         File metadataDir = LauncherStorage.getProfileMetadataDir(context, dir.getName());
         VersionProfileMetadata metadata = loadMetadata(
                 metadataDir,
-                VersionProfileMetadataStore.Defaults.custom(dir.getName(), getApkVersionName(new File(dir, "base.apk.levi")))
+                VersionProfileMetadataStore.Defaults.custom(dir.getName(), getApkVersionName(new File(dir, "base.apk.chimera")))
         );
         String directoryName = dir.getName();
         String expectedProfileId = LauncherStorage.sanitizeProfileId(directoryName);
@@ -1115,7 +1115,7 @@ public class VersionManager {
         // Copy APK to expected location
         File apkSource = new File(versionDir, "apk/base.apk");
         if (apkSource.exists()) {
-            File apkDest = new File(versionDir, "base.apk.levi");
+            File apkDest = new File(versionDir, "base.apk.chimera");
             copyFile(apkSource, apkDest);
         }
         

@@ -27,7 +27,7 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "levilauncher"
+rootProject.name = "chimeralauncher"
 include ':app'
 include ':minecraft'
 include ':pojav_controls'

@@ -1,6 +1,6 @@
 import { defineConfig, type DefaultTheme } from "vitepress";
 
-const repo = "https://github.com/LiteLDev/LeviLaunchroid";
+const repo = "https://github.com/LiteLDev/ChimeraLauncher";
 const releases = `${repo}/releases`;
 const base = process.env.VITEPRESS_BASE ?? "/";
 
@@ -102,8 +102,8 @@ function buildChineseNav(): DefaultTheme.NavItem[] {
 }
 
 export default defineConfig({
-  title: "LeviLauncher",
-  description: "Documentation for the LeviLaunchroid Android Minecraft Bedrock launcher.",
+  title: "Chimera Launcher",
+  description: "Documentation for the ChimeraLauncher Android Minecraft Bedrock launcher.",
   lang: "en-US",
   base,
   cleanUrls: true,
@@ -119,7 +119,7 @@ export default defineConfig({
     },
     socialLinks: [{ icon: "github", link: repo }],
     footer: {
-      copyright: "Copyright © 2024-2026 LeviMC",
+      copyright: "Copyright © 2024-2026 ChimeraMC",
     },
   },
   locales: {
@@ -174,6 +174,6 @@ export default defineConfig({
     lineNumbers: true,
   },
   sitemap: {
-    hostname: "https://levilaunchroid.levimc.org/",
+    hostname: "https://launch.chimeramc.org/",
   },
 });

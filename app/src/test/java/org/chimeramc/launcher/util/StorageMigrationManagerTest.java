@@ -1,4 +1,4 @@
-package org.levimc.launcher.util;
+package org.chimeramc.launcher.util;
 
 import static org.junit.Assert.assertEquals;
 
@@ -8,8 +8,8 @@ public class StorageMigrationManagerTest {
     @Test
     public void mapsVersionApkToVersionRoot() {
         assertEquals(
-                "minecraft/Minecraft_1.21.80/base.apk.levi",
-                StorageMigrationManager.mapLegacyRootRelativePath("minecraft/Minecraft_1.21.80/base.apk.levi")
+                "minecraft/Minecraft_1.21.80/base.apk.chimera",
+                StorageMigrationManager.mapLegacyRootRelativePath("minecraft/Minecraft_1.21.80/base.apk.chimera")
         );
     }
 

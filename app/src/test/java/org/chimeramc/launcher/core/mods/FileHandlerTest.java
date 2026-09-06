@@ -1,4 +1,4 @@
-package org.levimc.launcher.core.mods;
+package org.chimeramc.launcher.core.mods;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;

@@ -39,7 +39,7 @@ public class ApkInstaller {
         void onError(String errorMessage);
     }
 
-    private static final String APK_FILE_NAME = "base.apk.levi";
+    private static final String APK_FILE_NAME = "base.apk.chimera";
     private static final int BUFFER_SIZE = 131072;
     private static final int PROGRESS_PREPARED = 5;
     private static final int PROGRESS_COPY_DONE = 55;
@@ -126,7 +126,7 @@ public class ApkInstaller {
                                 } else {
                                     if (!splitsDir.exists()) splitsDir.mkdirs();
                                     String splitName = new File(entryName).getName();
-                                    splitName = splitName.replace(".apk", ".apk.levi");
+                                    splitName = splitName.replace(".apk", ".apk.chimera");
                                     outFile = new File(splitsDir, splitName);
                                     outputName = splitName;
                                 }
@@ -186,9 +186,9 @@ public class ApkInstaller {
     }
 
     private String extractVersionName(Uri apkOrApksUri, File baseDir, String dirName) {
-        File baseApkLevi = new File(baseDir, APK_FILE_NAME);
-        if (baseApkLevi.exists()) {
-            String v = extractApkVersionName(baseApkLevi);
+        File baseApkChimera = new File(baseDir, APK_FILE_NAME);
+        if (baseApkChimera.exists()) {
+            String v = extractApkVersionName(baseApkChimera);
             if (!"unknown_version".equals(v)) return v;
         }
         String name = dirName;
