@@ -34,6 +34,9 @@ public enum ControllerType{
         if(vendor != vendorId){
             return false;
         }
+        if(productIdA == -1){
+            return true;
+        }
         return product==productIdA || (productIdB != -1 && product==productIdB);
     }
 

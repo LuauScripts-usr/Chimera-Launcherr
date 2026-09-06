@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
@@ -15,26 +14,194 @@
         android:paddingTop="15dp"
         android:paddingBottom="24dp">
 
-        <TextView
-            android:id="@+id/controller_title"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/controller_title"
-            android:fontFamily="@font/misans"
-            android:textColor="@color/primary"
-            android:textSize="22sp"
-            android:textStyle="bold" />
-
-        <TextView
-            android:id="@+id/controller_empty_hint"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
-            android:text="@string/controller_empty_hint"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+            <TextView
+                android:id="@+id/controller_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/controller_title"
+                android:fontFamily="@font/misans"
+                android:textColor="@color/primary"
+                android:textSize="22sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/controller_status"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginStart="12dp"
+                android:fontFamily="@font/misans"
+                android:text="@string/controller_status_none"
+                android:textColor="@color/text_secondary"
+                android:textSize="13sp"
+                android:gravity="end" />
+
+        </LinearLayout>
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:layout_marginTop="8dp">
+
+            <org.chimeramc.launcher.ui.views.ControllerIllustrationView
+                android:id="@+id/controller_illustration"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="center" />
+
+            <TextView
+                android:id="@+id/controller_illustration_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom|center_horizontal"
+                android:layout_marginBottom="6dp"
+                android:fontFamily="@font/misans"
+                android:textColor="@color/text_secondary"
+                android:textSize="12sp" />
+
+        </FrameLayout>
+
+        <TextView
+            android:id="@+id/controller_profile_section_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:text="@string/controller_profiles_title"
             android:fontFamily="@font/misans"
-            android:textColor="@color/text_secondary"
-            android:textSize="14sp"
-            android:gravity="center" />
+            android:textColor="@color/primary"
+            android:textSize="15sp"
+            android:textStyle="bold" />
+
+        <HorizontalScrollView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:scrollbars="none"
+            android:overScrollMode="never">
+
+            <LinearLayout
+                android:id="@+id/controller_profile_chips"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal" />
+
+        </HorizontalScrollView>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:orientation="horizontal"
+            android:gravity="center">
+
+            <TextView
+                android:id="@+id/controller_profile_create"
+                android:layout_width="0dp"
+                android:layout_height="36dp"
+                android:layout_weight="1"
+                android:layout_marginEnd="6dp"
+                android:gravity="center"
+                android:fontFamily="@font/misans"
+                android:text="@string/controller_profile_create"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                android:textColor="@color/on_primary"
+                android:background="@drawable/bg_filter_chip"
+                android:clickable="true"
+                android:focusable="true" />
+
+            <TextView
+                android:id="@+id/controller_profile_rename"
+                android:layout_width="0dp"
+                android:layout_height="36dp"
+                android:layout_weight="1"
+                android:layout_marginEnd="6dp"
+                android:gravity="center"
+                android:fontFamily="@font/misans"
+                android:text="@string/controller_profile_rename"
+                android:textSize="12sp"
+                android:textColor="@color/on_surface"
+                android:background="@drawable/bg_filter_chip"
+                android:clickable="true"
+                android:focusable="true" />
+
+            <TextView
+                android:id="@+id/controller_profile_duplicate"
+                android:layout_width="0dp"
+                android:layout_height="36dp"
+                android:layout_weight="1"
+                android:layout_marginEnd="6dp"
+                android:gravity="center"
+                android:fontFamily="@font/misans"
+                android:text="@string/controller_profile_duplicate"
+                android:textSize="12sp"
+                android:textColor="@color/on_surface"
+                android:background="@drawable/bg_filter_chip"
+                android:clickable="true"
+                android:focusable="true" />
+
+            <TextView
+                android:id="@+id/controller_profile_delete"
+                android:layout_width="0dp"
+                android:layout_height="36dp"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:fontFamily="@font/misans"
+                android:text="@string/controller_profile_delete"
+                android:textSize="12sp"
+                android:textColor="@color/on_surface"
+                android:background="@drawable/bg_filter_chip"
+                android:clickable="true"
+                android:focusable="true" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:orientation="horizontal"
+            android:gravity="center">
+
+            <TextView
+                android:id="@+id/controller_next_button"
+                android:layout_width="0dp"
+                android:layout_height="40dp"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:fontFamily="@font/misans"
+                android:text="@string/controller_next"
+                android:textSize="13sp"
+                android:textStyle="bold"
+                android:textColor="@color/on_primary"
+                android:background="@drawable/bg_filter_chip"
+                android:clickable="true"
+                android:focusable="true" />
+
+            <TextView
+                android:id="@+id/controller_edit_button"
+                android:layout_width="0dp"
+                android:layout_height="40dp"
+                android:layout_weight="1"
+                android:layout_marginStart="8dp"
+                android:gravity="center"
+                android:fontFamily="@font/misans"
+                android:text="@string/controller_edit"
+                android:textSize="13sp"
+                android:textStyle="bold"
+                android:textColor="@color/on_primary"
+                android:background="@drawable/bg_filter_chip"
+                android:clickable="true"
+                android:focusable="true" />
+
+        </LinearLayout>
 
     </LinearLayout>
 </LinearLayout>
