@@ -1,8 +1,8 @@
 {
-  "name": "levilaunchroid-docs",
+  "name": "chimeralauncher-docs",
   "private": true,
   "version": "0.0.0",
-  "description": "Documentation site for the LeviLaunchroid Android launcher",
+  "description": "Documentation site for the ChimeraLauncher Android launcher",
   "scripts": {
     "docs:dev": "vitepress dev .",
     "docs:build": "vitepress build .",

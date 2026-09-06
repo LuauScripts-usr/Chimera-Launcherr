@@ -1,11 +1,11 @@
-package org.levimc.launcher.util;
+package org.chimeramc.launcher.util;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
-import org.levimc.launcher.settings.FeatureSettings;
+import org.chimeramc.launcher.settings.FeatureSettings;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -38,7 +38,7 @@ public class LauncherStorageTest {
 
     @Test
     public void mediaAppRootUsesPackageMediaDirectory() {
-        File mediaDir = new File("/storage/emulated/0/Android/media/org.levimc.launcher");
+        File mediaDir = new File("/storage/emulated/0/Android/media/org.chimeramc.launcher");
 
         assertEquals(mediaDir, LauncherStorage.buildTargetMediaAppRoot(mediaDir));
     }
@@ -46,14 +46,14 @@ public class LauncherStorageTest {
     @Test
     public void displayPathUsesAndroidMediaPackageDirectory() {
         assertEquals(
-                "Android/media/org.levimc.launcher",
-                LauncherStorage.buildTargetAppRootDisplayPath("org.levimc.launcher")
+                "Android/media/org.chimeramc.launcher",
+                LauncherStorage.buildTargetAppRootDisplayPath("org.chimeramc.launcher")
         );
     }
 
     @Test
     public void profileCacheRootUsesInternalCacheDirectoryAndVersionId() {
-        File appCacheDir = new File("/data/user/0/org.levimc.launcher/cache");
+        File appCacheDir = new File("/data/user/0/org.chimeramc.launcher/cache");
 
         assertEquals(
                 new File(appCacheDir, "minecraft/Minecraft_1.21.80-beta"),
@@ -63,7 +63,7 @@ public class LauncherStorageTest {
 
     @Test
     public void sharedStorageModeUsesNewLayoutWhenLegacySharedRootsAreEmpty() throws Exception {
-        File temp = Files.createTempDirectory("levi-shared-layout").toFile();
+        File temp = Files.createTempDirectory("chimera-shared-layout").toFile();
         File internalRoot = new File(temp, "internal");
         File externalRoot = new File(temp, "external");
         assertTrue(internalRoot.mkdirs());
@@ -78,7 +78,7 @@ public class LauncherStorageTest {
 
     @Test
     public void sharedStorageModeUsesLegacyLayoutWhenInternalHasResources() throws Exception {
-        File temp = Files.createTempDirectory("levi-shared-layout").toFile();
+        File temp = Files.createTempDirectory("chimera-shared-layout").toFile();
         File internalRoot = new File(temp, "internal");
         File externalRoot = new File(temp, "external");
         File worldsDir = new File(internalRoot, LauncherStorage.GAME_DATA_RELATIVE_PATH + "/minecraftWorlds/world1");
@@ -95,7 +95,7 @@ public class LauncherStorageTest {
 
     @Test
     public void sharedStorageModeUsesLegacyLayoutWhenExternalHasResources() throws Exception {
-        File temp = Files.createTempDirectory("levi-shared-layout").toFile();
+        File temp = Files.createTempDirectory("chimera-shared-layout").toFile();
         File internalRoot = new File(temp, "internal");
         File externalRoot = new File(temp, "external");
         File packsDir = new File(externalRoot, LauncherStorage.GAME_DATA_RELATIVE_PATH + "/resource_packs/pack1");
@@ -168,7 +168,7 @@ public class LauncherStorageTest {
 
     @Test
     public void cleanupLegacyRootRejectsIncompleteMigration() throws Exception {
-        File temp = Files.createTempDirectory("levi-cleanup").toFile();
+        File temp = Files.createTempDirectory("chimera-cleanup").toFile();
         File legacyRoot = new File(temp, "legacy");
         File targetRoot = new File(temp, "target");
         assertTrue(legacyRoot.mkdirs());
@@ -183,7 +183,7 @@ public class LauncherStorageTest {
 
     @Test
     public void cleanupLegacyRootTreatsMissingDirectoryAsSuccess() throws Exception {
-        File temp = Files.createTempDirectory("levi-cleanup").toFile();
+        File temp = Files.createTempDirectory("chimera-cleanup").toFile();
         File targetRoot = new File(temp, "target");
         assertTrue(targetRoot.mkdirs());
 
@@ -197,7 +197,7 @@ public class LauncherStorageTest {
 
     @Test
     public void cleanupLegacyRootRejectsTargetOverlap() throws Exception {
-        File temp = Files.createTempDirectory("levi-cleanup").toFile();
+        File temp = Files.createTempDirectory("chimera-cleanup").toFile();
         File targetRoot = new File(temp, "target");
         File legacyRoot = new File(targetRoot, "legacy");
         assertTrue(legacyRoot.mkdirs());
@@ -211,7 +211,7 @@ public class LauncherStorageTest {
 
     @Test
     public void cleanupLegacyRootDeletesFilesAndCountsBytes() throws Exception {
-        File temp = Files.createTempDirectory("levi-cleanup").toFile();
+        File temp = Files.createTempDirectory("chimera-cleanup").toFile();
         File legacyRoot = new File(temp, "legacy");
         File targetRoot = new File(temp, "target");
         File nested = new File(legacyRoot, "nested");

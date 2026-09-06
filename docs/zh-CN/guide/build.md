@@ -1,6 +1,6 @@
 # 从源码构建
 
-本页面向想构建 LeviLaunchroid 本体的贡献者。Native mod 的构建说明位于 [Native Mod 快速开始](/zh-CN/guide/developer)。
+本页面向想构建 ChimeraLauncher 本体的贡献者。Native mod 的构建说明位于 [Native Mod 快速开始](/zh-CN/guide/developer)。
 
 ## 前置要求
 
@@ -13,11 +13,11 @@
 ## 打开项目
 
 ```bash
-git clone https://github.com/LiteLDev/LeviLaunchroid.git
-cd LeviLaunchroid
+git clone https://github.com/LiteLDev/ChimeraLauncher.git
+cd ChimeraLauncher
 ```
 
-用 Android Studio 打开项目目录，并等待 Gradle sync 完成。Gradle 设置里的项目名是 `levilauncher`，仓库名仍然是 `LeviLaunchroid`。
+用 Android Studio 打开项目目录，并等待 Gradle sync 完成。Gradle 设置里的项目名是 `chimeralauncher`，仓库名仍然是 `ChimeraLauncher`。
 
 ## 构建并运行
 

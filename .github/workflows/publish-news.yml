@@ -93,7 +93,7 @@ jobs:
           }
           request = {
               "message": {
-                  "topic": "levilauncher-news",
+                  "topic": "chimeralauncher-news",
                   "data": data,
                   "android": {"priority": "high", "ttl": "86400s"},
               }

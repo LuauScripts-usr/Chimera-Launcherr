@@ -2,12 +2,12 @@
 layout: home
 
 hero:
-  name: LeviLauncher
+  name: Chimera Launcher
   text: A lightweight Android launcher for Minecraft Bedrock
   tagline: Import and launch your official Minecraft installation, manage isolated versions, switch accounts, organize worlds and packs, and extend the game with native modules.
   image:
     src: /appicon.png
-    alt: LeviLauncher
+    alt: Chimera Launcher
   actions:
     - theme: brand
       text: Get started
@@ -20,11 +20,11 @@ hero:
       link: /guide/developer
     - theme: alt
       text: Download
-      link: https://github.com/LiteLDev/LeviLaunchroid/releases/latest
+      link: https://github.com/LiteLDev/ChimeraLauncher/releases/latest
 
 features:
   - title: Official game first
-    details: LeviLauncher is built for legitimate Minecraft Bedrock players and requires the official Google Play version of Minecraft.
+    details: Chimera Launcher is built for legitimate Minecraft Bedrock players and requires the official Google Play version of Minecraft.
   - title: Version isolation
     details: Keep multiple game versions and their data separated so testing one setup does not disturb another.
   - title: Content management
@@ -43,7 +43,7 @@ Use the language selector or open [简体中文](/zh-CN/).
 
 ## What this site covers
 
-LeviLauncher is an open-source Android launcher for Minecraft Bedrock Edition. It focuses on practical launcher workflows first: installing the launcher, preparing an official Minecraft copy, managing versions, starting the game, and keeping player content organized.
+Chimera Launcher is an open-source Android launcher for Minecraft Bedrock Edition. It focuses on practical launcher workflows first: installing the launcher, preparing an official Minecraft copy, managing versions, starting the game, and keeping player content organized.
 
 Developer-facing Preloader APIs are still documented here, but they are part of the Developer section instead of the main entry point.
 

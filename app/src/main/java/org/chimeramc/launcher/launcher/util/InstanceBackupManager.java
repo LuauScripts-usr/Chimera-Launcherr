@@ -51,7 +51,7 @@ import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
 
 public class InstanceBackupManager {
-    public static final String BACKUP_EXTENSION = ".levibackup";
+    public static final String BACKUP_EXTENSION = ".chimerabackup";
     public static final String ZIP_EXTENSION = ".zip";
 
     private static final String TAG = "InstanceBackupManager";
@@ -714,7 +714,7 @@ public class InstanceBackupManager {
 
     private boolean shouldSkipInstalledProfileEntry(String relativePath) {
         String normalized = normalizeZipEntryName(relativePath);
-        return "base.apk.levi".equals(normalized) || normalized.startsWith("splits/");
+        return "base.apk.chimera".equals(normalized) || normalized.startsWith("splits/");
     }
 
     private void extractBackupEntries(ZipFile zipFile, RestoreCallback callback, RestoreTargetResolver resolver) throws IOException {
@@ -897,12 +897,12 @@ public class InstanceBackupManager {
 
     private static boolean hasStrongBackupExtension(Context context, Uri uri) {
         if (uri == null) return false;
-        return hasLevibackupExtension(uri.getPath())
-                || hasLevibackupExtension(uri.getLastPathSegment())
-                || hasLevibackupExtension(resolveDisplayName(context, uri));
+        return hasChimerabackupExtension(uri.getPath())
+                || hasChimerabackupExtension(uri.getLastPathSegment())
+                || hasChimerabackupExtension(resolveDisplayName(context, uri));
     }
 
-    private static boolean hasLevibackupExtension(String value) {
+    private static boolean hasChimerabackupExtension(String value) {
         return value != null && value.toLowerCase(Locale.ROOT).endsWith(BACKUP_EXTENSION);
     }
 

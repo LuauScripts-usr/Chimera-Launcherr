@@ -51,7 +51,7 @@ public class MinecraftLauncher {
 
     public ApplicationInfo createFakeApplicationInfo(GameVersion version, String packageName) {
         ApplicationInfo fakeInfo = new ApplicationInfo();
-        File apkFile = new File(version.versionDir, "base.apk.levi");
+        File apkFile = new File(version.versionDir, "base.apk.chimera");
         fakeInfo.sourceDir = apkFile.getAbsolutePath();
         fakeInfo.publicSourceDir = fakeInfo.sourceDir;
         String systemAbi = abiToSystemLibDir(Build.SUPPORTED_ABIS[0]);
@@ -66,7 +66,7 @@ public class MinecraftLauncher {
             if (splits != null) {
                 ArrayList<String> splitPathList = new ArrayList<>();
                 for (File f : splits) {
-                    if (f.isFile() && f.getName().endsWith(".apk.levi")) {
+                    if (f.isFile() && f.getName().endsWith(".apk.chimera")) {
                         splitPathList.add(f.getAbsolutePath());
                     }
                 }

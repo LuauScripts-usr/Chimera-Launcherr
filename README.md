@@ -9,11 +9,11 @@
 
 **A lightweight Android launcher for Minecraft: Bedrock Edition**
 
-[![GitHub Release](https://img.shields.io/github/v/release/LiteLDev/LeviLaunchroid?style=flat-square&color=blue)](https://github.com/LiteLDev/LeviLaunchroid/releases)
-[![License: Apache 2.0](https://img.shields.io/github/license/LiteLDev/LeviLaunchroid)](https://github.com/LiteLDev/LeviLaunchroid/blob/main/LICENSE)
-[![Issues](https://img.shields.io/github/issues/LiteLDev/LeviLaunchroid?style=flat-square&color=red)](https://github.com/LiteLDev/LeviLaunchroid/issues)
-[![Stars](https://img.shields.io/github/stars/LiteLDev/LeviLaunchroid?style=flat-square&color=yellow)](https://github.com/LiteLDev/LeviLaunchroid)
-[![Downloads](https://img.shields.io/github/downloads/LiteLDev/LeviLaunchroid/total.svg)](https://github.com/LiteLDev/LeviLaunchroid/releases)
+[![GitHub Release](https://img.shields.io/github/v/release/LiteLDev/ChimeraLauncher?style=flat-square&color=blue)](https://github.com/LiteLDev/ChimeraLauncher/releases)
+[![License: Apache 2.0](https://img.shields.io/github/license/LiteLDev/ChimeraLauncher)](https://github.com/LiteLDev/ChimeraLauncher/blob/main/LICENSE)
+[![Issues](https://img.shields.io/github/issues/LiteLDev/ChimeraLauncher?style=flat-square&color=red)](https://github.com/LiteLDev/ChimeraLauncher/issues)
+[![Stars](https://img.shields.io/github/stars/LiteLDev/ChimeraLauncher?style=flat-square&color=yellow)](https://github.com/LiteLDev/ChimeraLauncher)
+[![Downloads](https://img.shields.io/github/downloads/LiteLDev/ChimeraLauncher/total.svg)](https://github.com/LiteLDev/ChimeraLauncher/releases)
 [![Android](https://img.shields.io/badge/Android-9.0%2B-green?style=flat-square&logo=android)](https://www.android.com/)
 
 </div>
@@ -58,7 +58,7 @@ Before proceeding with Chimera Launcher installation, ensure that you have the o
 
 ### Installation Steps
 
-1. Visit the [Releases Page](https://github.com/LiteLDev/LeviLaunchroid/releases) and download the latest APK build
+1. Visit the [Releases Page](https://github.com/LiteLDev/ChimeraLauncher/releases) and download the latest APK build
 2. Open your device Settings and navigate to Security or Applications
 3. Enable "Unknown Sources" or "Allow installation from unknown sources" to permit APK installation
 4. Locate the downloaded APK file using your file manager and tap to install
@@ -85,7 +85,7 @@ If you want to build Chimera Launcher from source or contribute to development, 
 1. Clone the Chimera Launcher repository:
 
    ```bash
-   git clone https://github.com/LiteLDev/LeviLaunchroid.git
+   git clone https://github.com/LiteLDev/ChimeraLauncher.git
    ```
 
 2. Open the project directory in Android Studio
@@ -171,7 +171,7 @@ Chimera Launcher would not be possible without the contributions and support of 
 - **Chimera Team Organization** – For maintaining the Chimera Launcher project and providing infrastructure support
 - **Android Community** – For excellent documentation, libraries, and tools that made this launcher possible
 - **Open Source Community** – For all the libraries, frameworks, and tools that power this project
-- **Contributors** – A heartfelt thank you to all [contributors](https://github.com/LiteLDev/LeviLaunchroid/graphs/contributors) who have continuously improved and maintained Chimera Launcher through their time and expertise
+- **Contributors** – A heartfelt thank you to all [contributors](https://github.com/LiteLDev/ChimeraLauncher/graphs/contributors) who have continuously improved and maintained Chimera Launcher through their time and expertise
 
 ---
 
@@ -179,9 +179,9 @@ Chimera Launcher would not be possible without the contributions and support of 
 
 **Author / Team:** Chimera Team Team
 
-**Project Repository:** [https://github.com/LiteLDev/LeviLaunchroid](https://github.com/LiteLDev/LeviLaunchroid)
+**Project Repository:** [https://github.com/LiteLDev/ChimeraLauncher](https://github.com/LiteLDev/ChimeraLauncher)
 
-**Report Issues:** [GitHub Issues Page](https://github.com/LiteLDev/LeviLaunchroid/issues)
+**Report Issues:** [GitHub Issues Page](https://github.com/LiteLDev/ChimeraLauncher/issues)
 
 **For support and questions:** Please create an issue on the GitHub repository or contact the Chimera Team team directly
 
@@ -189,11 +189,11 @@ Chimera Launcher would not be possible without the contributions and support of 
 
 <div align="center">
 
-[![GitHub Release](https://img.shields.io/github/v/release/LiteLDev/LeviLaunchroid?style=flat-square&color=blue)](https://github.com/LiteLDev/LeviLaunchroid/releases)
+[![GitHub Release](https://img.shields.io/github/v/release/LiteLDev/ChimeraLauncher?style=flat-square&color=blue)](https://github.com/LiteLDev/ChimeraLauncher/releases)
 [![License: Apache 2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg?style=flat-square)](https://www.apache.org/licenses/LICENSE-2.0)
-[![Issues](https://img.shields.io/github/issues/LiteLDev/LeviLaunchroid?style=flat-square&color=red)](https://github.com/LiteLDev/LeviLaunchroid/issues)
-[![Stars](https://img.shields.io/github/stars/LiteLDev/LeviLaunchroid?style=flat-square&color=yellow)](https://github.com/LiteLDev/LeviLaunchroid)
-[![Downloads](https://img.shields.io/github/downloads/LiteLDev/LeviLaunchroid/total.svg)](https://github.com/LiteLDev/LeviLaunchroid/releases)
+[![Issues](https://img.shields.io/github/issues/LiteLDev/ChimeraLauncher?style=flat-square&color=red)](https://github.com/LiteLDev/ChimeraLauncher/issues)
+[![Stars](https://img.shields.io/github/stars/LiteLDev/ChimeraLauncher?style=flat-square&color=yellow)](https://github.com/LiteLDev/ChimeraLauncher)
+[![Downloads](https://img.shields.io/github/downloads/LiteLDev/ChimeraLauncher/total.svg)](https://github.com/LiteLDev/ChimeraLauncher/releases)
 [![Android](https://img.shields.io/badge/Android-9.0%2B-green?style=flat-square&logo=android)](https://www.android.com/)
 
 **Made with ❤️ by the Chimera Team Community**

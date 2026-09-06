@@ -1,4 +1,4 @@
-package org.levimc.launcher.util;
+package org.chimeramc.launcher.util;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -17,7 +17,7 @@ public class InstanceBackupManagerTest {
     @Test
     public void manifestRoundTripsUnknownFieldsIgnored() {
         String json = "{"
-                + "\"format\":\"levilauncher_instance_backup\","
+                + "\"format\":\"chimeralauncher_instance_backup\","
                 + "\"schemaVersion\":1,"
                 + "\"instanceName\":\"Demo\","
                 + "\"directoryName\":\"Minecraft_1.21.80\","
@@ -32,7 +32,7 @@ public class InstanceBackupManagerTest {
 
         InstanceBackupManager.BackupManifest manifest = InstanceBackupManager.parseManifestJson(json);
 
-        assertEquals("levilauncher_instance_backup", manifest.format);
+        assertEquals("chimeralauncher_instance_backup", manifest.format);
         assertEquals(1, manifest.schemaVersion);
         assertEquals("Demo", manifest.instanceName);
         assertEquals("Minecraft_1.21.80", manifest.directoryName);
@@ -42,10 +42,10 @@ public class InstanceBackupManagerTest {
     }
 
     @Test
-    public void backupFileNamesAcceptLevibackupAndZip() {
-        assertTrue(InstanceBackupManager.isBackupFileName("demo.levibackup"));
+    public void backupFileNamesAcceptChimerabackupAndZip() {
+        assertTrue(InstanceBackupManager.isBackupFileName("demo.chimerabackup"));
         assertTrue(InstanceBackupManager.isBackupFileName("demo.zip"));
-        assertTrue(InstanceBackupManager.isBackupFileName("DEMO.LEVIBACKUP"));
+        assertTrue(InstanceBackupManager.isBackupFileName("DEMO.CHIMERABACKUP"));
         assertFalse(InstanceBackupManager.isBackupFileName("demo.mcworld"));
     }
 
