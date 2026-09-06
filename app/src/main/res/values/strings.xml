@@ -854,6 +854,13 @@ Migration must complete before Chimera Launcher can continue.</string>
     <string name="nav_controller">Controller</string>
     <string name="controller_title">Controller</string>
     <string name="controller_empty_hint">Controller setup is coming soon. Connect a supported gamepad to begin.</string>
+<string name="controller_status_none">No supported controller detected</string>
+    <string name="controller_status_detected">Detected: %1$s</string>
+    <string name="controller_connected_hint">Profile screen will appear here</string>
+    <string name="controller_manual_hint">Manual preview &#8212; press Next to cycle through supported controllers</string>
+    <string name="controller_next">Next</string>
+    <string name="controller_type_placeholder">&#8212;</string>
+
 
     <string name="search_instances_hint">Search…</string>
     <string name="instances_label">Instances</string>

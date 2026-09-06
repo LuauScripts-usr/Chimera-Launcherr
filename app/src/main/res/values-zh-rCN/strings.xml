@@ -762,6 +762,13 @@
     <string name="nav_controller">手柄</string>
     <string name="controller_title">手柄</string>
     <string name="controller_empty_hint">手柄设置即将推出。连接受支持的游戏手柄即可开始。</string>
+<string name="controller_status_none">未检测到受支持的手柄</string>
+    <string name="controller_status_detected">已检测到: %1$s</string>
+    <string name="controller_connected_hint">手柄资料画面将在此显示</string>
+    <string name="controller_manual_hint">手动预览 &#8212; 按“下一个”循环切换受支持的手柄</string>
+    <string name="controller_next">下一个</string>
+    <string name="controller_type_placeholder">&#8212;</string>
+
     <string name="search_instances_hint">搜索…</string>
     <string name="instances_label">实例</string>
     <string name="select_instance_title">选择实例</string>
