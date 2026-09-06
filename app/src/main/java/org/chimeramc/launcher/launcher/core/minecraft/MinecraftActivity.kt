@@ -23,6 +23,7 @@ import org.chimeramc.launcher.core.crash.CrashReporter
 import org.chimeramc.launcher.core.mods.ModManager
 import org.chimeramc.launcher.core.mods.inbuilt.nativemod.PojavControlsMod
 import org.chimeramc.launcher.core.mods.inbuilt.overlay.InbuiltOverlayManager
+import org.chimeramc.launcher.launcher.controller.ControllerInputProcessor
 import org.chimeramc.launcher.preloader.PreloaderInput
 import org.chimeramc.pojavcontrols.PojavControls
 import org.chimeramc.pojavcontrols.PojavControlsHost
@@ -135,6 +136,7 @@ class MinecraftActivity : MainActivity(), PojavControlsHost {
         
         initializePreloaderTextInput()
         PreloaderInput.setActivity(this)
+        ControllerInputProcessor.detectAndLoad(this)
         MinecraftActivityState.onCreated(this)
         trace.mark("MinecraftActivity onCreate finished")
     }
@@ -302,20 +304,21 @@ class MinecraftActivity : MainActivity(), PojavControlsHost {
         }
 
         val unicodeChar = event.unicodeChar
+        val remappedKey = ControllerInputProcessor.processKeyEvent(event.keyCode)
         if (event.action == KeyEvent.ACTION_UP) {
-            if (org.chimeramc.launcher.preloader.PreloaderInput.onKeyEvent(event.keyCode, unicodeChar, false)) {
+            if (org.chimeramc.launcher.preloader.PreloaderInput.onKeyEvent(remappedKey, unicodeChar, false)) {
                 return true
             }
         }
 
         if (event.action == KeyEvent.ACTION_DOWN) {
-            if (org.chimeramc.launcher.preloader.PreloaderInput.onKeyEvent(event.keyCode, unicodeChar, true)) {
+            if (org.chimeramc.launcher.preloader.PreloaderInput.onKeyEvent(remappedKey, unicodeChar, true)) {
                 return true
             }
         }
 
         overlayManager?.let { manager ->
-            if (manager.handleKeyEvent(event.keyCode, event.action)) {
+            if (manager.handleKeyEvent(remappedKey, event.action)) {
                 return true
             }
         }
@@ -361,6 +364,10 @@ class MinecraftActivity : MainActivity(), PojavControlsHost {
 
     override fun dispatchGenericMotionEvent(event: MotionEvent): Boolean {
         if (shouldConsumeMouseMotion(event)) {
+            return true
+        }
+
+        if (ControllerInputProcessor.isWithinDeadZone(event)) {
             return true
         }
 
