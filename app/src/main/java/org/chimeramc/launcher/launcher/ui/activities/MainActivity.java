@@ -1219,6 +1219,16 @@ import okhttp3.OkHttpClient;
     }
 
     private void setupQuickActions() {
+        // Last Played Hero Card
+        View lastPlayedCard = findViewById(R.id.last_played_card);
+        if (lastPlayedCard != null) {
+            lastPlayedCard.setOnClickListener(v -> launchGame());
+            DynamicAnim.applyPressScale(lastPlayedCard);
+        }
+
+        // Refresh hero card stats
+        refreshLastPlayedCard();
+
         // Quick Launch Card
         View quickLaunchCard = findViewById(R.id.quick_launch_card);
         if (quickLaunchCard != null) {
@@ -1671,15 +1681,60 @@ import okhttp3.OkHttpClient;
     }
 
 
-     public void setTextMinecraftVersion() {
+    public void setTextMinecraftVersion() {
         if (binding == null) return;
         if (versionManager == null) {
             binding.textMinecraftVersion.setText(getString(R.string.not_found_version));
+            updateLastPlayedName(null, null);
             return;
         }
         GameVersion selectedVersion = versionManager.getSelectedVersion();
         String instanceName = selectedVersion != null ? getInstanceDisplayName(selectedVersion) : null;
         binding.textMinecraftVersion.setText(TextUtils.isEmpty(instanceName) ? getString(R.string.not_found_version) : instanceName);
+        updateLastPlayedName(instanceName, selectedVersion);
+        refreshLastPlayedCard();
+    }
+
+    private void refreshLastPlayedCard() {
+        GameVersion selectedVersion = versionManager != null ? versionManager.getSelectedVersion() : null;
+        int installedCount =0;
+        int activeModsCount =0;
+        if (versionManager != null) {
+            List<org.chimeramc.launcher.core.versions.GameVersion> installed = versionManager.getInstalledVersions();
+            List<org.chimeramc.launcher.core.versions.GameVersion> custom = versionManager.getCustomVersions();
+            installedCount = (installed != null ? installed.size() : 0) + (custom != null ? custom.size() : 0);
+        }
+        if (viewModel != null) {
+            java.util.List<org.chimeramc.launcher.core.mods.Mod> mods = viewModel.getModsLiveData().getValue();
+            if (mods != null) {
+                for (org.chimeramc.launcher.core.mods.Mod mod : mods) {
+                    if (mod.isEnabled()) activeModsCount++;
+                }
+            }
+        }
+        TextView instancesStat = findViewById(R.id.last_played_instances_stat);
+        if (instancesStat != null) {
+            instancesStat.setText(getString(R.string.stat_instances_count, installedCount));
+        }
+        TextView modsStat = findViewById(R.id.last_played_mods_stat);
+        if (modsStat != null) {
+            modsStat.setText(getString(R.string.stat_mods_count, activeModsCount));
+        }
+        updateLastPlayedName(
+                selectedVersion != null ? getInstanceDisplayName(selectedVersion) : null,
+                selectedVersion
+        );
+    }
+
+    private void updateLastPlayedName(String instanceName, GameVersion selectedVersion) {
+        TextView heroName = findViewById(R.id.last_played_name);
+        if (heroName != null) {
+            heroName.setText(TextUtils.isEmpty(instanceName) ? getString(R.string.not_found_version) : instanceName);
+        }
+        TextView heroVersion = findViewById(R.id.last_played_version);
+        if (heroVersion != null) {
+            heroVersion.setText(selectedVersion != null ? getInstanceVersionText(selectedVersion) : "");
+        }
     }
 
     private boolean isVersionManagerReady() {

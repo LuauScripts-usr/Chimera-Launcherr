@@ -10,6 +10,8 @@ import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 
+import androidx.core.content.ContextCompat;
+
 import org.chimeramc.launcher.launcher.controller.ControllerType;
 
 import java.util.ArrayList;
@@ -27,6 +29,7 @@ public class ControllerIllustrationView extends View {
     private final Paint buttonPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private final Paint glowPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private final Paint textPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+    private int accentColor = -1;
     private float cx;
     private float cy;
     private float scale;
@@ -42,20 +45,49 @@ public class ControllerIllustrationView extends View {
     }
 
     private void init() {
-        basePaint.setColor(Color.rgb(38, 42, 50));
-        outlinePaint.setColor(Color.rgb(120, 128, 140));
+        applyThemeColors();
         outlinePaint.setStyle(Paint.Style.STROKE);
         outlinePaint.setStrokeWidth(3f);
-        buttonPaint.setColor(Color.rgb(72, 78, 90));
-        glowPaint.setColor(Color.rgb(78, 226, 162));
-        textPaint.setColor(Color.rgb(210, 218, 228));
+        glowPaint.setColor((int) 0xFF4AE0A0L);
         textPaint.setTextAlign(Paint.Align.CENTER);
         rebuild();
+    }
+
+    private boolean isDarkMode() {
+        int nightModeFlags = getContext().getResources().getConfiguration().uiMode
+                & android.content.res.Configuration.UI_MODE_NIGHT_MASK;
+        return nightModeFlags == android.content.res.Configuration.UI_MODE_NIGHT_YES;
+    }
+
+    private void applyThemeColors() {
+        if (isDarkMode()) {
+            basePaint.setColor(Color.rgb(38, 42, 50));
+            outlinePaint.setColor(Color.rgb(120, 128, 140));
+            buttonPaint.setColor(Color.rgb(72, 78, 90));
+            textPaint.setColor(Color.rgb(210, 218, 228));
+        } else {
+            basePaint.setColor(Color.rgb(232, 235, 240));
+            outlinePaint.setColor(Color.rgb(110, 120, 130));
+            buttonPaint.setColor(Color.rgb(190, 196, 202));
+            textPaint.setColor(Color.rgb(60, 64, 72));
+        }
     }
 
     public void setType(ControllerType type) {
         this.type = type;
         rebuild();
+    }
+
+    public void setAccentColor(int accentColor) {
+        this.accentColor = accentColor;
+        invalidate();
+    }
+
+    @Override
+    protected void onConfigurationChanged(android.content.res.Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        applyThemeColors();
+        invalidate();
     }
 
     public void setRegionGlow(String id, boolean on) {
@@ -146,6 +178,7 @@ public class ControllerIllustrationView extends View {
         Float strength = glow.get(r.id);
         float g = strength == null ? 0f : strength;
         if (g >  0.05f) {
+            glowPaint.setColor(accentColor != -1 ? accentColor : (int) 0xFF4AE0A0L);
             glowPaint.setAlpha((int) (150 * g));
             canvas.drawCircle(px, py, pr * (1f +  0.3f * g), glowPaint);
         }

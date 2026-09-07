@@ -224,27 +224,27 @@ public class BaseActivity extends AppCompatActivity {
             if (!(this instanceof MainActivity)) {
                 Intent intent = new Intent(this, MainActivity.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-                startActivity(intent);
+                switchNavTab(intent);
             }
         });
         findViewById(R.id.nav_tab_instances).setOnClickListener(v -> {
             if (!(this instanceof InstancesActivity)) {
-                startActivity(new Intent(this, InstancesActivity.class));
+                switchNavTab(new Intent(this, InstancesActivity.class));
             }
         });
         findViewById(R.id.nav_tab_about).setOnClickListener(v -> {
             if (!(this instanceof AboutActivity)) {
-                startActivity(new Intent(this, AboutActivity.class));
+                switchNavTab(new Intent(this, AboutActivity.class));
             }
         });
         findViewById(R.id.nav_tab_settings).setOnClickListener(v -> {
             if (!(this instanceof SettingsActivity)) {
-                startActivity(new Intent(this, SettingsActivity.class));
+                switchNavTab(new Intent(this, SettingsActivity.class));
             }
         });
         findViewById(R.id.nav_tab_controller).setOnClickListener(v -> {
             if (!(this instanceof ControllerActivity)) {
-                startActivity(new Intent(this, ControllerActivity.class));
+                switchNavTab(new Intent(this, ControllerActivity.class));
             }
         });
 
@@ -493,6 +493,13 @@ public class BaseActivity extends AppCompatActivity {
 
     private boolean shouldSuppressTransition(Intent intent) {
         return intent != null && (intent.getFlags() & Intent.FLAG_ACTIVITY_NO_ANIMATION) != 0;
+    }
+
+    private void switchNavTab(Intent intent){
+        startActivity(intent);
+        if (!shouldSuppressTransition(intent)) {
+            overridePendingTransition(R.anim.nav_tab_in, R.anim.nav_tab_out);
+        }
     }
 
     @Override

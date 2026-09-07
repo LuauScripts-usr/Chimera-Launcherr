@@ -235,6 +235,10 @@ public class PersonalizationManager {
         return prefs.getInt(KEY_CARD_ROUNDING, CARD_ROUNDING_DEFAULT);
     }
 
+    public float getCardRoundingPx(Context ctx) {
+        return getCardRounding() * ctx.getResources().getDisplayMetrics().density;
+    }
+
     public void setCardRounding(int roundingPx) {
         int clamped = Math.max(CARD_ROUNDING_MIN, Math.min(CARD_ROUNDING_MAX, roundingPx));
         if (getCardRounding() == clamped) return;
