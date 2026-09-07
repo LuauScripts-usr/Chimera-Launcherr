@@ -254,15 +254,58 @@
             </LinearLayout>
         </HorizontalScrollView>
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/instances_recycler"
+        <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
-            android:layout_marginTop="16dp"
-            android:clipToPadding="false"
-            android:overScrollMode="never"
-            android:paddingBottom="8dp" />
+            android:layout_marginTop="16dp">
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/instances_recycler"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:clipToPadding="false"
+                android:overScrollMode="never"
+                android:paddingBottom="8dp" />
+
+            <LinearLayout
+                android:id="@+id/empty_instances"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:padding="32dp"
+                android:visibility="gone">
+
+                <ImageView
+                    android:layout_width="52dp"
+                    android:layout_height="52dp"
+                    android:src="@drawable/ic_minecraft_cube"
+                    android:alpha="0.4"
+                    android:scaleType="centerCrop" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:fontFamily="@font/misans"
+                    android:text="@string/empty_instances_title"
+                    android:textColor="@color/on_surface"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:fontFamily="@font/misans"
+                    android:gravity="center"
+                    android:text="@string/empty_instances_message"
+                    android:textColor="@color/text_secondary"
+                    android:textSize="13sp" />
+
+            </LinearLayout>
+        </FrameLayout>
 
     </LinearLayout>
 </LinearLayout>

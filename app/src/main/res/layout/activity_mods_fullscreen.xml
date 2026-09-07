@@ -151,6 +151,44 @@
                 android:nestedScrollingEnabled="false"
                 android:paddingHorizontal="8dp" />
 
+            <LinearLayout
+                android:id="@+id/empty_mods"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:padding="32dp"
+                android:visibility="gone">
+
+                <ImageView
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:src="@drawable/ic_modules"
+                    android:alpha="0.4"
+                    android:scaleType="centerCrop" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="14dp"
+                    android:fontFamily="@font/misans"
+                    android:text="@string/empty_mods_title"
+                    android:textColor="@color/on_surface"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:fontFamily="@font/misans"
+                    android:gravity="center"
+                    android:text="@string/empty_mods_message"
+                    android:textColor="@color/text_secondary"
+                    android:textSize="13sp" />
+
+            </LinearLayout>
+
             <TextView
                 android:id="@+id/no_mods_message_32bit"
                 android:layout_width="match_parent"

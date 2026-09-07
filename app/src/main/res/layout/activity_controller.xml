@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/controller_root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
@@ -93,6 +94,17 @@
                 android:orientation="horizontal" />
 
         </HorizontalScrollView>
+
+        <TextView
+            android:id="@+id/empty_controller_profiles"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:fontFamily="@font/misans"
+            android:text="@string/empty_controller_profiles_title"
+            android:textColor="@color/text_secondary"
+            android:textSize="13sp"
+            android:visibility="gone" />
 
         <LinearLayout
             android:layout_width="match_parent"

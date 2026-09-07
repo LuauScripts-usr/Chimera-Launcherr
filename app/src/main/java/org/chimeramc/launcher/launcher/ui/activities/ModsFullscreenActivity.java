@@ -272,6 +272,13 @@ public class ModsFullscreenActivity extends BaseActivity {
                 lastModsCount = count;
             }
         }
+
+        View emptyView = findViewById(R.id.empty_mods);
+        if (emptyView != null) {
+            View menuButton = findViewById(R.id.mod_menu_button);
+            boolean supported = menuButton == null || menuButton.getVisibility() == View.VISIBLE;
+            emptyView.setVisibility(supported && (mods == null || mods.isEmpty()) ? View.VISIBLE : View.GONE);
+        }
     }
 
     private void updateModsCount() {

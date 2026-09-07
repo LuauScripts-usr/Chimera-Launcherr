@@ -55,7 +55,18 @@ public class ControllerActivity extends BaseActivity {
         setContentView(R.layout.activity_controller);
         setupNavBar();
 
+        org.chimeramc.launcher.util.PersonalizationManager pm = new org.chimeramc.launcher.util.PersonalizationManager(this);
+        View root = findViewById(R.id.controller_root);
+        if (root != null) {
+            pm.applyGlassToView(root);
+            pm.applyAccentToView(root, this);
+        }
+        applyCompactAndRounding(pm);
+
         illustration = findViewById(R.id.controller_illustration);
+        if (illustration != null) {
+            illustration.setAccentColor(pm.getAccentColor());
+        }
         statusText = findViewById(R.id.controller_status);
         illustrationLabel = findViewById(R.id.controller_illustration_label);
         profileChips = findViewById(R.id.controller_profile_chips);
@@ -141,10 +152,25 @@ public class ControllerActivity extends BaseActivity {
         refreshProfiles();
     }
 
+    private void applyCompactAndRounding(org.chimeramc.launcher.util.PersonalizationManager pm) {
+        View root = findViewById(R.id.controller_root);
+        if (root instanceof android.view.ViewGroup viewGroup){
+            int pad = (int)((pm.isCompactMode() ? 8 : 16) * getResources().getDisplayMetrics().density);
+            viewGroup.setPadding(pad, pad, pad, pad);
+        }
+    }
+
     private void refreshProfiles() {
+        if (profileChips == null) return;
         profileChips.removeAllViews();
         List<ControllerProfile> profiles = profileManager.getProfiles(currentType);
         int active = profileManager.getActiveSlot(currentType);
+        View emptyHint = findViewById(R.id.empty_controller_profiles);
+        boolean hasProfiles = profiles != null && !profiles.isEmpty();
+        if (emptyHint != null) {
+            emptyHint.setVisibility(hasProfiles ? View.GONE : View.VISIBLE);
+        }
+        if (!hasProfiles) return;
         for (int i = 0; i < profiles.size(); i++) {
             final int slot = i;
             TextView chip = new TextView(this);

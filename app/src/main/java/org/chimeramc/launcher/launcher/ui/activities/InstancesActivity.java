@@ -847,6 +847,11 @@ public class InstancesActivity extends BaseActivity {
         adapter.updateData(flat);
         visibleInstanceCount = filtered.size();
         updateCount();
+
+        View emptyView = findViewById(R.id.empty_instances);
+        if (emptyView != null) {
+            emptyView.setVisibility(filtered.isEmpty() ? View.VISIBLE : View.GONE);
+        }
     }
 
     private int getArchGroup(GameVersion v) {
@@ -1050,7 +1055,7 @@ public class InstancesActivity extends BaseActivity {
 
             GradientDrawable gd = new GradientDrawable();
             gd.setShape(GradientDrawable.RECTANGLE);
-            gd.setCornerRadius(12 * holder.itemView.getContext().getResources().getDisplayMetrics().density);
+            gd.setCornerRadius(pm.getCardRoundingPx(holder.itemView.getContext()));
             gd.setColor(bgColor);
 
             if (isSelected && accent != 0) {
