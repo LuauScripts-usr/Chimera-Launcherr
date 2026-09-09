@@ -1,4 +1,4 @@
-package org.chimeramc.launcher.launcher.ui.activities;
+package org.chimeramc.launcher.ui.activities;
 
 import android.app.Activity;
 import android.content.SharedPreferences;
