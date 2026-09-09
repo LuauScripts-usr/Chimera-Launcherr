@@ -58,7 +58,6 @@ public class ControllerActivity extends BaseActivity {
         org.chimeramc.launcher.util.PersonalizationManager pm = new org.chimeramc.launcher.util.PersonalizationManager(this);
         View root = findViewById(R.id.controller_root);
         if (root != null) {
-            pm.applyGlassToView(root);
             pm.applyAccentToView(root, this);
         }
         applyCompactAndRounding(pm);
@@ -160,6 +159,21 @@ public class ControllerActivity extends BaseActivity {
         }
     }
 
+    private void applyGlassToChips() {
+        org.chimeramc.launcher.util.PersonalizationManager pm = new org.chimeramc.launcher.util.PersonalizationManager(this);
+        int[] buttonIds = {
+                R.id.controller_next_button, R.id.controller_edit_button,
+                R.id.controller_profile_create, R.id.controller_profile_rename,
+                R.id.controller_profile_duplicate, R.id.controller_profile_delete
+        };
+        for (int id : buttonIds) {
+            View v = findViewById(id);
+            if (v != null) {
+                pm.applyGlassToView(v);
+            }
+        }
+    }
+
     private void refreshProfiles() {
         if (profileChips == null) return;
         profileChips.removeAllViews();
@@ -179,7 +193,7 @@ public class ControllerActivity extends BaseActivity {
             chip.setPadding(dp(10), dp(6), dp(10), dp(6));
             chip.setGravity(android.view.Gravity.CENTER);
             if (i == active) {
-                chip.setTextColor(getColor(android.R.color.white));
+                chip.setTextColor(getColor(R.color.on_primary));
                 chip.setBackgroundResource(R.drawable.bg_filter_chip);
                 chip.setSelected(true);
             } else {

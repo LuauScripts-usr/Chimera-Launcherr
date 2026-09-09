@@ -254,7 +254,7 @@ public class ContentListActivity extends BaseActivity {
 
     private void filterContent(String query) {
         String lowerQuery = query.toLowerCase().trim();
-
+        boolean empty = false;
         if (contentType == TYPE_WORLDS) {
             if (lowerQuery.isEmpty()) {
                 worldsAdapter.updateWorlds(allWorlds);
@@ -264,16 +264,23 @@ public class ContentListActivity extends BaseActivity {
                     .collect(Collectors.toList());
                 worldsAdapter.updateWorlds(filtered);
             }
+            empty = worldsAdapter.getItemCount() == 0;
+            setEmptyState(empty, R.string.content_empty_worlds_title, R.string.content_empty_worlds_message);
         } else if (contentType == TYPE_SERVERS) {
             if (lowerQuery.isEmpty()) {
                 serversAdapter.updateData(allServers);
             } else {
                 List<org.chimeramc.launcher.core.content.ServerItem> filtered = allServers.stream()
-                    .filter(server -> server.name.toLowerCase().contains(lowerQuery) || 
+                    .filter(server -> server.name.toLowerCase().contains(lowerQuery) ||
                                      server.ip.toLowerCase().contains(lowerQuery))
                     .collect(Collectors.toList());
                 serversAdapter.updateData(filtered);
             }
+            empty = serversAdapter.getItemCount() == 0;
+            setEmptyState(empty, R.string.content_empty_servers_title, R.string.content_empty_servers_message);
+        } else if (contentType == TYPE_SCREENSHOTS) {
+            empty = screenshotsAdapter.getItemCount() == 0;
+            setEmptyState(empty, R.string.content_empty_screenshots_title, R.string.content_empty_screenshots_message);
         } else {
             if (lowerQuery.isEmpty()) {
                 packsAdapter.updateResourcePacks(allPacks);
@@ -283,6 +290,21 @@ public class ContentListActivity extends BaseActivity {
                     .collect(Collectors.toList());
                 packsAdapter.updateResourcePacks(filtered);
             }
+            empty = packsAdapter.getItemCount() == 0;
+            setEmptyState(empty, R.string.content_empty_packs_title, R.string.content_empty_packs_message);
+        }
+    }
+
+    private void setEmptyState(boolean empty, int titleRes, int messageRes) {
+        View emptyContainer = binding.contentEmpty;
+        if (emptyContainer == null) return;
+        emptyContainer.setVisibility(empty ? View.VISIBLE : View.GONE);
+        if (empty) {
+            binding.contentRecyclerView.setVisibility(View.GONE);
+            binding.contentEmptyTitle.setText(getString(titleRes));
+            binding.contentEmptyMessage.setText(getString(messageRes));
+        } else {
+            binding.contentRecyclerView.setVisibility(View.VISIBLE);
         }
     }
 
