@@ -557,10 +557,10 @@ import okhttp3.OkHttpClient;
         viewModel = new ViewModelProvider(this, new MainViewModelFactory(getApplication())).get(MainViewModel.class);
         apkImportManager = new ApkImportManager(this, viewModel);
 
+        initializeVersionManager();
         initModsSection();
         initContentManagementSection();
         initMiscellaneousSection();
-        initializeVersionManager();
     }
 
     private void initializeVersionManager() {
@@ -644,7 +644,7 @@ import okhttp3.OkHttpClient;
     }
 
     private void initModsSection() {
-        if (viewModel == null) return;
+        if (versionManager == null || viewModel == null) return;
         
         // Check if current version is 32-bit only - hide mod UI entirely
         GameVersion selectedVersion = versionManager.getSelectedVersion();
