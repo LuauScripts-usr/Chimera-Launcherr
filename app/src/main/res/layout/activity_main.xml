@@ -649,8 +649,7 @@
                     android:paddingVertical="20dp"
                     android:visibility="gone" />
             </LinearLayout>
-        </LinearLayout>
-    <!-- Content Library Section -->
+        <!-- Content Library Section -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -871,5 +870,6 @@
                     android:textColor="@color/text_secondary"
                     android:textSize="12sp" />
             </LinearLayout>
+        </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
