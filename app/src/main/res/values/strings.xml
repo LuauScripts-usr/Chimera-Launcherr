@@ -762,7 +762,7 @@ Migration must complete before Chimera Launcher can continue.</string>
     <string name="skins_no_version">Select an instance first to apply a skin pack</string>
     <string name="skins_applied">%1$s applied</string>
     <string name="skins_loading">Scanning skin packs…</string>
-    <string name="skins_cape_note">Cape support isn't available yet — skin packs apply skins only.</string>
+    <string name="skins_cape_note">Cape support is not available yet - skin packs apply skins only.</string>
 
     <!-- Content Empty States -->
     <string name="content_empty_worlds_title">No worlds yet</string>
