@@ -163,6 +163,14 @@
             android:label="@string/controller_title" />
 
         <activity
+            android:name="org.chimeramc.launcher.ui.activities.SkinsActivity"
+            android:exported="false"
+            android:screenOrientation="sensorLandscape"
+            android:configChanges="fontScale|density|smallestScreenSize|screenSize|uiMode|screenLayout|orientation|navigation|keyboardHidden|keyboard|touchscreen|locale|mnc|mcc"
+            tools:ignore="DiscouragedApi"
+            android:label="@string/skins_title" />
+
+        <activity
             android:name="org.chimeramc.launcher.ui.activities.InstanceSettingsActivity"
             android:exported="false"
             android:screenOrientation="sensorLandscape"

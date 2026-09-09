@@ -158,7 +158,8 @@ public class BaseActivity extends AppCompatActivity {
     private void setupBaseNavBar() {
         int[] tabIds ={
             R.id.nav_tab_launch, R.id.nav_tab_instances,
-            R.id.nav_tab_about, R.id.nav_tab_settings, R.id.nav_tab_controller
+            R.id.nav_tab_about, R.id.nav_tab_settings, R.id.nav_tab_controller,
+            R.id.nav_tab_skins
         };
 
         PersonalizationManager pm = new PersonalizationManager(this);
@@ -245,6 +246,11 @@ public class BaseActivity extends AppCompatActivity {
         findViewById(R.id.nav_tab_controller).setOnClickListener(v -> {
             if (!(this instanceof ControllerActivity)) {
                 switchNavTab(new Intent(this, ControllerActivity.class));
+            }
+        });
+        findViewById(R.id.nav_tab_skins).setOnClickListener(v -> {
+            if (!(this instanceof SkinsActivity)) {
+                switchNavTab(new Intent(this, SkinsActivity.class));
             }
         });
 
@@ -369,7 +375,8 @@ public class BaseActivity extends AppCompatActivity {
         if (!navBarInjected) return;
         int[] tabIds ={
             R.id.nav_tab_launch, R.id.nav_tab_instances,
-            R.id.nav_tab_about, R.id.nav_tab_settings, R.id.nav_tab_controller
+            R.id.nav_tab_about, R.id.nav_tab_settings, R.id.nav_tab_controller,
+            R.id.nav_tab_skins
         };
 
         PersonalizationManager pm = new PersonalizationManager(this);
