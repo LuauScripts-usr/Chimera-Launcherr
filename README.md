@@ -111,6 +111,24 @@ If you want to build Chimera Launcher from source or contribute to development, 
 
 ---
 
+### Continuous Integration
+
+Every push to `main` and every pull request automatically triggers a CI workflow (`.github/workflows/build.yml`) that:
+
+- Checks out the repository **with submodules** (the native Preloader/LibHttpClient code is fetched,so the full native build can run)
+- Builds a debug APK with JDK 21 and Gradle 8.13 (via the existing wrapper,`./gradlew assembleDebug`)
+- **Fails the run (and blocks/red-flags the PR)** if the build breaks — it never silently swallows errors
+- Uploads the resulting APK as a workflow artifact, downloadable straight from the **Actions** tab
+
+To grab the APK from a green run:
+
+1. Open the **Actions** tab on the repository
+2. Click the latest green **Build Debug APK** run
+3. Scroll to the bottom and download the **app-debug-apk** artifact
+4. Install it on your device (Android 9.0+/API 28+,
+
+---
+
 ## Contribution Guidelines
 
 We welcome contributions from the community to improve Chimera Launcher. To ensure a high-quality codebase,and smooth collaboration, please adhere to the following guidelines:
