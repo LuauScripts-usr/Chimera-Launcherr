@@ -139,7 +139,6 @@ public class SkinsActivity extends BaseActivity {
             List<ResourcePackItem> packs = readSkinPacks();
             String applied = readAppliedPackName();
             runOnUiThread(() -> {
-                appliedPackName = applied;
                 adapter.updateSkinPacks(packs, applied, true);
                 boolean hasPacks = !packs.isEmpty();
                 if (emptyView != null) emptyView.setVisibility(hasPacks ? View.GONE : View.VISIBLE);
