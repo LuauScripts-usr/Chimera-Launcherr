@@ -151,6 +151,13 @@ public class ModManager {
     }
 
     public static void enableLoadedMods() {
+        ModManager instance = getInstance();
+        boolean hasEnabledMods = instance.getMods().stream().anyMatch(Mod::isEnabled);
+        if (!hasEnabledMods) {
+            Log.i(TAG, "No enabled mods, skipping preloader init");
+            return;
+        }
+
         if (!ensurePreloaderLoaded()) {
             return;
         }
