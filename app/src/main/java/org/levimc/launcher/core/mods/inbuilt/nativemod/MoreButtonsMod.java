@@ -1,4 +1,4 @@
-package org.chimeramc.launcher.core.mods.inbuilt.nativemod;
+package org.levimc.launcher.core.mods.inbuilt.nativemod;
 
 public final class MoreButtonsMod {
     private static boolean initialized;

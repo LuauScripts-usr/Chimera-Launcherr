@@ -8,7 +8,7 @@ import org.chimeramc.launcher.core.mods.inbuilt.manager.InbuiltModManager;
 import org.chimeramc.launcher.core.mods.inbuilt.manager.MoreButtonsManager;
 import org.chimeramc.launcher.core.mods.inbuilt.model.MoreButtonConfig;
 import org.chimeramc.launcher.core.mods.inbuilt.model.ModIds;
-import org.chimeramc.launcher.core.mods.inbuilt.nativemod.PojavControlsMod;
+import org.levimc.launcher.core.mods.inbuilt.nativemod.PojavControlsMod;
 import org.chimeramc.pojavcontrols.PojavControls;
 import org.chimeramc.pojavcontrols.PojavControlsHost;
 

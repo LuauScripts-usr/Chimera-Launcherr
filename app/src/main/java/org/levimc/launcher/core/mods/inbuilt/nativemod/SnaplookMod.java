@@ -1,6 +1,6 @@
-package org.chimeramc.launcher.core.mods.inbuilt.nativemod;
+package org.levimc.launcher.core.mods.inbuilt.nativemod;
 
-public class FpsMod {
+public class SnaplookMod {
 
     public static boolean init() {
         if (!InbuiltModsNative.loadLibrary()) {
@@ -10,6 +10,6 @@ public class FpsMod {
     }
 
     public static native boolean nativeInit();
-    public static native int nativeGetFps();
-    public static native boolean nativeIsInitialized();
+    public static native void nativeOnKeyDown();
+    public static native void nativeOnKeyUp();
 }

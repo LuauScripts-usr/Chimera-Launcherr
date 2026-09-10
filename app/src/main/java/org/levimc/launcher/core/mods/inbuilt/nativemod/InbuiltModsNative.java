@@ -1,4 +1,4 @@
-package org.chimeramc.launcher.core.mods.inbuilt.nativemod;
+package org.levimc.launcher.core.mods.inbuilt.nativemod;
 
 public class InbuiltModsNative {
     private static boolean libraryLoaded = false;

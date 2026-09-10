@@ -5,7 +5,7 @@ import android.widget.ImageButton;
 
 import org.chimeramc.launcher.R;
 import org.chimeramc.launcher.core.mods.inbuilt.model.ModIds;
-import org.chimeramc.launcher.core.mods.inbuilt.nativemod.AutoSprintMod;
+import org.levimc.launcher.core.mods.inbuilt.nativemod.AutoSprintMod;
 
 public class AutoSprintOverlay extends BaseOverlayButton {
     private boolean isActive = false;

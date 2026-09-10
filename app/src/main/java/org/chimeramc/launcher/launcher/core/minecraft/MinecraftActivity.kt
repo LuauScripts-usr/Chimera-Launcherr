@@ -21,7 +21,7 @@ import androidx.appcompat.widget.AppCompatEditText
 import com.mojang.minecraftpe.MainActivity
 import org.chimeramc.launcher.core.crash.CrashReporter
 import org.chimeramc.launcher.core.mods.ModManager
-import org.chimeramc.launcher.core.mods.inbuilt.nativemod.PojavControlsMod
+import org.levimc.launcher.core.mods.inbuilt.nativemod.PojavControlsMod
 import org.chimeramc.launcher.core.mods.inbuilt.overlay.InbuiltOverlayManager
 import org.chimeramc.launcher.launcher.controller.ControllerInputProcessor
 import org.chimeramc.launcher.preloader.PreloaderInput

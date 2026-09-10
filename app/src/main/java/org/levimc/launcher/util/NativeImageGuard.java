@@ -1,4 +1,4 @@
-package org.chimeramc.launcher.util;
+package org.levimc.launcher.util;
 
 import java.io.File;
 import java.io.IOException;
