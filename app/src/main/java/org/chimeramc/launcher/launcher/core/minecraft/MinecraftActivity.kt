@@ -134,10 +134,14 @@ class MinecraftActivity : MainActivity(), PojavControlsHost {
             requestedOrientation = android.content.pm.ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
         }
         
-        initializePreloaderTextInput()
-        PreloaderInput.setActivity(this)
-        ControllerInputProcessor.detectAndLoad(this)
-        MinecraftActivityState.onCreated(this)
+        try {
+            initializePreloaderTextInput()
+            PreloaderInput.setActivity(this)
+            ControllerInputProcessor.detectAndLoad(this)
+            MinecraftActivityState.onCreated(this)
+        } catch (throwable: Throwable) {
+            trace.error("Post-init hook failed", formatLaunchFailure(throwable))
+        }
         trace.mark("MinecraftActivity onCreate finished")
     }
 
