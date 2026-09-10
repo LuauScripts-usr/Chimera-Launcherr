@@ -267,7 +267,7 @@ public class ControllerIllustrationView extends View {
     }
 
     private void drawStick(Canvas canvas, float px, float py, float pr, boolean glowMode) {
-        Paint p = glowMode ? glowPaint : buttonPaint);
+        Paint p = glowMode ? glowPaint : buttonPaint;
         canvas.drawCircle(px, py, pr, p);
         if (!glowMode) {
             outlinePaint.setStrokeWidth(2f);
@@ -277,12 +277,12 @@ public class ControllerIllustrationView extends View {
     }
 
     private void drawRing(Canvas canvas, float px, float py, float pr, boolean glowMode) {
-        Paint p = glowMode ? glowPaint : outlinePaint);
+        Paint p = glowMode ? glowPaint : outlinePaint;
         canvas.drawCircle(px, py, pr, p);
     }
 
     private void drawDPad(Canvas canvas, float px, float py, float pr, boolean glowMode) {
-        Paint p = glowMode ? glowPaint : buttonPaint);
+        Paint p = glowMode ? glowPaint : buttonPaint;
         float arm = pr *  0.8f;
         RectF v = new RectF(px - pr *  0.28f, py - arm, px + pr *  0.28f, py + arm);
         RectF h = new RectF(px - arm, py - pr *  0.28f, px + arm, py + pr *  0.28f);
@@ -296,7 +296,7 @@ public class ControllerIllustrationView extends View {
         }
     }
     private void drawFaceXbox(Canvas canvas, Region r, float px, float py, float pr, boolean glowMode) {
-        Paint p = glowMode ? glowPaint : accentPaint);
+        Paint p = glowMode ? glowPaint : accentPaint;
         canvas.drawCircle(px, py, pr, p);
         if (!glowMode) {
             outlinePaint.setStrokeWidth(2f);
@@ -308,7 +308,7 @@ public class ControllerIllustrationView extends View {
     }
 
     private void drawFaceDual(Canvas canvas, Region r, float px, float py, float pr, boolean glowMode) {
-        Paint p = glowMode ? glowPaint : accentPaint);
+        Paint p = glowMode ? glowPaint : accentPaint;
         canvas.drawCircle(px, py, pr, p);
         if (!glowMode) {
             outlinePaint.setStrokeWidth(2f);
@@ -329,17 +329,17 @@ public class ControllerIllustrationView extends View {
 
     }
     private void drawDualSymbol(Canvas canvas, String id, float px, float py, float pr) {
-        Paint p = accentPaint);
+        Paint p = accentPaint;
         float q = pr * 0.45f;
-        if (id.equals("a"))) {
+        if (id.equals("a")) {
             canvas.drawLine(px - q, py - q, px + q, py + q, p);
             canvas.drawLine(px - q, py + q, px + q, py - q, p);
-        } else if (id.equals("b"))) {
+        } else if (id.equals("b")) {
             canvas.drawCircle(px, py, q, p);
-        } else if (id.equals("x"))) {
+        } else if (id.equals("x")) {
             RectF sq = new RectF(px - q, py - q, px + q, py + q);
             canvas.drawRect(sq, p);
-        } else if (id.equals("y"))) {
+        } else if (id.equals("y")) {
             Path t = new Path();
             t.moveTo(px, py - q);
             t.lineTo(px + q, py + q);
@@ -350,18 +350,18 @@ public class ControllerIllustrationView extends View {
     }
 
     private void drawBumper(Canvas canvas, float px, float py, float pr, boolean glowMode) {
-        Paint p = glowMode ? glowPaint : buttonPaint);
+        Paint p = glowMode ? glowPaint : buttonPaint;
         RectF b = new RectF(px - pr * 2.0f, py - pr * 0.6f, px + pr * 2.0f, py + pr * 0.6f);
         canvas.drawRoundRect(b, pr * 0.4f, pr * 0.4f, p);
     }
     private void drawTrigger(Canvas canvas, float px, float py, float pr, boolean glowMode) {
-        Paint p = glowMode ? glowPaint : buttonPaint);
+        Paint p = glowMode ? glowPaint : buttonPaint;
         RectF t = new RectF(px - pr * 1.6f, py - pr * 0.5f, px + pr * 1.6f, py + pr * 0.5f);
         canvas.drawRoundRect(t, pr * 0.5f, pr * 0.5f, p);
     }
 
     private void drawCenterButton(Canvas canvas, float px, float py, float pr, boolean glowMode) {
-        Paint p = glowMode ? glowPaint : buttonPaint);
+        Paint p = glowMode ? glowPaint : buttonPaint;
         canvas.drawCircle(px, py, pr, p);
         if (!glowMode) {
             outlinePaint.setStrokeWidth(2f);
@@ -372,7 +372,7 @@ public class ControllerIllustrationView extends View {
     }
 
     private void drawTouchpad(Canvas canvas, float px, float py, float pr, boolean glowMode) {
-        Paint p = glowMode ? glowPaint : buttonPaint);
+        Paint p = glowMode ? glowPaint : buttonPaint;
         RectF tp = new RectF(px - pr * 2.2f, py - pr * 0.7f, px + pr * 2.2f, py + pr * 0.7f);
         canvas.drawRoundRect(tp, pr * 0.3f, pr *  0.3f, p);
         if (!glowMode) {
@@ -383,7 +383,7 @@ public class ControllerIllustrationView extends View {
         }
     }
     private void drawPsLogo(Canvas canvas, float px, float py, float pr, boolean glowMode) {
-        Paint p = glowMode ? glowPaint : accentPaint);
+        Paint p = glowMode ? glowPaint : accentPaint;
         canvas.drawCircle(px, py, pr, p);
         if (!glowMode) {
             outlinePaint.setStrokeWidth(2f);
