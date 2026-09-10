@@ -70,10 +70,11 @@ object MinecraftRuntimePreparer {
         listener.onProgress(40, "Preparing game loader")
         listener.onLog("Loading game loader")
         trace.mark("Game loader load started")
-        if (ModManager.ensurePreloaderLoaded()) {
+        val hasEnabledMods = modManager.getMods().any { it.isEnabled }
+        if (hasEnabledMods && ModManager.ensurePreloaderLoaded()) {
             trace.mark("Game loader load finished")
         } else {
-            trace.mark("Game loader load skipped", "preloader unavailable")
+            trace.mark("Game loader load skipped", if (hasEnabledMods) "preloader unavailable" else "no enabled mods")
         }
         val signatureRulesFile = PreloaderSignatureRulesManager.getRulesFile(context.applicationContext)
         PreloaderInput.configureSignatureRules(signatureRulesFile, version.versionCode)
