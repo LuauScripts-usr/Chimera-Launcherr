@@ -110,6 +110,17 @@ class GamePackageManager private constructor(
     }
 
     private fun getDeviceAbi(): String {
+        if (version != null && "armeabi-v7a".equals(version.abiList)) {
+            return if (Build.SUPPORTED_32_BIT_ABIS.contains("armeabi-v7a")) {
+                "armeabi-v7a"
+            } else {
+                Build.SUPPORTED_64_BIT_ABIS.firstOrNull {
+                    it.contains("arm64-v8a") || it.contains("x86_64")
+                } ?: Build.SUPPORTED_32_BIT_ABIS.firstOrNull {
+                    it.contains("armeabi-v7a") || it.contains("x86")
+                } ?: (Build.SUPPORTED_ABIS.firstOrNull() ?: "armeabi-v7a")
+            }
+        }
         return Build.SUPPORTED_64_BIT_ABIS.firstOrNull {
             it.contains("arm64-v8a") || it.contains("x86_64")
         } ?: Build.SUPPORTED_32_BIT_ABIS.firstOrNull {

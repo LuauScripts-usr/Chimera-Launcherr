@@ -64,7 +64,9 @@ class MinecraftLoadingActivity : BaseActivity(), MinecraftRuntimePreparer.Progre
         applyLaunchOrientation()
         hideSystemUi()
         window.decorView.setOnSystemUiVisibilityChangeListener {
-            window.decorView.post { hideSystemUi() }
+            if (!isFinishing && !isDestroyed && !returningToLauncher) {
+                window.decorView.post { hideSystemUi() }
+            }
         }
         setContentView(R.layout.activity_minecraft_loading)
         hideSystemUi()
@@ -302,7 +304,6 @@ class MinecraftLoadingActivity : BaseActivity(), MinecraftRuntimePreparer.Progre
 
         if (returningToLauncher || isFinishing || isDestroyed) return
         startActivity(gameIntent)
-        overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
         finish()
         overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
     }
