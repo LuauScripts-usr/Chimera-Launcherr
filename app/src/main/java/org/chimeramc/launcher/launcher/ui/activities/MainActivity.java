@@ -121,6 +121,10 @@ import okhttp3.OkHttpClient;
     private View accountAvatarContainer;
     private ProgressBar avatarProgress;
     private Button signInButton;
+    private boolean headerAccountViewsLoaded;
+    private com.microsoft.xbox.idp.toolkit.CircleImageView headerAccountAvatar;
+    private TextView headerAccountName;
+    private Button headerSignInButton;
     private String lastAvatarXuid;
     private final OkHttpClient avatarClient = new OkHttpClient();
     private ExecutorService accountExecutor = Executors.newSingleThreadExecutor();
@@ -268,6 +272,7 @@ import okhttp3.OkHttpClient;
      }
 
     private void refreshAccountHeaderUI() {
+        ensureHeaderAccountViews();
         MsftAccountStore.MsftAccount active = getActiveAccount();
         if (active == null) {
             if (signInButton != null) signInButton.setVisibility(View.VISIBLE);
@@ -275,11 +280,28 @@ import okhttp3.OkHttpClient;
             if (accountAvatar != null) accountAvatar.setImageDrawable(null);
             lastAvatarXuid = null;
             if (avatarProgress != null) avatarProgress.setVisibility(View.GONE);
+            if (headerSignInButton != null) headerSignInButton.setVisibility(View.VISIBLE);
+            if (headerAccountAvatar != null) headerAccountAvatar.setVisibility(View.GONE);
+            if (headerAccountName != null) headerAccountName.setText(AccountTextUtils.displayNameOrNotSigned(this, null));
         } else {
             if (signInButton != null) signInButton.setVisibility(View.GONE);
-            if (accountAvatarContainer != null) accountAvatarContainer.setVisibility(View.VISIBLE);
+            if (accountAvatarContainer != null) accountAvatarContainer.setVisibility(View.VISIBLE;
+            if (headerSignInButton != null) headerSignInButton.setVisibility(View.GONE;
+            if (headerAccountAvatar != null) headerAccountAvatar.setVisibility(View.VISIBLE;
+            if (headerAccountName != null) headerAccountName.setText(AccountTextUtils.displayNameOrNotSigned(this, active));
             loadXboxAvatar(active);
+            if (headerAccountAvatar != null && accountAvatar != null && accountAvatar.getDrawable() != null) {
+                headerAccountAvatar.setImageDrawable(accountAvatar.getDrawable();
+            }
         }
+    }
+
+    private void ensureHeaderAccountViews() {
+        if (headerAccountViewsLoaded) return;
+        headerAccountAvatar = findViewById(R.id.header_account_avatar);
+        headerAccountName = findViewById(R.id.header_account_name);
+        headerSignInButton = findViewById(R.id.header_sign_in_button);
+        headerAccountViewsLoaded = true;
     }
 
     private void loadXboxAvatar(MsftAccountStore.MsftAccount active) {
@@ -302,6 +324,7 @@ import okhttp3.OkHttpClient;
         if (cached != null) {
             accountAvatar.setTag(R.id.nav_account_avatar, url);
             accountAvatar.setImageBitmap(cached);
+            if (headerAccountAvatar != null) headerAccountAvatar.setImageBitmap(cached);
             if (avatarProgress != null) avatarProgress.setVisibility(View.GONE);
             return;
         }
@@ -318,6 +341,7 @@ import okhttp3.OkHttpClient;
                         if (bmp != null) {
                             AccountTextUtils.cacheAvatar(url, bmp);
                             accountAvatar.setImageBitmap(bmp);
+                            if (headerAccountAvatar != null) headerAccountAvatar.setImageBitmap(bmp);
                         }
                         if (avatarProgress != null) avatarProgress.setVisibility(View.GONE);
                     });
@@ -1082,10 +1106,6 @@ import okhttp3.OkHttpClient;
         int iconSize = pm.getIconSize();
         applyIconSize(iconSize);
         
-        // Apply Font Scale
-        float fontScale = pm.getFontScale();
-        applyFontScale(fontScale);
-        
         // Apply Blur Intensity
         int blur = pm.getBlurIntensity();
         applyBlurIntensity(blur);
@@ -1128,14 +1148,6 @@ import okhttp3.OkHttpClient;
         // For now, this is a placeholder for future icon scaling
     }
     
-    private void applyFontScale(float scale) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            android.content.res.Configuration config = new android.content.res.Configuration(getResources().getConfiguration());
-            config.fontScale = scale;
-            getResources().updateConfiguration(config, getResources().getDisplayMetrics());
-        }
-    }
-    
     private void applyBlurIntensity(int intensity) {
         // Blur implementation - using background dimming as fallback
         if (binding != null && binding.getRoot() != null) {
@@ -1144,7 +1156,7 @@ import okhttp3.OkHttpClient;
             binding.getRoot().setBackgroundColor(Color.argb((int)(dimAmount * 255), 0, 0, 0));
         }
     }
-    
+
     private void applyGlowEffects(boolean enabled) {
         // Glow effect implementation
         if (enabled) {
@@ -1451,10 +1463,10 @@ import okhttp3.OkHttpClient;
             }
         }
 
-        if (!PlayStoreValidator.isMinecraftFromPlayStore(this)) {
-            trace.warning("Launch cancelled", "Minecraft is not verified as Play Store install");
+        if (!PlayStoreValidator.isMinecraftInstalled(this)) {
+            trace.warning("Launch cancelled", "Minecraft package is not installed");
             binding.launchButton.setEnabled(true);
-            PlayStoreValidationDialog.showNotFromPlayStoreDialog(this);
+            PlayStoreValidationDialog.showNotInstalledDialog(this);
             return;
         }
 

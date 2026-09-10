@@ -36,7 +36,7 @@ import java.io.FileOutputStream;
 import java.io.InputStream;
 
 public class PersonalizationManager {
-    private static final String PREFS_NAME = "personalization_prefs";
+    public static final String PREFS_NAME = "personalization_prefs";
     private static final String KEY_ACCENT_COLOR = "accent_color";
     private static final String KEY_BG_IMAGE_PATH = "bg_image_path";
     private static final String KEY_BG_IMAGE_BLUR = "bg_image_blur";
@@ -47,7 +47,7 @@ public class PersonalizationManager {
     private static final String KEY_UI_TRANSPARENCY = "ui_transparency";
     private static final String KEY_CARD_ROUNDING = "card_rounding";
     private static final String KEY_ICON_SIZE = "icon_size";
-    private static final String KEY_FONT_SCALE = "font_scale";
+    public static final String KEY_FONT_SCALE = "font_scale";
     private static final String KEY_BLUR_INTENSITY = "blur_intensity";
     private static final String KEY_SHOW_ANIMATIONS = "show_animations";
     private static final String KEY_ENABLE_GLOW = "enable_glow_effects";
