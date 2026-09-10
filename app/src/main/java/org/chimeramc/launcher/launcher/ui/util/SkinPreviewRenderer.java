@@ -30,16 +30,16 @@ public final class SkinPreviewRenderer {
         Paint p = new Paint();
         p.setFilterBitmap(false);
         float s = atlas.getWidth() / 64f;
-        drawPart(c, atlas, scaleRect(BODY_FRONT,\ s),4,8,\p);
-        drawPart(c, atlas, scaleRect(RIGHT_ARM_FRONT,\ s),12,8,\p);
-        drawPart(c, atlas, scaleRect(LEFT_ARM_FRONT,\ s),0,8,\p);
-        drawPart(c, atlas, scaleRect(RIGHT_LEG_FRONT,\ s),4,20,\p);
-        drawPart(c, atlas, scaleRect(LEFT_LEG_FRONT,\ s),8,20,\p);
-        drawPart(c, atlas, scaleRect(HEAD_FRONT,\ s),4,0,\p);
-        drawOverlay(c, atlas, scaleRect(HAT,\ s),4,0,\p);
-        drawOverlay(c, atlas, scaleRect(JACKET,\ s),4,8,\p);
-        drawOverlay(c, atlas, scaleRect(RIGHT_SLEEVE,\ s),12,8,\p);
-        drawOverlay(c, atlas, scaleRect(LEFT_SLEEVE,\ s),0,8,\p);
+        drawPart(c, atlas, scaleRect(BODY_FRONT, s),4,8,p);
+        drawPart(c, atlas, scaleRect(RIGHT_ARM_FRONT, s),12,8,p);
+        drawPart(c, atlas, scaleRect(LEFT_ARM_FRONT, s),0,8,p);
+        drawPart(c, atlas, scaleRect(RIGHT_LEG_FRONT, s),4,20,p);
+        drawPart(c, atlas, scaleRect(LEFT_LEG_FRONT, s),8,20,p);
+        drawPart(c, atlas, scaleRect(HEAD_FRONT, s),4,0,p);
+        drawOverlay(c, atlas, scaleRect(HAT, s),4,0,p);
+        drawOverlay(c, atlas, scaleRect(JACKET, s),4,8,p);
+        drawOverlay(c, atlas, scaleRect(RIGHT_SLEEVE, s),12,8,p);
+        drawOverlay(c, atlas, scaleRect(LEFT_SLEEVE, s),0,8,p);
         return out;
     }
 

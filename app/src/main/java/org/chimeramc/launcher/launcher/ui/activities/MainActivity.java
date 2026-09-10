@@ -285,13 +285,13 @@ import okhttp3.OkHttpClient;
             if (headerAccountName != null) headerAccountName.setText(AccountTextUtils.displayNameOrNotSigned(this, null));
         } else {
             if (signInButton != null) signInButton.setVisibility(View.GONE);
-            if (accountAvatarContainer != null) accountAvatarContainer.setVisibility(View.VISIBLE;
-            if (headerSignInButton != null) headerSignInButton.setVisibility(View.GONE;
-            if (headerAccountAvatar != null) headerAccountAvatar.setVisibility(View.VISIBLE;
+            if (accountAvatarContainer != null) accountAvatarContainer.setVisibility(View.VISIBLE);
+            if (headerSignInButton != null) headerSignInButton.setVisibility(View.GONE);
+            if (headerAccountAvatar != null) headerAccountAvatar.setVisibility(View.VISIBLE);
             if (headerAccountName != null) headerAccountName.setText(AccountTextUtils.displayNameOrNotSigned(this, active));
             loadXboxAvatar(active);
             if (headerAccountAvatar != null && accountAvatar != null && accountAvatar.getDrawable() != null) {
-                headerAccountAvatar.setImageDrawable(accountAvatar.getDrawable();
+                headerAccountAvatar.setImageDrawable(accountAvatar.getDrawable());
             }
         }
     }
