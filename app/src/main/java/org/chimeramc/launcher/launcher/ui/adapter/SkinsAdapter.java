@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import org.chimeramc.launcher.R;
 import org.chimeramc.launcher.core.content.ResourcePackItem;
+import org.chimeramc.launcher.ui.util.SkinPreviewRenderer;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -90,10 +91,14 @@ public class SkinsAdapter extends RecyclerView.Adapter<SkinsAdapter.SkinViewHold
             Bitmap bitmap;
             try (FileInputStream fis = new FileInputStream(first)) {
                 BitmapFactory.Options opts = new BitmapFactory.Options();
-                opts.inSampleSize = 4;
+                opts.inScaled = false;
                 bitmap = BitmapFactory.decodeStream(fis, null, opts);
             } catch (Exception e) {
                 bitmap = null;
+            }
+            if (bitmap != null && (bitmap.getWidth() % 64 == 0 || bitmap.getWidth() == 64) &&
+                    (bitmap.getHeight() % 32 == 0)) {
+                bitmap = SkinPreviewRenderer.render(bitmap);
             }
             Bitmap finalBitmap = bitmap;
             holder.itemView.post(() -> {
