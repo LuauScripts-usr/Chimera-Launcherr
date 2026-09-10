@@ -14,6 +14,7 @@ public final class PojavControls {
     private static PojavControlOverlay overlay;
     private static WeakReference<Activity> editorActivity = new WeakReference<>(null);
     private static PojavControlsEditorView editor;
+    private static volatile boolean lowLatencyMode = false;
 
     private PojavControls() {}
 
@@ -38,6 +39,14 @@ public final class PojavControls {
 
     public static synchronized boolean onActivityResult(int requestCode, int resultCode, Intent data) {
         return editor != null && editor.handleActivityResult(requestCode, resultCode, data);
+    }
+
+    public static void setLowLatencyMode(boolean enabled) {
+        lowLatencyMode = enabled;
+    }
+
+    public static boolean isLowLatencyMode() {
+        return lowLatencyMode;
     }
 
     public static synchronized boolean ownsTouchInput() {

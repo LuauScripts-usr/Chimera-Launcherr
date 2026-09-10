@@ -625,6 +625,8 @@ Migration must complete before Chimera Launcher can continue.</string>
     <string name="dialog_message_exit_app">Are you sure you want to exit?</string>
     <string name="dialog_positive_exit">Exit</string>
     <string name="show_logcat_overlay">Logcat overlay</string>
+    <string name="low_input_delay_title">Low Input Delay</string>
+    <string name="low_input_delay_desc">Forwards controller/touch input immediately without extra rendering work, for reduced latency</string>
     <string name="logcat_live">Logcat: <b>live</b></string>
     <string name="logcat_paused">Logcat: paused</string>
     <!-- Logcat Overlay i18n -->

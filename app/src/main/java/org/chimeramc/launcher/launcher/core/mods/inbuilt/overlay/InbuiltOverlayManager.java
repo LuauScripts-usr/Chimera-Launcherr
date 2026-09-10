@@ -240,6 +240,8 @@ public class InbuiltOverlayManager {
                 if (activity instanceof PojavControlsHost && PojavControlsMod.setEnabled(true)) {
                     PojavControls.setEnabled(activity, (PojavControlsHost) activity, true);
                 }
+                PojavControls.setLowLatencyMode(
+                        org.chimeramc.launcher.settings.FeatureSettings.getInstance().isLowInputDelayEnabled());
                 break;
         }
     }

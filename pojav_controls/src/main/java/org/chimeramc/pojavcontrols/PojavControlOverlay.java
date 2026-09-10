@@ -171,7 +171,9 @@ final class PojavControlOverlay extends ViewGroup {
     protected void dispatchDraw(Canvas canvas) {
         updateVisibility();
         super.dispatchDraw(canvas);
-        postInvalidateDelayed(250);
+        if (!PojavControls.isLowLatencyMode()) {
+            postInvalidateDelayed(250);
+        }
     }
 
     private float cameraSensitivity() {

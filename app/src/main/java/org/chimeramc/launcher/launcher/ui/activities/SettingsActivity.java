@@ -310,6 +310,13 @@ public class SettingsActivity extends BaseActivity {
         SwitchMaterial switchManagedLogin = findViewById(R.id.switch_managed_login);
         switchManagedLogin.setChecked(fs.isLauncherManagedMcLoginEnabled());
         switchManagedLogin.setOnCheckedChangeListener((btn, checked) -> fs.setLauncherManagedMcLoginEnabled(checked));
+
+        SwitchMaterial switchLowInputDelay = findViewById(R.id.switch_low_input_delay);
+        switchLowInputDelay.setChecked(fs.isLowInputDelayEnabled());
+        switchLowInputDelay.setOnCheckedChangeListener((btn, checked) -> {
+            fs.setLowInputDelayEnabled(checked);
+            org.chimeramc.pojavcontrols.PojavControls.setLowLatencyMode(checked);
+        });
     }
 
     private void setupPersonalizeSection() {
@@ -763,6 +770,14 @@ public class SettingsActivity extends BaseActivity {
             switchCrashUpload.setTrackTintList(new ColorStateList(states, new int[]{trackChecked, 0xFF555555}));
         }
         
+        SwitchMaterial switchLowInputDelay = findViewById(R.id.switch_low_input_delay);
+        if (switchLowInputDelay != null && accent != 0) {
+            int[][] states = {{android.R.attr.state_checked}, {}};
+            switchLowInputDelay.setThumbTintList(new ColorStateList(states, new int[]{accent, 0xFFAAAAAA}));
+            int trackChecked = Color.argb(100, Color.red(accent), Color.green(accent), Color.blue(accent));
+            switchLowInputDelay.setTrackTintList(new ColorStateList(states, new int[]{trackChecked, 0xFF555555}));
+        }
+
         TextView navAppName = findViewById(R.id.nav_app_name);
         if (navAppName != null && accent != 0) {
             pm.applySolidAccentText(navAppName, accent);
