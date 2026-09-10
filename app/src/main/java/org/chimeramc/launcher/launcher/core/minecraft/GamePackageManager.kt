@@ -10,8 +10,8 @@ import android.os.SystemClock
 import android.util.Log
 import org.chimeramc.launcher.core.versions.GameVersion
 import org.chimeramc.launcher.util.LauncherStorage
-import org.chimeramc.launcher.util.NativeBridgeHelper
-import org.chimeramc.launcher.util.NativeImageGuard
+import org.levimc.launcher.util.NativeBridgeHelper
+import org.levimc.launcher.util.NativeImageGuard
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException

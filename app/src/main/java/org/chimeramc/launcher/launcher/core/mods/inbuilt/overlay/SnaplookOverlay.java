@@ -7,7 +7,7 @@ import android.widget.ImageButton;
 
 import org.chimeramc.launcher.R;
 import org.chimeramc.launcher.core.mods.inbuilt.model.ModIds;
-import org.chimeramc.launcher.core.mods.inbuilt.nativemod.SnaplookMod;
+import org.levimc.launcher.core.mods.inbuilt.nativemod.SnaplookMod;
 
 public class SnaplookOverlay extends BaseOverlayButton {
     private boolean isActive = false;

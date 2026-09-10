@@ -16,8 +16,8 @@ import android.widget.ImageButton;
 import org.chimeramc.launcher.R;
 import org.chimeramc.launcher.core.mods.inbuilt.manager.InbuiltModManager;
 import org.chimeramc.launcher.core.mods.inbuilt.model.ModIds;
-import org.chimeramc.launcher.core.mods.inbuilt.nativemod.HotbarSlotMod;
-import org.chimeramc.launcher.core.mods.inbuilt.nativemod.MoreButtonsMod;
+import org.levimc.launcher.core.mods.inbuilt.nativemod.HotbarSlotMod;
+import org.levimc.launcher.core.mods.inbuilt.nativemod.MoreButtonsMod;
 
 public final class HotbarSlotOverlay extends BaseOverlayButton {
     private static final float PRESSED_Y = 8f;

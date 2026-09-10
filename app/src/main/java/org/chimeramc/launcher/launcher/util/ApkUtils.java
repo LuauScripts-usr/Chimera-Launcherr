@@ -6,6 +6,8 @@ import android.net.Uri;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 
+import org.levimc.launcher.util.NativeImageGuard;
+
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;

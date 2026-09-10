@@ -8,7 +8,7 @@ import android.widget.ImageButton;
 import org.chimeramc.launcher.R;
 import org.chimeramc.launcher.core.mods.inbuilt.manager.InbuiltModManager;
 import org.chimeramc.launcher.core.mods.inbuilt.model.ModIds;
-import org.chimeramc.launcher.core.mods.inbuilt.nativemod.ZoomMod;
+import org.levimc.launcher.core.mods.inbuilt.nativemod.ZoomMod;
 
 public class ZoomOverlay extends BaseOverlayButton {
     private boolean isZooming = false;

@@ -19,7 +19,7 @@ import org.chimeramc.launcher.ui.dialogs.CustomAlertDialog;
 import org.chimeramc.launcher.ui.dialogs.LibsRepairDialog;
 import org.chimeramc.launcher.util.ApkUtils;
 import org.chimeramc.launcher.util.LauncherStorage;
-import org.chimeramc.launcher.util.NativeImageGuard;
+import org.levimc.launcher.util.NativeImageGuard;
 
 import java.io.BufferedInputStream;
 import java.io.File;

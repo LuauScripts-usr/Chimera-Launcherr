@@ -88,8 +88,8 @@ object MinecraftRuntimePreparer {
         listener.onLog("Loading native mods")
 
         try {
-            org.chimeramc.launcher.core.mods.inbuilt.nativemod.InbuiltModsNative.loadLibrary()
-            org.chimeramc.launcher.core.mods.inbuilt.nativemod.GyroMod.nativePreResolve()
+            org.levimc.launcher.core.mods.inbuilt.nativemod.InbuiltModsNative.loadLibrary()
+            org.levimc.launcher.core.mods.inbuilt.nativemod.GyroMod.nativePreResolve()
         } catch (_: Throwable) {}
 
         //nativeSetupRuntime(modManager.currentVersion?.modsDir?.absolutePath.toString())
