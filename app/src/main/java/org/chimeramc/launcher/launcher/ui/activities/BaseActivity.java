@@ -71,9 +71,12 @@ public class BaseActivity extends AppCompatActivity {
         String languageCode = prefs.getString("language", Locale.getDefault().toLanguageTag());
         Locale locale = Locale.forLanguageTag(languageCode);
         Locale.setDefault(locale);
+        float fontScale = newBase.getSharedPreferences(PersonalizationManager.PREFS_NAME, Context.MODE_PRIVATE);
+                .getFloat(PersonalizationManager.KEY_FONT_SCALE, PersonalizationManager.FONT_SCALE_DEFAULT);
         Resources res = newBase.getResources();
         Configuration config = new Configuration(res.getConfiguration());
         config.setLocale(locale);
+        config.fontScale = fontScale;
         Context localizedContext = newBase.createConfigurationContext(config);
         super.attachBaseContext(localizedContext);
     }

@@ -111,15 +111,19 @@
                     <Button
                         android:id="@+id/header_sign_in_button"
                         android:layout_width="wrap_content"
-                        android:layout_height="32dp"
+                        android:layout_height="38dp"
                         android:minWidth="0dp"
                         android:minHeight="0dp"
-                        android:paddingHorizontal="14dp"
+                        android:insetTop="0dp"
+                        android:insetBottom="0dp"
+                        android:paddingHorizontal="16dp"
+                        android:paddingVertical="0dp"
                         android:background="@drawable/button_accent"
                         android:text="@string/sign_in"
                         android:textColor="@color/on_primary"
-                        android:textSize="11sp"
+                        android:textSize="12sp"
                         android:textStyle="bold"
+                        android:lineSpacingExtra="0dp"
                         android:textAllCaps="false" />
                 </LinearLayout>
             </LinearLayout>
