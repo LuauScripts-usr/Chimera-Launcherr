@@ -3,8 +3,8 @@
 ## Build
 - `./gradlew :app:compileDebugJavaWithJavac` — fast Java-only validation.
 - `./gradlew :app:compileDebugKotlin` — validates the Kotlin module (also compiles Java).
-- `./gradlew :app:assembleDebug` — full build; **fails on the native CMake step** (preloader/libHttpClient are git submodules that aren't checked out in dev), so it cannot be used to verify Java/Kotlin changes. Use the compile tasks above instead.
-- Needs an Android SDK at `/opt/android-sdk`, configured via `local.properties` (`sdk.dir=/opt/android-sdk`). `local.properties` is gitignored.
+  - **Submodules required before assembling**: `app/src/main/cpp/preloader` (https://github.com/LuauScripts-usr/preloader-android) and `app/src/main/cpp/libHttpClient` (https://github.com/microsoft/libHttpClient( are git submodules; `CMakeLists.txt` add_subdirectories both. If uninitialized (`git submodule status` shows `-` prefix(, run `git submodule sync && git submodule update --init --recursive` first, then `./gradlew clean` (stale stub `libgxcore.so` can persist otherwise(.
+  - Toolchain installed at `/opt/android-sdk` (`local.properties`; java at `/usr/lib/jvm/java-21-openjdk-amd64`(. `libgxcore.so` is a **prebuilt** drop-in at `app/src/main/jniLibs/` **arm64-v8a only**, ~3 MB; no armeabi-v7a gxcore by design. Verify in APK: `unzip -l app/build/outputs/apk/debug/app-debug.apk | grep gxcore`. Kit: `adb uninstall org.chimeramc.launcher` before installing a new APK (stale extracted native libs cached under app storage(.
 
 ## Controller architecture (org.chimeramc.launcher.launcher.controller + ui.views + ui.activities.ControllerActivity)
 - `ControllerType` — enum mapping vendor/product IDs to Xbox (vendor 0x045E, any product), DS4 (0x054C / 0x05C4|0x09CC), DualSense (0x054C / 0x0CE6). `matches()` returns true for any product when `productIdA == -1`.
