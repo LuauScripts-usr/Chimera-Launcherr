@@ -112,7 +112,7 @@ class MinecraftActivity : MainActivity(), PojavControlsHost {
             trace.mark("Prepared runtime consumed")
         } catch (throwable: Throwable) {
             trace.error("MinecraftActivity prepare failed", formatLaunchFailure(throwable))
-            returnToLauncherAfterLaunchFailure()
+            returnToLauncherAfterLaunchFailure(throwable)
             return
         }
         trace.mark("Native mod enable started")
@@ -124,7 +124,7 @@ class MinecraftActivity : MainActivity(), PojavControlsHost {
             super.onCreate(savedInstanceState)
         } catch (throwable: Throwable) {
             trace.error("Mojang MainActivity super.onCreate failed", formatLaunchFailure(throwable))
-            returnToLauncherAfterLaunchFailure()
+            returnToLauncherAfterLaunchFailure(throwable)
             return
         }
         trace.mark("Mojang MainActivity super.onCreate finished")
@@ -162,9 +162,18 @@ class MinecraftActivity : MainActivity(), PojavControlsHost {
         intent.putExtra("MINECRAFT_FIREBASE_SENDER_ID", senderId)
     }
 
-    private fun returnToLauncherAfterLaunchFailure() {
+    private fun returnToLauncherAfterLaunchFailure(throwable: Throwable? = null) {
         gameRuntimeStarted = false
         MinecraftLaunchSession.clear()
+        try {
+            val logFile = File(getExternalFilesDir(null), "last_launch_failure.txt")
+            logFile.writeText(
+                "Time: ${java.util.Date()}\n" +
+                "Message: ${throwable?.message}\n" +
+                "Type: ${throwable?.javaClass?.name}\n" +
+                "Stack:\n${throwable?.stackTraceToString()}"
+            )
+        } catch (_: Throwable) {}
         MinecraftProcessRestarter.restartLauncherAfterMinecraftExit(this)
         finish()
     }
