@@ -51,6 +51,10 @@ class MinecraftLoadingActivity : BaseActivity(), MinecraftRuntimePreparer.Progre
     private var progressAnimator: ValueAnimator? = null
     private var currentProgress = 0
     private var lastLogMessage: String? = null
+    private var logRenderScheduled = false
+    private var statusRenderScheduled = false
+    private var lastRenderedStatus: String? = null
+    private var lastRenderedDetail: String? = null
     private val visibleLogMessages = ArrayDeque<String>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -176,8 +180,22 @@ class MinecraftLoadingActivity : BaseActivity(), MinecraftRuntimePreparer.Progre
     private fun updateProgress(progress: Int, status: String, detail: String?) {
         if (isFinishing || isDestroyed) return
         animateProgressTo(progress.coerceIn(0, 100))
-        statusView.text = status
-        detailView.text = detail.orEmpty()
+        scheduleStatusRender(status, detail)
+    }
+
+    private fun scheduleStatusRender(status: String, detail: String?) {
+        if (isFinishing || isDestroyed) return
+        if (status == lastRenderedStatus && detail == lastRenderedDetail) return
+        lastRenderedStatus = status
+        lastRenderedDetail = detail
+        if (statusRenderScheduled) return
+        statusRenderScheduled = true
+        mainHandler.postDelayed({
+            statusRenderScheduled = false
+            if (isFinishing || isDestroyed) return@postDelayed
+            statusView.text = status
+            detailView.text = detail.orEmpty()
+        }, STATUS_RENDER_DEBOUNCE_MS)
     }
 
     private fun appendLog(message: String) {
@@ -189,10 +207,18 @@ class MinecraftLoadingActivity : BaseActivity(), MinecraftRuntimePreparer.Progre
         while (visibleLogMessages.size > MAX_VISIBLE_LOG_LINES) {
             visibleLogMessages.removeFirst()
         }
-        logView.text = visibleLogMessages.joinToString(separator = "\n", postfix = "\n")
-        logScroll.post {
-            logScroll.fullScroll(ScrollView.FOCUS_DOWN)
-        }
+        scheduleLogRender()
+    }
+
+    private fun scheduleLogRender() {
+        if (logRenderScheduled) return
+        logRenderScheduled = true
+        mainHandler.postDelayed({
+            logRenderScheduled = false
+            if (isFinishing || isDestroyed) return@postDelayed
+            logView.text = visibleLogMessages.joinToString(separator = "\n", postfix = "\n")
+            logScroll.post { logScroll.fullScroll(ScrollView.FOCUS_DOWN) }
+        }, LOG_RENDER_DEBOUNCE_MS)
     }
 
     private fun showFailure(throwable: Throwable) {
@@ -321,6 +347,7 @@ class MinecraftLoadingActivity : BaseActivity(), MinecraftRuntimePreparer.Progre
     }
 
     override fun onDestroy() {
+        mainHandler.removeCallbacksAndMessages(null)
         progressAnimator?.cancel()
         executor.shutdownNow()
         super.onDestroy()
@@ -359,6 +386,8 @@ class MinecraftLoadingActivity : BaseActivity(), MinecraftRuntimePreparer.Progre
     private companion object {
         private const val FIRST_FRAME_FALLBACK_MS = 240L
         private const val PROGRESS_ANIMATION_MS = 140L
+        private const val LOG_RENDER_DEBOUNCE_MS = 100L
+        private const val STATUS_RENDER_DEBOUNCE_MS = 100L
         private const val TRACK_ALPHA = 42
         private const val MAX_VISIBLE_LOG_LINES = 48
     }
