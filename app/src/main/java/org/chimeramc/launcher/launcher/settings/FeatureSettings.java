@@ -10,6 +10,7 @@ public class FeatureSettings {
     private boolean logcatOverlayEnabled = false;
     private boolean lowInputDelayEnabled = false;
     private Boolean crashUploadEnabled = true;
+    private boolean foregroundServiceEnabled = false;
 
     public enum StorageType {
         INTERNAL,
@@ -51,6 +52,9 @@ public class FeatureSettings {
 
     public boolean isCrashUploadEnabled() { return crashUploadEnabled == null || crashUploadEnabled; }
     public void setCrashUploadEnabled(boolean enabled) { this.crashUploadEnabled = enabled; autoSave(); }
+
+    public boolean isForegroundServiceEnabled() { return foregroundServiceEnabled; }
+    public void setForegroundServiceEnabled(boolean enabled) { this.foregroundServiceEnabled = enabled; autoSave(); }
 
 
     private void autoSave() {

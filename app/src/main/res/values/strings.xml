@@ -1150,7 +1150,10 @@ Migration must complete before Chimera Launcher can continue.</string>
     <string name="news_refresh_failed">Could not refresh. Showing saved news.</string>
     <string name="news_unread_description">Launcher news, %1$d unread</string>
     <string name="news_notification_channel">Launcher news</string>
-    <string name="news_notification_channel_description">New Chimera Launcher announcements and important notices</string>
+    <string name="news_notification_channel_description">New Chimera Launcher announcementsand important notices</string>
+    <string name="foreground_service_channel">Minecraft</string>
+    <string name="foreground_service_notification_title">Minecraft is running</string>
+    <string name="foreground_service_notification_text">Keeping the game alive in the background</string>
     <string name="mod_config_category_slots">Slots</string>
     <string name="mod_config_category_appearance">Appearance</string>
     <string name="mod_config_category_behavior">Behavior</string>

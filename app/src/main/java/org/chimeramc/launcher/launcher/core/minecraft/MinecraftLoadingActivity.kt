@@ -305,7 +305,7 @@ class MinecraftLoadingActivity : BaseActivity(), MinecraftRuntimePreparer.Progre
         if (returningToLauncher || isFinishing || isDestroyed) return
         startActivity(gameIntent)
         finish()
-        overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
+        overridePendingTransition(0, 0)  // no animation, test only
     }
 
     private fun showSkippedIncompatibleModsIfNeeded(
