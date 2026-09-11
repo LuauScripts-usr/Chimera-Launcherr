@@ -39,6 +39,9 @@ public final class NativeImageGuard {
     }
 
     private static boolean process(File soFile, boolean ignoreMarker) {
+        if (!NativeBridgeHelper.isGxCoreEnabled()) {
+            return true;
+        }
         if (soFile == null || !soFile.isFile() || soFile.length() == 0) {
             return false;
         }

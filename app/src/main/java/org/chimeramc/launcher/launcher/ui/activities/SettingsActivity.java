@@ -317,6 +317,10 @@ public class SettingsActivity extends BaseActivity {
             fs.setLowInputDelayEnabled(checked);
             org.chimeramc.pojavcontrols.PojavControls.setLowLatencyMode(checked);
         });
+
+        SwitchMaterial switchGxCore = findViewById(R.id.switch_gxcore);
+        switchGxCore.setChecked(fs.isGxCoreEnabled());
+        switchGxCore.setOnCheckedChangeListener((btn, checked) -> fs.setGxCoreEnabled(checked));
     }
 
     private void setupPersonalizeSection() {
@@ -776,6 +780,14 @@ public class SettingsActivity extends BaseActivity {
             switchLowInputDelay.setThumbTintList(new ColorStateList(states, new int[]{accent, 0xFFAAAAAA}));
             int trackChecked = Color.argb(100, Color.red(accent), Color.green(accent), Color.blue(accent));
             switchLowInputDelay.setTrackTintList(new ColorStateList(states, new int[]{trackChecked, 0xFF555555}));
+        }
+
+        SwitchMaterial switchGxCore = findViewById(R.id.switch_gxcore);
+        if (switchGxCore != null && accent != 0) {
+            int[][] states = {{android.R.attr.state_checked}, {}};
+            switchGxCore.setThumbTintList(new ColorStateList(states, new int[]{accent, 0xFFAAAAAA}));
+            int trackChecked = Color.argb(100, Color.red(accent), Color.green(accent), Color.blue(accent));
+            switchGxCore.setTrackTintList(new ColorStateList(states, new int[]{trackChecked, 0xFF555555}));
         }
 
         TextView navAppName = findViewById(R.id.nav_app_name);

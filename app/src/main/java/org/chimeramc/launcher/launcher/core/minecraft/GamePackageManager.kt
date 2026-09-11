@@ -540,6 +540,17 @@ class GamePackageManager private constructor(
             }
             try {
                 if (normalizedName == "gxcore") {
+                    if (!NativeBridgeHelper.isGxCoreEnabled()) {
+                        mirrorLogcat('W', "gxcore verification disabled by feature flag — skipping bootstrap")
+                        return LibraryLoadResult(
+                            normalizedName,
+                            fileName,
+                            source,
+                            true,
+                            elapsedSince(startedAt),
+                            "skipped gxcore bootstrap (feature flag gxcoreEnabled=false)"
+                        )
+                    }
                     if (!NativeBridgeHelper.bootstrapGxCore()) {
                         val detail = "gxcore bootstrap failed"
                         mirrorLogcat('E', "Failed to load $fileName from $source: $detail")
