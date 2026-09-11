@@ -32,10 +32,6 @@ object MinecraftRuntimePreparer {
         fun onLog(message: String)
     }
 
-    @JvmStatic
-    @JvmName("nativeSetupRuntime")
-    private external fun nativeSetupRuntime(modsPath: String)
-
     private val noopListener = object : ProgressListener {
         override fun onProgress(progress: Int, status: String, detail: String?) = Unit
         override fun onLog(message: String) = Unit
@@ -93,7 +89,12 @@ object MinecraftRuntimePreparer {
             org.levimc.launcher.core.mods.inbuilt.nativemod.GyroMod.nativePreResolve()
         } catch (_: Throwable) {}
 
-        //nativeSetupRuntime(modManager.currentVersion?.modsDir?.absolutePath.toString())
+        val modsDir = modManager.currentVersion?.modsDir?.absolutePath
+        if (modsDir.isNullOrEmpty()) {
+            listener.onLog("Skipped gxcore native runtime setup: no mods directory")
+        } else if (!org.levimc.launcher.core.minecraft.MinecraftRuntimePreparer.runNativeSetup(modsDir)) {
+            listener.onLog("gxcore native runtime setup failed")
+        }
         val nativeModResult = loadNativeMods(context, launchIntent, modManager, listener, trace)
 
         try {

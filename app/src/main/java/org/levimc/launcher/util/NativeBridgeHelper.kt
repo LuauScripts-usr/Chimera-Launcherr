@@ -56,15 +56,20 @@ object NativeBridgeHelper {
         return nativeRewriteImage(inputPath, outputPath)
     }
 
+    private const val TAG = "NativeBridgeHelper"
+
     @JvmStatic
     fun bootstrapGxCore(): Boolean {
         if (!ensureGxCoreLoaded()) {
+            android.util.Log.w(TAG, "bootstrapGxCore skipped: gxcore failed to load")
             return false
         }
         return try {
             nativeBootstrapGxCore()
+            android.util.Log.i(TAG, "gxcore bootstrap completed")
             true
-        } catch (_: Throwable) {
+        } catch (t: Throwable) {
+            android.util.Log.e(TAG, "gxcore bootstrap threw: ${t.message ?: t.javaClass.simpleName}", t)
             false
         }
     }
