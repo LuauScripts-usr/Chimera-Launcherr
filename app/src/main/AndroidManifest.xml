@@ -431,6 +431,7 @@
 
         <activity
             android:name=".core.minecraft.MinecraftLoadingActivity"
+            android:hardwareAccelerated="false"
             android:alwaysRetainTaskState="true"
             android:configChanges="fontScale|density|smallestScreenSize|screenSize|uiMode|screenLayout|orientation|navigation|keyboardHidden|keyboard|touchscreen|locale|mnc|mcc"
             android:excludeFromRecents="false"
@@ -442,6 +443,7 @@
 
         <activity
             android:name=".core.minecraft.MinecraftActivity"
+            android:hardwareAccelerated="false"
             android:alwaysRetainTaskState="true"
             android:configChanges="fontScale|density|smallestScreenSize|screenSize|uiMode|screenLayout|orientation|navigation|keyboardHidden|keyboard|touchscreen|locale|mnc|mcc"
             android:excludeFromRecents="false"
