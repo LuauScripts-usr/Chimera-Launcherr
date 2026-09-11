@@ -831,9 +831,9 @@ public class LogcatOverlay extends FrameLayout {
         }
         android.content.ClipboardManager cm = (android.content.ClipboardManager) getContext().getSystemService(Context.CLIPBOARD_SERVICE);
         if (cm != null) {
-            cm.setPrimaryClip(android.content.ClipData.newPlainText("logcat", fullText);
+            cm.setPrimaryClip(android.content.ClipData.newPlainText("logcat", fullText));
         }
-        Toast.makeText(getContext(), R.string.logcat_copied, Toast.LENGTH_SHORT].show();
+        Toast.makeText(getContext(), R.string.logcat_copied, Toast.LENGTH_SHORT).show();
     }
 
     private void shareLogFile() {
