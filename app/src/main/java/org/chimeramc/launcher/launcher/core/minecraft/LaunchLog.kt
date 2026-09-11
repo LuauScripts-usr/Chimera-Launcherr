@@ -7,6 +7,7 @@ import java.io.PrintWriter
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import kotlin.jvm.JvmStatic
 
 /**
  * Persistent on-disk log for the game-launch pipeline.
@@ -51,6 +52,7 @@ object LaunchLog {
     }
 
     /** Appends a plain line (no timestamp prefix( — used for raw onLog messages. */
+    @JvmStatic
     fun append(context: Context, message: String) {
         synchronized (lock) {
             val w = writer(context) ?: return
@@ -62,6 +64,7 @@ object LaunchLog {
     }
 
     /** Appends a logcat-style line: `MM-DD HH:MM:SS.mmm pid tid I/Tag  : msg`. */
+    @JvmStatic
     fun appendLogcat(context: Context, level: Char, tag: String, message: String) {
         synchronized (lock) {
             val w = writer(context) ?: return
@@ -79,6 +82,7 @@ object LaunchLog {
     }
 
     /** The log file itself (may be null before the first write or if external storage unavailable). */
+    @JvmStatic
     fun resolveFile(context: Context): File? {
         synchronized (lock) {
             if (file != null) return file
@@ -87,6 +91,7 @@ object LaunchLog {
     }
 
     /** Reads the full historical file content,or null if unavailable/missing. */
+    @JvmStatic
     fun readAll(context: Context): String? {
         val f = resolveFile(context) ?: return null
         return try {
