@@ -218,7 +218,11 @@ class MinecraftLoadingActivity : BaseActivity(), MinecraftRuntimePreparer.Progre
         mainHandler.postDelayed({
             logRenderScheduled = false
             if (isFinishing || isDestroyed) return@postDelayed
-            logView.text = visibleLogMessages.joinToString(separator = "\n", postfix = "\n")
+            logView.append(visibleLogMessages.removeFirst())
+            for (message in visibleLogMessages) {
+                logView.append("\n$message")
+            }
+            visibleLogMessages.clear()
             logScroll.post { logScroll.fullScroll(ScrollView.FOCUS_DOWN) }
         }, LOG_RENDER_DEBOUNCE_MS)
     }
@@ -387,7 +391,7 @@ class MinecraftLoadingActivity : BaseActivity(), MinecraftRuntimePreparer.Progre
     private companion object {
         private const val FIRST_FRAME_FALLBACK_MS = 240L
         private const val PROGRESS_ANIMATION_MS = 140L
-        private const val LOG_RENDER_DEBOUNCE_MS = 100L
+        private const val LOG_RENDER_DEBOUNCE_MS = 200L
         private const val STATUS_RENDER_DEBOUNCE_MS = 100L
         private const val TRACK_ALPHA = 42
         private const val MAX_VISIBLE_LOG_LINES = 48
