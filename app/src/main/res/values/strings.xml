@@ -637,6 +637,8 @@ Migration must complete before Chimera Launcher can continue.</string>
     <string name="logcat_autoscroll">Auto-scroll</string>
     <string name="logcat_pause">Pause</string>
     <string name="logcat_clear">Clear</string>
+    <string name="logcat_copy">Copy log</string>
+    <string name="logcat_copied">Logcat copied</string>
     <string name="logcat_close">Close</string>
     <string name="logcat_corner_bottom_left">Resize: bottom-left</string>
     <string name="logcat_corner_bottom_right">Resize: bottom-right</string>

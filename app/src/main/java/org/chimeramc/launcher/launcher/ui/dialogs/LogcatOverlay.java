@@ -65,7 +65,7 @@ public class LogcatOverlay extends FrameLayout {
     private ListPopupWindow levelPopup;
     private View filterBar;
     private ImageButton pauseButton, clearButton, autoScrollButton, closeButton, minimizeBubble;
-    private ImageButton filterButton, filterClearButton;
+    private ImageButton filterButton, filterClearButton, copyButton;
     private View overlayHeader, bottomResizeBar, cornerBottomLeft, cornerBottomRight;
 
     private final Handler mainHandler = new Handler(Looper.getMainLooper());
@@ -112,6 +112,7 @@ public class LogcatOverlay extends FrameLayout {
         filterBar = findViewById(R.id.filter_bar);
         clearButton = findViewById(R.id.btn_clear);
         pauseButton = findViewById(R.id.btn_pause);
+        copyButton = findViewById(R.id.btn_copy);
         autoScrollButton = findViewById(R.id.btn_autoscroll);
         closeButton = findViewById(R.id.btn_close);
         minimizeBubble = findViewById(R.id.minimize_bubble);
@@ -151,6 +152,10 @@ public class LogcatOverlay extends FrameLayout {
             clearPersistedHistory();
             if (logAdapter != null) logAdapter.clear();
         });
+
+        if (copyButton != null) {
+            copyButton.setOnClickListener(v -> copyFullLogToClipboard());
+        }
 
         pauseButton.setOnClickListener(v -> {
             paused = !paused;
@@ -788,6 +793,24 @@ public class LogcatOverlay extends FrameLayout {
                 }
             } catch (Exception ignored) {}
         }
+    }
+
+    private void copyFullLogToClipboard() {
+        List<String> snapshot;
+        synchronized (logBuffer) { snapshot = new ArrayList<>(logBuffer); }
+        if (snapshot.isEmpty()) {
+            Toast.makeText(getContext(), R.string.logcat_copied, Toast.LENGTH_SHORT).show();
+            return;
+        }
+        StringBuilder sb = new StringBuilder(snapshot.size() * 96);
+        for (String line : snapshot) {
+            sb.append(line).append('\n');
+        }
+        android.content.ClipboardManager cm = (android.content.ClipboardManager) getContext().getSystemService(Context.CLIPBOARD_SERVICE);
+        if (cm != null) {
+            cm.setPrimaryClip(android.content.ClipData.newPlainText("logcat", sb.toString()));
+        }
+        Toast.makeText(getContext(), R.string.logcat_copied, Toast.LENGTH_SHORT).show();
     }
 
     private void clearPersistedHistory() {

@@ -52,6 +52,15 @@
                 android:src="@android:drawable/ic_media_pause" />
 
             <ImageButton
+                android:id="@+id/btn_copy"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:background="@android:color/transparent"
+                android:contentDescription="@string/logcat_copy"
+                android:tint="@android:color/white"
+                android:src="@android:drawable/ic_menu_share" />
+
+            <ImageButton
                 android:id="@+id/btn_clear"
                 android:layout_width="32dp"
                 android:layout_height="32dp"
