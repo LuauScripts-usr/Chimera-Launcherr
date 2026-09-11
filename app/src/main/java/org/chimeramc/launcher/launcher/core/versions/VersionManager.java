@@ -118,10 +118,18 @@ public class VersionManager {
     private String inferAbiFromNativeLibDir(String nativeLibDir, GameVersion version) {
         if (version != null && !version.isInstalled) {
             File libDir = getRuntimeLibDir(version.directoryName);
+            File flatSo = new File(libDir, "libminecraftpe.so");
+            if (flatSo.exists()) {
+                String elfAbi = detectElfAbi(flatSo);
+                if (elfAbi != null) return elfAbi;
+                return "unknown";
+            }
             String[] abiDirs = {"arm64", "arm", "x86_64", "x86"};
             for (String abiDir : abiDirs) {
                 File soFile = new File(libDir, abiDir + "/libminecraftpe.so");
                 if (soFile.exists()) {
+                    String elfAbi = detectElfAbi(soFile);
+                    if (elfAbi != null) return elfAbi;
                     return switch (abiDir) {
                         case "arm64" -> "arm64-v8a";
                         case "arm" -> "armeabi-v7a";
@@ -137,6 +145,29 @@ public class VersionManager {
         if (nativeLibDir.contains("x86_64")) return "x86_64";
         if (nativeLibDir.contains("x86")) return "x86";
         return "unknown";
+    }
+
+    private static String detectElfAbi(File soFile) {
+        try (FileInputStream fis = new FileInputStream(soFile)) {
+
+            byte[] hdr = new byte[20];
+            int n = fis.read(hdr);
+            if (n < 5) return null;
+            if (hdr[0] != 0x7F || hdr[1] != 'E' || hdr[2] != 'L' || hdr[3] != 'F') return null;
+            int elfClass = hdr[4]; // 1 = ELFCLASS32 2 = ELFCLASS64
+            if (n < 20) {
+                return elfClass ==  1 ? "armeabi-v7a" : elfClass ==  2 ? "arm64-v8a" : null;
+            }
+            int machine = (hdr[18] & 0xFF) | ((hdr[19] & 0xFF) << 8);
+            if (elfClass == 1) {
+                return machine ==  3 ? "x86" : "armeabi-v7a";
+            } else if (elfClass ==  2) {
+                return machine ==  62 ? "x86_64" : "arm64-v8a";
+            }
+            return null;
+        } catch (IOException | SecurityException e) {
+            return null;
+        }
     }
 
     private String getApkVersionName(File apkFile) {
