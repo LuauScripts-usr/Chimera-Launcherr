@@ -146,7 +146,7 @@ class GamePackageManager private constructor(
                     }
                 }
             } catch (e: Exception) {
-                Log.w(TAG, "Failed to inspect ABI of ${file.name}: ${e.message}")
+                mirrorLogcat('W', "Failed to inspect ABI of ${file.name}: ${e.message}")
             }
         }
         if (present.none { it.value }) return null
@@ -194,7 +194,7 @@ class GamePackageManager private constructor(
                         ensureReadOnly(file)
                     }
                 } catch (e: Exception) {
-                    Log.w(TAG, "Failed ensureReadOnly: ${e.message}")
+                    mirrorLogcat('W', "Failed ensureReadOnly: ${e.message}")
                 }
             }
             return
@@ -226,7 +226,7 @@ class GamePackageManager private constructor(
                 File(outputDir, ".extraction_marker").delete()
                 report("Minecraft library cache manifest written")
             } catch (e: Exception) {
-                Log.w(TAG, "Failed to write extraction manifest: ${e.message}")
+                mirrorLogcat('W', "Failed to write extraction manifest: ${e.message}")
                 report("Failed to write extraction manifest: ${e.message}")
             }
         }
@@ -249,7 +249,7 @@ class GamePackageManager private constructor(
                 if (it.exists()) {
                     true
                 } else {
-                    Log.w(TAG, "APK file not found: ${it.absolutePath}")
+                    mirrorLogcat('W', "APK file not found: ${it.absolutePath}")
                     report("APK file not found: ${it.absolutePath}")
                     false
                 }
@@ -279,7 +279,7 @@ class GamePackageManager private constructor(
     private fun copyFromNativeDir(sourceDir: String, destDir: File) {
         val source = File(sourceDir)
         if (!source.exists()) {
-            Log.w(TAG, "Source native library directory does not exist: $sourceDir")
+            mirrorLogcat('W', "Source native library directory does not exist: $sourceDir")
             return
         }
 
@@ -301,7 +301,7 @@ class GamePackageManager private constructor(
                     logFileOperation("Failed to copy", lib, e = e)
                 }
             } else {
-                Log.w(TAG, "Library $lib not found in $sourceDir")
+                mirrorLogcat('W', "Library $lib not found in $sourceDir")
             }
         }
     }
@@ -309,7 +309,7 @@ class GamePackageManager private constructor(
     private fun extractFromApk(apkPath: String, outputDir: File, abi: String) {
         val apkFile = File(apkPath)
         if (!apkFile.exists()) {
-            Log.w(TAG, "APK file does not exist: $apkPath")
+            mirrorLogcat('W', "APK file does not exist: $apkPath")
             return
         }
         if (!apkPath.contains("arm") && !apkPath.contains("x86") && !apkPath.contains("base.apk")) {
@@ -336,7 +336,7 @@ class GamePackageManager private constructor(
                 }
             }
         } catch (e: Exception) {
-            Log.w(TAG, "Failed to extract libraries from $apkPath: ${e.message}")
+            mirrorLogcat('W', "Failed to extract libraries from $apkPath: ${e.message}")
         }
     }
 
@@ -386,7 +386,7 @@ class GamePackageManager private constructor(
             File(dir, it).let { f -> f.exists() && f.length() > 0 }
         }
         if (missing.isNotEmpty()) {
-            Log.w(TAG, "Missing libraries in $dir: ${missing.joinToString()}")
+            mirrorLogcat('W', "Missing libraries in $dir: ${missing.joinToString()}")
             report("Missing libraries in ${dir.absolutePath}: ${missing.joinToString()}")
         }
     }
@@ -439,16 +439,26 @@ class GamePackageManager private constructor(
         }
     }
 
+    private fun mirrorLogcat(level: Char, message: String) {
+        when (level) {
+            'W' -> Log.w(TAG, message)
+            'E' -> Log.e(TAG, message)
+            else -> Log.i(TAG, message)
+        }
+        LaunchLog.appendLogcat(context, level, TAG, message)
+    }
+
     private fun logFileOperation(action: String, lib: String, extra: String? = null, e: Exception? = null) {
         val message = buildString {
             append("$action $lib")
             if (extra != null) append(" $extra")
             if (e != null) append(": ${e.message}")
         }
-        if (e != null) Log.w(TAG, message)
+        if (e != null) mirrorLogcat('W', message)
     }
 
     private fun report(message: String) {
+        LaunchLog.append(context, message)
         if (progressListener != null) {
             progressListener.onLog(message)
         } else {
@@ -467,13 +477,13 @@ class GamePackageManager private constructor(
             if (baseApk.exists()) {
                 paths.add(applicationInfo.sourceDir)
             } else {
-                Log.w(TAG, "Base APK for assets not found: ${applicationInfo.sourceDir}")
+                mirrorLogcat('W', "Base APK for assets not found: ${applicationInfo.sourceDir}")
             }
             applicationInfo.splitSourceDirs?.forEach {
                 if (File(it).exists()) {
                     paths.add(it)
                 } else {
-                    Log.w(TAG, "Split APK for assets not found: $it")
+                    mirrorLogcat('W', "Split APK for assets not found: $it")
                 }
             }
         } else {
@@ -488,7 +498,7 @@ class GamePackageManager private constructor(
             try {
                 addAssetPathMethod.invoke(assets, path)
             } catch (e: Exception) {
-                Log.w(TAG, "Failed to add asset path $path: ${e.message}")
+                mirrorLogcat('W', "Failed to add asset path $path: ${e.message}")
             }
         }
         return assets
@@ -498,7 +508,7 @@ class GamePackageManager private constructor(
         try {
             java.security.Security.insertProviderAt(org.conscrypt.Conscrypt.newProvider(), 1)
         } catch (e: Exception) {
-            Log.w(TAG, "Conscrypt init failed: ${e.message}")
+            mirrorLogcat('W', "Conscrypt init failed: ${e.message}")
         }
     }
 
@@ -532,7 +542,7 @@ class GamePackageManager private constructor(
                 if (normalizedName == "gxcore") {
                     if (!NativeBridgeHelper.bootstrapGxCore()) {
                         val detail = "gxcore bootstrap failed"
-                        Log.e(TAG, "Failed to load $fileName from $source: $detail")
+                        mirrorLogcat('E', "Failed to load $fileName from $source: $detail")
                         return LibraryLoadResult(normalizedName, fileName, source, false, elapsedSince(startedAt), detail)
                     }
                 } else {
@@ -547,11 +557,11 @@ class GamePackageManager private constructor(
                 )
             } catch (e: UnsatisfiedLinkError) {
                 val detail = e.message ?: e.javaClass.simpleName
-                Log.e(TAG, "Failed to load $fileName from $source: $detail")
+                mirrorLogcat('E', "Failed to load $fileName from $source: $detail")
                 return LibraryLoadResult(normalizedName, fileName, source, false, elapsedSince(startedAt), detail)
             } catch (e: Exception) {
                 val detail = e.message ?: e.javaClass.simpleName
-                Log.e(TAG, "Failed to load $fileName from $source: $detail")
+                mirrorLogcat('E', "Failed to load $fileName from $source: $detail")
                 return LibraryLoadResult(normalizedName, fileName, source, false, elapsedSince(startedAt), detail)
             }
         }
@@ -566,16 +576,16 @@ class GamePackageManager private constructor(
                 LibraryLoadResult(normalizedName, fileName, source, true, elapsedSince(startedAt), libFile.absolutePath)
             } catch (e: UnsatisfiedLinkError) {
                 val detail = e.message ?: e.javaClass.simpleName
-                Log.e(TAG, "Failed to load $fileName from ${libFile.absolutePath}: $detail")
+                mirrorLogcat('E', "Failed to load $fileName from ${libFile.absolutePath}: $detail")
                 LibraryLoadResult(normalizedName, fileName, source, false, elapsedSince(startedAt), detail)
             } catch (e: Exception) {
                 val detail = e.message ?: e.javaClass.simpleName
-                Log.e(TAG, "Failed to load $fileName from ${libFile.absolutePath}: $detail")
+                mirrorLogcat('E', "Failed to load $fileName from ${libFile.absolutePath}: $detail")
                 LibraryLoadResult(normalizedName, fileName, source, false, elapsedSince(startedAt), detail)
             }
         } else {
             val detail = "$fileName not found in $nativeLibDir"
-            Log.w(TAG, detail)
+            mirrorLogcat('W', detail)
             LibraryLoadResult(normalizedName, fileName, source, false, elapsedSince(startedAt), detail)
         }
     }
@@ -622,7 +632,7 @@ class GamePackageManager private constructor(
                 detail
             )
             if (!result.loaded) {
-                Log.e(TAG, "Failed to load bundle library $libName: ${result.detail ?: "unknown error"}")
+                mirrorLogcat('E', "Failed to load bundle library $libName: ${result.detail ?: "unknown error"}")
                 listener?.onLog("Failed to load native library: ${result.fileName}")
             } else {
                 listener?.onLog("Loaded native library: ${result.fileName}")

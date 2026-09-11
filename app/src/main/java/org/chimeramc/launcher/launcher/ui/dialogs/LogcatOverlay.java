@@ -155,6 +155,10 @@ public class LogcatOverlay extends FrameLayout {
 
         if (copyButton != null) {
             copyButton.setOnClickListener(v -> copyFullLogToClipboard());
+            copyButton.setOnLongClickListener(v -> {
+                shareLogFile();
+                return true;
+            });
         }
 
         pauseButton.setOnClickListener(v -> {
@@ -796,21 +800,53 @@ public class LogcatOverlay extends FrameLayout {
     }
 
     private void copyFullLogToClipboard() {
+        String fullText;
+
+
+        // Prefer the persistent launch_debug.log (survives process death; starts at the
+        // beginning of the launch), falling back to the in-memory ring buffer)
+
+        String fileText = org.chimeramc.launcher.core.minecraft.LaunchLog.readAll(getContext().getApplicationContext());
         List<String> snapshot;
         synchronized (logBuffer) { snapshot = new ArrayList<>(logBuffer); }
-        if (snapshot.isEmpty()) {
+        if (fileText != null) {
+            // LaunchLog already mirrors every onLog/logcat line, so the file is authoritative
+            // for the launch; append any in-memory lines that arrived after (edge cases))
+            StringBuilder sb = new StringBuilder(fileText);
+            if (fileText.length() > 0 && fileText.charAt(fileText.length() - 1) != '\n') sb.append('\n');
+            for (String line : snapshot) {
+                sb.append(line).append('\n');
+            }
+            fullText = sb.toString();
+        } else {
+            StringBuilder sb = new StringBuilder(snapshot.size() * 96);
+            for (String line : snapshot) {
+                sb.append(line).append('\n');
+            }
+            fullText = sb.toString();
+        }
+        if (fullText == null || fullText.isEmpty()) {
             Toast.makeText(getContext(), R.string.logcat_copied, Toast.LENGTH_SHORT).show();
             return;
         }
-        StringBuilder sb = new StringBuilder(snapshot.size() * 96);
-        for (String line : snapshot) {
-            sb.append(line).append('\n');
-        }
         android.content.ClipboardManager cm = (android.content.ClipboardManager) getContext().getSystemService(Context.CLIPBOARD_SERVICE);
         if (cm != null) {
-            cm.setPrimaryClip(android.content.ClipData.newPlainText("logcat", sb.toString()));
+            cm.setPrimaryClip(android.content.ClipData.newPlainText("logcat", fullText);
         }
-        Toast.makeText(getContext(), R.string.logcat_copied, Toast.LENGTH_SHORT).show();
+        Toast.makeText(getContext(), R.string.logcat_copied, Toast.LENGTH_SHORT].show();
+    }
+
+    private void shareLogFile() {
+        String content = org.chimeramc.launcher.core.minecraft.LaunchLog.readAll(getContext().getApplicationContext());
+        if (content == null || content.isEmpty()) {
+            Toast.makeText(getContext(), R.string.logcat_no_log_to_share, Toast.LENGTH_SHORT).show();
+            return;
+        }
+        android.content.Intent shareIntent = new android.content.Intent(android.content.Intent.ACTION_SEND);
+        shareIntent.setType("text/plain");
+        shareIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, getContext().getString(R.string.logcat_share_subject));
+        shareIntent.putExtra(android.content.Intent.EXTRA_TEXT, content);
+        getContext().startActivity(android.content.Intent.createChooser(shareIntent, getContext().getString(R.string.logcat_share_title)));
     }
 
     private void clearPersistedHistory() {
