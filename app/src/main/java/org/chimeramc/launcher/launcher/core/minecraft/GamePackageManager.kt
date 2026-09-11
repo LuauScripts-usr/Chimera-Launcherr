@@ -109,8 +109,10 @@ class GamePackageManager private constructor(
         return cacheLibDir.absolutePath
     }
 
-    private fun getDeviceAbi(): String {
+    private fun getDeviceAbi(apkFiles: List<File> = emptyList()): String {
+        resolveAbiFromApks(apkFiles)?.let { return it }
         if (version != null && "armeabi-v7a".equals(version.abiList)) {
+
             return if (Build.SUPPORTED_32_BIT_ABIS.contains("armeabi-v7a")) {
                 "armeabi-v7a"
             } else {
@@ -126,6 +128,34 @@ class GamePackageManager private constructor(
         } ?: Build.SUPPORTED_32_BIT_ABIS.firstOrNull {
             it.contains("armeabi-v7a") || it.contains("x86")
         } ?: (Build.SUPPORTED_ABIS.firstOrNull() ?: "armeabi-v7a")
+    }
+
+    private fun resolveAbiFromApks(apkFiles: List<File>): String? {
+
+        val candidates = listOf("arm64-v8a", "armeabi-v7a", "x86_64", "x86")
+        val present = mutableMapOf<String, Boolean>()
+        candidates.forEach { present[it] = false }
+        for (file in apkFiles) {
+            if (!file.isFile) continue
+            try {
+                ZipFile(file).use { zip ->
+                    for (abi in candidates) {
+                        if (!present[abi]!! && zip.getEntry("lib/$abi/libminecraftpe.so") != null) {
+                            present[abi] = true
+                        }
+                    }
+                }
+            } catch (e: Exception) {
+                Log.w(TAG, "Failed to inspect ABI of ${file.name}: ${e.message}")
+            }
+        }
+        if (present.none { it.value }) return null
+        val explicit = version?.abiList?.takeIf { present[it] == true }
+        if (explicit != null) return explicit
+        for (pref in candidates) {
+            if (present[pref] == true) return pref
+        }
+        return null
     }
 
     private fun extractLibraries() {
@@ -173,7 +203,7 @@ class GamePackageManager private constructor(
 
         if (version != null && !version.isInstalled) {
             val apkPaths = apkFiles.map { it.absolutePath }
-            apkPaths.forEach { extractFromApk(it, outputDir, getDeviceAbi()) }
+            apkPaths.forEach { extractFromApk(it, outputDir, getDeviceAbi(apkFiles)) }
             val missingLibs = cacheRequiredLibs.filter { lib -> !File(outputDir, lib).exists() }
             if (missingLibs.isNotEmpty()) {
                 throw IllegalStateException(
@@ -186,7 +216,7 @@ class GamePackageManager private constructor(
                 copyFromNativeDir(appInfo.nativeLibraryDir, outputDir)
             }
             val apkPaths = apkFiles.map { it.absolutePath }
-            apkPaths.forEach { extractFromApk(it, outputDir, getDeviceAbi()) }
+            apkPaths.forEach { extractFromApk(it, outputDir, getDeviceAbi(apkFiles)) }
         }
         verifyLibraries(outputDir)
 
@@ -230,7 +260,7 @@ class GamePackageManager private constructor(
     private fun buildExtractionManifest(apkFiles: List<File>): String {
         return buildString {
             append("extractor=").append(EXTRACTOR_VERSION).append('\n')
-            append("abi=").append(getDeviceAbi()).append('\n')
+            append("abi=").append(getDeviceAbi(apkFiles)).append('\n')
             append("token=").append(NativeImageGuard.TOKEN).append('\n')
             append("mode=").append(if (version != null && !version.isInstalled) "isolated" else "installed").append('\n')
             append("http=").append(shouldLoadHttpClient()).append('\n')
