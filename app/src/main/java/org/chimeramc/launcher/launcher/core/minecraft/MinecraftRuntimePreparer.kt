@@ -37,34 +37,53 @@ object MinecraftRuntimePreparer {
         override fun onLog(message: String) = Unit
     }
 
+    /** Wraps the caller's listener so every onLog line is also persisted to launch_debug.log. */
+    private class FileMirroringListener(
+        private val delegate: ProgressListener,
+        private val launchContext: Context
+    ) : ProgressListener {
+        override fun onProgress(progress: Int, status: String, detail: String?) {
+            delegate.onProgress(progress, status, detail)
+        }
+        override fun onLog(message: String) {
+            delegate.onLog(message)
+            LaunchLog.append(launchContext, message)
+        }
+    }
+
     fun prepare(
         context: Context,
         launchIntent: Intent,
         listener: ProgressListener = noopListener
     ): PreparedRuntime {
+        val launchContext = context.applicationContext
+        val fileListener = FileMirroringListener(listener, launchContext)
+        LaunchLog.append(launchContext, "==== Minecraft launch preparation started ====")
         val trace = LaunchTrace.ensure(launchIntent)
         trace.milestone("Runtime preparation started")
-        listener.onProgress(4, "Checking selected version")
+        fileListener.onProgress(4, "Checking selected version")
         val version = resolveGameVersion(launchIntent)
+
             ?: throw IllegalArgumentException("No Minecraft version specified")
-        listener.onLog("Using ${version.directoryName} (${version.versionCode})")
+        fileListener.onLog("Using ${version.directoryName} (${version.versionCode})")
         trace.mark("Minecraft version resolved", "${version.directoryName} ${version.versionCode}")
 
-        listener.onProgress(12, "Preparing game files")
+        fileListener.onProgress(12,"Preparing game files")
         val gameManager = GamePackageManager.getInstance(context.applicationContext, version, trace, null)
         trace.mark("GamePackageManager ready")
 
-        listener.onProgress(26, "Preparing launch")
+        fileListener.onProgress(26,"Preparing launch")
         prepareMinecraftIntent(context, launchIntent, gameManager, version)
+
         trace.mark("Launch intent prepared")
 
-        listener.onProgress(34, "Checking mods")
+        fileListener.onProgress(34,"Checking mods")
         val modManager = ModManager.getInstance()
         modManager.setCurrentVersion(version)
         trace.mark("ModManager state prepared")
 
-        listener.onProgress(40, "Preparing game loader")
-        listener.onLog("Loading game loader")
+        fileListener.onProgress(40,"Preparing game loader")
+        fileListener.onLog("Loading game loader")
         trace.mark("Game loader load started")
         val hasEnabledMods = modManager.getMods().any { it.isEnabled }
         if (hasEnabledMods && ModManager.ensurePreloaderLoaded()) {
@@ -76,26 +95,26 @@ object MinecraftRuntimePreparer {
         PreloaderInput.configureSignatureRules(signatureRulesFile, version.versionCode)
         trace.mark("Preloader signature rules configured", signatureRulesFile?.absolutePath ?: "<none>")
 
-        listener.onLog("Loading native libraries")
-        loadMinecraftLibraries(gameManager, version, listener, trace)
+        fileListener.onLog("Loading native libraries")
+        loadMinecraftLibraries(gameManager, version, fileListener, trace)
 
-        applyShaderCompatFixer(version, listener, trace)
+        applyShaderCompatFixer(version, fileListener, trace)
 
-        listener.onProgress(78, "Loading enabled mods")
-        listener.onLog("Loading native mods")
+        fileListener.onProgress(78,"Loading enabled mods")
+        fileListener.onLog("Loading native mods")
 
         try {
             org.levimc.launcher.core.mods.inbuilt.nativemod.InbuiltModsNative.loadLibrary()
             org.levimc.launcher.core.mods.inbuilt.nativemod.GyroMod.nativePreResolve()
         } catch (_: Throwable) {}
 
-        val modsDir = modManager.currentVersion?.modsDir?.absolutePath
+val modsDir = modManager.currentVersion?.modsDir?.absolutePath
         if (modsDir.isNullOrEmpty()) {
-            listener.onLog("Skipped gxcore native runtime setup: no mods directory")
+            fileListener.onLog("Skipped gxcore native runtime setup: no mods directory")
         } else if (!org.levimc.launcher.core.minecraft.MinecraftRuntimePreparer.runNativeSetup(modsDir)) {
-            listener.onLog("gxcore native runtime setup failed")
+            fileListener.onLog("gxcore native runtime setup failed")
         }
-        val nativeModResult = loadNativeMods(context, launchIntent, modManager, listener, trace)
+        val nativeModResult = loadNativeMods(context, launchIntent, modManager, fileListener, trace)
 
         try {
             val profileId = MinecraftLauncher.getStorageProfileId(version)
@@ -108,7 +127,7 @@ object MinecraftRuntimePreparer {
                 externalGameData
             )
             if (bundledPackCount > 0) {
-                listener.onLog("Prepared $bundledPackCount bundled native-mod pack(s)")
+                fileListener.onLog("Prepared $bundledPackCount bundled native-mod pack(s)")
             }
             trace.mark("Bundled native-mod packs synchronized", bundledPackCount.toString())
         } catch (error: Exception) {
@@ -116,7 +135,8 @@ object MinecraftRuntimePreparer {
             throw RuntimeException("Failed to prepare bundled native-mod packs", error)
         }
 
-        listener.onProgress(100, "Runtime ready", "Entering Minecraft")
+        fileListener.onProgress(100,"Runtime ready", "Entering Minecraft")
+        LaunchLog.append(launchContext, "==== Minecraft launch preparation finished ====")
         trace.milestone("Runtime preparation finished")
         return PreparedRuntime(version, gameManager, nativeModResult.skippedIncompatibleMods)
     }

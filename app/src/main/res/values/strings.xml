@@ -639,6 +639,9 @@ Migration must complete before Chimera Launcher can continue.</string>
     <string name="logcat_clear">Clear</string>
     <string name="logcat_copy">Copy log</string>
     <string name="logcat_copied">Logcat copied</string>
+    <string name="logcat_no_log_to_share">No log available to share</string>
+    <string name="logcat_share_subject">Chimera Launcher — launch debug log</string>
+    <string name="logcat_share_title">Share log file</string>
     <string name="logcat_close">Close</string>
     <string name="logcat_corner_bottom_left">Resize: bottom-left</string>
     <string name="logcat_corner_bottom_right">Resize: bottom-right</string>
