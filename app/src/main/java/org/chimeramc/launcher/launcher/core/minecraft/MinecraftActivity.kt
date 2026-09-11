@@ -129,6 +129,8 @@ class MinecraftActivity : MainActivity(), PojavControlsHost {
         }
         trace.mark("Mojang MainActivity super.onCreate finished")
 
+        MinecraftForegroundService.startIfEnabled(this)
+
         val launchVertically = intent.getBooleanExtra("LAUNCH_VERTICALLY", false)
         if (launchVertically) {
             requestedOrientation = android.content.pm.ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
@@ -461,6 +463,7 @@ class MinecraftActivity : MainActivity(), PojavControlsHost {
         MinecraftActivityState.onDestroyed(this)
         MinecraftLaunchSession.clear()
         stopInbuiltModServices()
+        MinecraftForegroundService.stop(this)
 
         try {
             super.onDestroy()
