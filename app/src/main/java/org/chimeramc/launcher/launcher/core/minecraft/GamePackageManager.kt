@@ -174,13 +174,11 @@ class GamePackageManager private constructor(
         if (version != null && !version.isInstalled) {
             val apkPaths = apkFiles.map { it.absolutePath }
             apkPaths.forEach { extractFromApk(it, outputDir, getDeviceAbi()) }
-            if (cacheRequiredLibs.any { !File(outputDir, it).exists() }) {
-                Log.w(TAG, "Primary ABI ${getDeviceAbi()} libraries missing, trying fallback ABIs")
-                report("Primary ABI ${getDeviceAbi()} libraries missing, trying fallback ABIs")
-                val fallbackAbis = listOf("arm64-v8a", "armeabi-v7a", "x86_64", "x86")
-                fallbackAbis.filter { it != getDeviceAbi() }.forEach { abi ->
-                    apkPaths.forEach { extractFromApk(it, outputDir, abi) }
-                }
+            val missingLibs = cacheRequiredLibs.filter { lib -> !File(outputDir, lib).exists() }
+            if (missingLibs.isNotEmpty()) {
+                throw IllegalStateException(
+                    "Required native libraries for ABI ${getDeviceAbi()} are missing from this version's APK/splits."
+                )
             }
         } else {
             val appInfo = packageContext.applicationInfo
@@ -664,7 +662,7 @@ class GamePackageManager private constructor(
 
     companion object {
         private const val TAG = "GamePackageManager"
-        private const val EXTRACTOR_VERSION = 2
+        private const val EXTRACTOR_VERSION = 3
 
         @Volatile
         private var instance: GamePackageManager? = null
