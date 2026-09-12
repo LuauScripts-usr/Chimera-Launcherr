@@ -40,7 +40,7 @@
                     android:layout_gravity="center_horizontal"
                     android:layout_marginBottom="14dp"
                     android:contentDescription="@string/app_name"
-                    android:src="@mipmap/ic_launcher" />
+                    android:src="@drawable/ic_mod_menu_header" />
 
                 <TextView
                     android:id="@+id/nav_modules"
@@ -705,7 +705,7 @@
                                 <ImageView
                                     android:layout_width="24dp"
                                     android:layout_height="24dp"
-                                    android:src="@drawable/ic_leaf_logo"
+                                    android:src="@drawable/ic_mod_menu_fab"
                                     android:tint="#888888" />
 
                                 <TextView
