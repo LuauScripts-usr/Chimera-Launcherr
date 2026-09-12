@@ -7,6 +7,7 @@ import androidx.preference.PreferenceManager
 import org.chimeramc.launcher.core.crash.CrashReporter
 import org.chimeramc.launcher.core.news.NewsNotificationHelper
 import org.chimeramc.launcher.settings.FeatureSettings
+import org.chimeramc.launcher.settings.LowLatencyNetworkManager
 import org.chimeramc.launcher.ui.dialogs.LogcatOverlayManager
 
 class LauncherApplication : Application() {
@@ -15,12 +16,14 @@ class LauncherApplication : Application() {
         super.onCreate()
         context = applicationContext
         FeatureSettings.init(applicationContext)
+        LowLatencyNetworkManager.init(applicationContext)
         CrashReporter.init(this)
         val processName = Application.getProcessName()
         if (processName.endsWith(":crash")) return
 
         NewsNotificationHelper.initialize(this)
         LogcatOverlayManager.init(this)
+        PlaytimeManager.init(applicationContext)
 
         preferences = PreferenceManager.getDefaultSharedPreferences(this)
     }

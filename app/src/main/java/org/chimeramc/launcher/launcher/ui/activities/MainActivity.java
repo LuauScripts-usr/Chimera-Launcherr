@@ -12,9 +12,16 @@ import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.animation.ValueAnimator;
+import android.graphics.Outline;
 import android.os.Build;
+import android.os.Handler;
 import android.os.IBinder;
 import android.os.Bundle;
+import android.os.Looper;
+import android.view.ViewOutlineProvider;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.ImageView;
@@ -35,6 +42,7 @@ import org.chimeramc.launcher.R;
 import org.chimeramc.launcher.core.minecraft.MinecraftImportIntents;
 import org.chimeramc.launcher.core.minecraft.LaunchTrace;
 import org.chimeramc.launcher.core.minecraft.MinecraftLauncher;
+import org.chimeramc.launcher.core.minecraft.PlaytimeManager;
 import org.chimeramc.launcher.core.mods.FileHandler;
 import org.chimeramc.launcher.core.mods.Mod;
 import org.chimeramc.launcher.core.mods.inbuilt.manager.InbuiltModManager;
@@ -140,6 +148,11 @@ import okhttp3.OkHttpClient;
     private LibsRepairDialog storageMigrationDialog;
     private StorageMigrationService.MigrationState lastMigrationState;
     private final ExecutorService storageMigrationExecutor = Executors.newSingleThreadExecutor();
+
+    private final Handler uiHandler = new Handler(Looper.getMainLooper());
+    private Runnable pulseRunnable;
+    private boolean pulseRunning;
+    private ValueAnimator activeProgressAnimator;
 
     private final StorageMigrationService.MigrationListener storageMigrationListener =
             state -> runOnUiThread(() -> handleStorageMigrationState(state));
@@ -1052,6 +1065,12 @@ import okhttp3.OkHttpClient;
     protected void onResume() {
         super.onResume();
         applyPersonalization();
+        boolean anims = new PersonalizationManager(this).isShowAnimations();
+        if (!anims) {
+            stopHeroCardPulse();
+        } else if (!pulseRunning) {
+            startHeroCardPulse();
+        }
         refreshAccountHeaderUI();
         if (StorageMigrationService.isMigrationRunning(this)) {
             resumeStorageMigrationService();
@@ -1145,16 +1164,30 @@ import okhttp3.OkHttpClient;
     }
 
     private void applyGlowEffects(boolean enabled) {
-        // Glow effect implementation
-        if (enabled) {
-            // Add glow drawable to focused elements
-            int accentColor = new PersonalizationManager(this).getAccentColor();
-            if (accentColor != 0 && binding != null && binding.launchButton != null) {
-                binding.launchButton.setElevation(8f);
-            }
-        } else {
-            if (binding != null && binding.launchButton != null) {
-                binding.launchButton.setElevation(0f);
+        float glowElevation = enabled ? dp(8f) : dp(0f);
+        float cardElevation = enabled ? dp(3f) : dp(0f);
+
+        if (binding != null) {
+            if (binding.launchButton != null) binding.launchButton.setElevation(glowElevation);
+            if (binding.premiumLaunchCard != null) binding.premiumLaunchCard.setElevation(cardElevation);
+        }
+
+        int[] cardIds = {
+                R.id.last_played_card,
+                R.id.quick_launch_card,
+                R.id.quick_versions_card,
+                R.id.quick_mods_card,
+                R.id.quick_content_card
+        };
+        for (int id : cardIds) {
+            View card = findViewById(id);
+            if (card != null) {
+                card.setElevation(enabled ? dp(4f) : dp(0f));
+                if (enabled && card.getBackground() instanceof GradientDrawable && card.getId() == R.id.last_played_card) {
+                    GradientDrawable bg = (GradientDrawable) card.getBackground().mutate();
+                    int accent = new PersonalizationManager(this).getAccentColor();
+                    bg.setStroke((int) dp(1.5f), accent != 0 ? accent : getColor(R.color.grad_pulse_glow));
+                }
             }
         }
     }
@@ -1177,8 +1210,120 @@ import okhttp3.OkHttpClient;
         }
     }
 
+    private void startHeroCardPulse() {
+        View heroCard = findViewById(R.id.last_played_card);
+        if (heroCard == null) return;
+        PersonalizationManager pm = new PersonalizationManager(this);
+        if (!pm.isShowAnimations()) return;
+        if (pulseRunning) return;
+        // Cancel any stale per-card touches (spring shenanigans) so the pulse owns the card.
+        heroCard.animate().cancel();
+        pulseRunning = true;
+        int glowColor = pm.isDarkMode(this)
+                ? getColor(R.color.grad_pulse_glow)
+                : pm.getAccentColor() != 0 ? pm.getAccentColor() : getColor(R.color.grad_pulse_glow);
+        pulseRunnable = new Runnable() {
+            @Override
+            public void run() {
+                if (!pulseRunning) return;
+                // Subtle glow + lift pulse on the hero card, then settle back.
+                heroCard.animate().cancel();
+                heroCard.animate()
+                        .translationZ(dp(6f))
+                        .alpha(0.94f)
+                        .setDuration(700L)
+                        .setInterpolator(DynamicAnim.getDefaultInterpolator())
+                        .start();
+                heroCard.postDelayed(() -> {
+                    if (!pulseRunning) return;
+                    heroCard.animate()
+                            .translationZ(dp(0f))
+                            .alpha(1f)
+                            .setDuration(900L)
+                            .setInterpolator(DynamicAnim.getDefaultInterpolator())
+                            .withLayer()
+                            .start();
+                }, 700L);
+                uiHandler.postDelayed(this, 2400L);
+            }
+        };
+        // Straightforward glow ring via a highlight drawable when glow effects are on.
+        if (pm.isEnableGlowEffects() && heroCard.getBackground() instanceof GradientDrawable) {
+            GradientDrawable base = (GradientDrawable) heroCard.getBackground().mutate();
+            base.setStroke((int) dp(1.5f), glowColor);
+        }
+        uiHandler.post(pulseRunnable);
+    }
+
+    private void stopHeroCardPulse() {
+        pulseRunning = false;
+        if (pulseRunnable != null) {
+            uiHandler.removeCallbacks(pulseRunnable);
+            pulseRunnable = null;
+        }
+        View heroCard = findViewById(R.id.last_played_card);
+        if (heroCard != null) {
+            heroCard.animate().cancel();
+            heroCard.animate().translationZ(0f).alpha(1f).setDuration(200L).start();
+        }
+    }
+
+    /**
+     * Smoothly advances the launch progress bar (with a subtle glow on the thumb),
+     * instead of snapping between values. The bar is revealed on the first update
+     * and hidden again once any file import finishes.
+     */
+    private void animateProgressTo(int target) {
+        if (binding == null || binding.progressLoader == null) return;
+        if (activeProgressAnimator != null) {
+            activeProgressAnimator.cancel();
+        }
+        if (binding.progressLoader.getVisibility() != View.VISIBLE) {
+            binding.progressLoader.setIndeterminate(false);
+            binding.progressLoader.setProgress(0);
+            binding.progressLoader.setVisibility(View.VISIBLE);
+        }
+        PersonalizationManager pm = new PersonalizationManager(this);
+        int from = binding.progressLoader.getProgress();
+        int duration = pm.isShowAnimations() ? 350 : 0;
+        if (duration == 0) {
+            binding.progressLoader.setProgress(target);
+            return;
+        }
+        activeProgressAnimator = ValueAnimator.ofInt(from, target).setDuration(duration);
+        activeProgressAnimator.setInterpolator(DynamicAnim.getDefaultInterpolator());
+        activeProgressAnimator.addUpdateListener(animator ->
+                binding.progressLoader.setProgress((Integer) animator.getAnimatedValue()));
+        activeProgressAnimator.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                activeProgressAnimator = null;
+            }
+        });
+        activeProgressAnimator.start();
+    }
+
+    private void hideProgressLoader() {
+        if (binding == null || binding.progressLoader == null) return;
+        if (activeProgressAnimator != null) {
+            activeProgressAnimator.cancel();
+            activeProgressAnimator = null;
+        }
+        binding.progressLoader.setProgress(0);
+        binding.progressLoader.setVisibility(View.GONE);
+    }
+
+    private float dp(float value) {
+        return value * getResources().getDisplayMetrics().density;
+    }
+
     @Override
     protected void onStop() {
+        stopHeroCardPulse();
+        if (activeProgressAnimator != null) {
+            activeProgressAnimator.cancel();
+            activeProgressAnimator = null;
+        }
         unbindStorageMigrationService();
         super.onStop();
     }
@@ -1227,6 +1372,7 @@ import okhttp3.OkHttpClient;
 
         // Refresh hero card stats
         refreshLastPlayedCard();
+        startHeroCardPulse();
 
         // Quick Launch Card
         View quickLaunchCard = findViewById(R.id.quick_launch_card);
@@ -1703,16 +1849,48 @@ import okhttp3.OkHttpClient;
         }
         TextView instancesStat = findViewById(R.id.last_played_instances_stat);
         if (instancesStat != null) {
-            instancesStat.setText(getString(R.string.stat_instances_count, installedCount));
+            setAnimatedStatText(instancesStat, getString(R.string.stat_instances_count, installedCount));
         }
         TextView modsStat = findViewById(R.id.last_played_mods_stat);
         if (modsStat != null) {
-            modsStat.setText(getString(R.string.stat_mods_count, activeModsCount));
+            setAnimatedStatText(modsStat, getString(R.string.stat_mods_count, activeModsCount));
+        }
+        TextView playtimeStat = findViewById(R.id.last_played_time_stat);
+        if (playtimeStat != null) {
+            long totalPlaytime = selectedVersion != null
+                    ? PlaytimeManager.getTotalMs(MinecraftLauncher.getStorageProfileId(selectedVersion))
+                    : 0L;
+            playtimeStat.setText(PlaytimeManager.formatPlaytime(totalPlaytime));
         }
         updateLastPlayedName(
                 selectedVersion != null ? getInstanceDisplayName(selectedVersion) : null,
                 selectedVersion
         );
+    }
+
+    private void setAnimatedStatText(TextView view, String text) {
+        if (view == null) return;
+        PersonalizationManager pm = new PersonalizationManager(this);
+        if (!pm.isShowAnimations()) {
+            view.setText(text);
+            return;
+        }
+        String current = view.getText().toString();
+        if (current.equals(text)) {
+            return;
+        }
+        view.setText(text);
+        view.setScaleX(0.6f);
+        view.setScaleY(0.6f);
+        view.setAlpha(0.3f);
+        view.animate()
+                .scaleX(1f)
+                .scaleY(1f)
+                .alpha(1f)
+                .setDuration(320L)
+                .setInterpolator(DynamicAnim.getDefaultInterpolator())
+                .withLayer()
+                .start();
     }
 
     private void updateLastPlayedName(String instanceName, GameVersion selectedVersion) {
@@ -1775,12 +1953,14 @@ import okhttp3.OkHttpClient;
         fileHandler.processIncomingFilesWithConfirmation(intent, new FileHandler.FileOperationCallback() {
             @Override
             public void onSuccess(int processedFiles) {
+                hideProgressLoader();
                 if (processedFiles > 0)
                     UIHelper.showToast(MainActivity.this, getString(R.string.files_processed, processedFiles));
             }
 
             @Override
             public void onError(String errorMessage) {
+                hideProgressLoader();
                 if (errorMessage != null && !errorMessage.isEmpty()) {
                     UIHelper.showToast(MainActivity.this, errorMessage);
                 }
@@ -1788,7 +1968,7 @@ import okhttp3.OkHttpClient;
 
             @Override
             public void onProgressUpdate(int progress) {
-                if (binding != null) binding.progressLoader.setProgress(progress);
+                if (binding != null) animateProgressTo(progress);
             }
         }, false);
     }

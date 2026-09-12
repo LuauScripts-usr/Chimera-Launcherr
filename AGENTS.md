@@ -25,3 +25,29 @@
 - The preloader submodule source (`app/src/main/cpp/preloader`, not checked out in dev) is already branded `org.chimeramc.*` — so `ModManager`, `ExternalModBridge`, `PreloaderInput`, `MoreButtonsSvgBridge`, `MinecraftRuntimePreparer` natives stay in `org.chimeramc` packages.
 
 - If the native libs ever get rebuilt against the chimeramc package, move these classes back and regenerate the binaries together.
+
+## Personalization / theming (org.chimeramc.launcher.util.PersonalizationManager + org.chimeramc.launcher.launcher.ui.animation.DynamicAnim)
+- `PersonalizationManager` (launcher/util) drives: accent color (`getAccentColor`/`setAccentColor`), animation speed, UI transparency, card rounding (`getCardRoundingPx` — note non-Px name), icon size, blur intensity, compact mode, dark-mode detection (`isDarkMode(Context)`), and the three accessibility toggles:
+  - `isShowAnimations()` / `setShowAnimations(boolean)` — global animations on/off. Must gate ALL new motion: `DynamicAnim.disableAnimations()`/`enableAnimations()` only cover DynamicAnim land; custom ViewPropertyAnimators/ValueAnimators (e.g. hero-card pulse, progress tween in MainActivity) must check this flag themselves.
+  - `isEnableGlowEffects()` / `setEnableGlowEffects(boolean)` — gates card elevation + gradient strokes (MainActivity.applyGlowEffects). "Reduced motion" flows through `isShowAnimations`. DO NOT hard-code new animations outside this gate.
+- `DynamicAnim.applyPressScale(view)` / `applyPressScaleRecursively(root)` — press-scale + elevation micro-interaction; respects `animationsEnabled` (skips entirely when disabled). `setGlobalSpeedMultiplier(float)` scales spring durations.
+- Gradient accent palette lives in `colors.xml` + `values-night/colors.xml` (`grad_hero_start/end`, `grad_launch_*`, `grad_versions_*`, `grad_mods_*`, `grad_content_*`, `grad_pulse_glow`) with per-section drawables `card_hero_gradient.xml`, `card_launch_gradient.xml`, `card_versions_gradient.xml`, `card_mods_gradient.xml`, `card_content_gradient.xml`, and `section_accent_bar.xml` (3dp vertical accent bars used as section headers). Keep dark/light variants in sync and respect `on_primary`/`on_surface` for text legibility on gradients.
+
+## Game session lifecycle & playtime (org.chimeramc.launcher.launcher.core.minecraft.PlaytimeManager)
+- `PlaytimeManager` (in the launcher.core.minecraft package, not `util`) is the per-instance playtime tracker: `init(context)`, `startSession(profileId)`, `heartbeat()`, `stopSession()`, `getTotalMs(profileId)`, `formatPlaytime(ms)`. Persistence is SharedPreferences `"playtime_tracker"` — `total_ms_<profileId>` accumulates, `active_profile`/`active_start_elapsed` hold the running session; `HEARTBEAT_INTERVAL_MS = 15s` (public). Hardware monitors use more deeply-nested SharedPreferences keys.
+- On-device watchdog: `MinecraftActivity.kt` starts the session from intent extra `MinecraftLauncher.EXTRA_STORAGE_PROFILE_ID` (from `MinecraftLauncher.getStorageProfileId(version)`), sends a heartbeat via Handler every 15s, and calls `stopSession()` in `onDestroy`. `Application.kt` calls `PlaytimeManager.init()` to clean up an interrupted session (crash/kill).
+- Playtime is shown on the main hero card (`last_played_time_stat`) and per-instance in `InstancesActivity` + `item_instance_card.xml`; hero stats animate via `DynamicAnim` counters, but the playtime value itself uses a plain `setText`.
+
+## Low-latency networking (org.chimeramc.launcher.launcher.settings.LowLatencyNetworkManager)
+- Settings → Basic "Reduce Network Latency" toggle (`FeatureSettings.isReduceNetworkLatencyEnabled()` / `setReduceNetworkLatencyEnabled`), label honestly — a launcher cannot promise "lowest ping". What it implements:
+  - `createSocketFactory()` wraps the platform default and sets `TCP_NODELAY` on launcher-owned sockets (NewsRepository + GithubReleaseUpdater OkHttp builders apply it when the flag is on). Deliberately delegates to `SocketFactory.getDefault()` — calling the inherited abstract `super.createSocket(...)` does NOT compile.
+  - `prefetchDnsOnBackground()` warms `PREFETCH_HOSTS` (raw.githubusercontent, api.github.com, api.curseforge.com, www.googleapis.com) on a single background executor; re-triggered when the toggle is turned on.
+  - Game-session quiet zone: `setGameSessionActive(true)` (MinecraftActivity session start) makes `isGameSessionActive()` true; NewsRepository.refreshIfStale / GithubReleaseUpdater / LauncherNewsMessagingService then serve cached data instead of polling while a session runs.
+- Java-only sockets: `features` flag lives in FeatureSettings (`isReduceNetworkLatencyEnabled`) — see `app/src/main/java/org/chimeramc/launcher/launcher/settings/FeatureSettings.java`.
+
+## Runtime verification (no KVM/emulator in dev)
+- No Android emulator/KVM here — verify via `./gradlew :app:compileDebugJavaWithJavac` (fast), `:app:compileDebugKotlin`, and a full `nohup ./gradlew :app:assembleDebug > /tmp/build_apk.log 2>&1 &` then grep for `BUILD SUCCESSFUL`/`FAILED`. To test on a device later (adb, ARM64 Android), install `app/build/outputs/apk/debug/app-debug.apk`, and:
+  - Playtime: launch a version, wait ~20s, close; repeat — SharedPreferences `playtime_tracker` (total_ms_<profileId>) should accumulate ≈ real elapsed wall time (± a heartbeat interval).
+  - Reduced-motion: enable Settings → Personalize → "show animations" OFF, confirm hero-card pulse stops (no translationZ/alpha oscillation) and press feedback is instant/no spring.
+  - Glow: toggle "enable glow" OFF, confirm card elevation returns to 0 and gradient strokes disappear.
+  - Latency: with the toggle ON, use `tcpdump`/`strace` or bpf to confirm TCP_NODELAY on launcher sockets, no DNS re-resolve during an active session, and that NewsRepository/GithubReleaseUpdater skip the network while a game is running.
