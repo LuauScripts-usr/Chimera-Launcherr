@@ -148,7 +148,7 @@
                 android:id="@+id/last_played_card"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@drawable/glass_card_accent"
+                android:background="@drawable/card_hero_gradient"
                 android:clickable="true"
                 android:focusable="true"
                 android:foreground="?attr/selectableItemBackground"
@@ -303,20 +303,65 @@
                             android:textColor="@color/text_secondary_light"
                             android:textSize="10sp" />
                     </LinearLayout>
+
+                    <View
+                        android:layout_width="1dp"
+                        android:layout_height="match_parent"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginEnd="16dp"
+                        android:background="@color/outline" />
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:id="@+id/last_played_time_stat"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/misans"
+                            android:textColor="@color/on_primary"
+                            android:textSize="16sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="1dp"
+                            android:fontFamily="@font/misans"
+                            android:text="@string/stat_playtime"
+                            android:textColor="@color/text_secondary_light"
+                            android:textSize="10sp" />
+                    </LinearLayout>
                 </LinearLayout>
             </LinearLayout>
 
             <!-- Quick Actions Grid -->
-            <TextView
+            <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Quick Actions"
-                android:fontFamily="@font/misans"
-                android:textColor="@color/on_surface"
-                android:textSize="16sp"
-                android:textStyle="bold"
                 android:layout_marginTop="20dp"
-                android:layout_marginBottom="12dp" />
+                android:layout_marginBottom="12dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <View
+                    android:layout_width="3dp"
+                    android:layout_height="16dp"
+                    android:background="@drawable/section_accent_bar" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:text="Quick Actions"
+                    android:fontFamily="@font/misans"
+                    android:textColor="@color/on_surface"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
 
             <GridLayout
                 android:layout_width="match_parent"
@@ -332,7 +377,7 @@
                     android:layout_width="0dp"
                     android:layout_height="80dp"
                     android:layout_columnWeight="1"
-                    android:background="@drawable/glass_card_accent"
+                    android:background="@drawable/card_launch_gradient"
                     android:gravity="center"
                     android:orientation="vertical"
                     android:padding="12dp"
@@ -363,7 +408,7 @@
                     android:layout_width="0dp"
                     android:layout_height="80dp"
                     android:layout_columnWeight="1"
-                    android:background="@drawable/glass_card"
+                    android:background="@drawable/card_versions_gradient"
                     android:gravity="center"
                     android:orientation="vertical"
                     android:padding="12dp"
@@ -393,7 +438,7 @@
                     android:layout_width="0dp"
                     android:layout_height="80dp"
                     android:layout_columnWeight="1"
-                    android:background="@drawable/glass_card"
+                    android:background="@drawable/card_mods_gradient"
                     android:gravity="center"
                     android:orientation="vertical"
                     android:padding="12dp"
@@ -423,7 +468,7 @@
                     android:layout_width="0dp"
                     android:layout_height="80dp"
                     android:layout_columnWeight="1"
-                    android:background="@drawable/glass_card"
+                    android:background="@drawable/card_content_gradient"
                     android:gravity="center"
                     android:orientation="vertical"
                     android:padding="12dp"
@@ -575,7 +620,9 @@
                         android:fontFamily="@font/misans"
                         android:textColor="@color/on_surface"
                         android:textSize="16sp"
-                        android:textStyle="bold" />
+                        android:textStyle="bold"
+                        android:drawableStart="@drawable/section_accent_bar"
+                        android:drawablePadding="8dp" />
 
                     <TextView
                         android:id="@+id/news_view_all"
@@ -619,7 +666,9 @@
                         android:fontFamily="@font/misans"
                         android:textColor="@color/on_surface"
                         android:textSize="16sp"
-                        android:textStyle="bold" />
+                        android:textStyle="bold"
+                        android:drawableStart="@drawable/section_accent_bar"
+                        android:drawablePadding="8dp" />
 
                     <Button
                         android:id="@+id/manage_mods_button"
@@ -676,7 +725,9 @@
                         android:fontFamily="@font/misans"
                         android:textColor="@color/on_surface"
                         android:textSize="16sp"
-                        android:textStyle="bold" />
+                        android:textStyle="bold"
+                        android:drawableStart="@drawable/section_accent_bar"
+                        android:drawablePadding="8dp" />
 
                     <TextView
                         android:id="@+id/contentViewAll"

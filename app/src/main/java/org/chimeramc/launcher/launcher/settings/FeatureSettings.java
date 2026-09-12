@@ -12,6 +12,7 @@ public class FeatureSettings {
     private Boolean crashUploadEnabled = true;
     private boolean foregroundServiceEnabled = false;
     private Boolean gxcoreEnabled = true;
+    private boolean reduceNetworkLatencyEnabled = false;
 
     public enum StorageType {
         INTERNAL,
@@ -59,6 +60,16 @@ public class FeatureSettings {
 
     public boolean isGxCoreEnabled() { return gxcoreEnabled == null || gxcoreEnabled; }
     public void setGxCoreEnabled(boolean enabled) { this.gxcoreEnabled = enabled; autoSave(); }
+
+    public boolean isReduceNetworkLatencyEnabled() { return reduceNetworkLatencyEnabled; }
+    public void setReduceNetworkLatencyEnabled(boolean enabled) {
+        if (this.reduceNetworkLatencyEnabled == enabled) return;
+        this.reduceNetworkLatencyEnabled = enabled;
+        autoSave();
+        if (enabled) {
+            LowLatencyNetworkManager.prefetchDnsOnBackground();
+        }
+    }
 
 
     private void autoSave() {

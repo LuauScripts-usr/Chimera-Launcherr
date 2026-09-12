@@ -34,6 +34,7 @@ import org.chimeramc.launcher.R;
 import org.chimeramc.launcher.core.crash.CrashReporter;
 import org.chimeramc.launcher.preloader.PreloaderSignatureRulesManager;
 import org.chimeramc.launcher.settings.FeatureSettings;
+import org.chimeramc.launcher.settings.LowLatencyNetworkManager;
 import org.chimeramc.launcher.ui.animation.DynamicAnim;
 import org.chimeramc.launcher.ui.dialogs.LogcatOverlayManager;
 import org.chimeramc.launcher.util.GithubReleaseUpdater;
@@ -321,6 +322,15 @@ public class SettingsActivity extends BaseActivity {
         SwitchMaterial switchGxCore = findViewById(R.id.switch_gxcore);
         switchGxCore.setChecked(fs.isGxCoreEnabled());
         switchGxCore.setOnCheckedChangeListener((btn, checked) -> fs.setGxCoreEnabled(checked));
+
+        SwitchMaterial switchReduceNetworkLatency = findViewById(R.id.switch_reduce_network_latency);
+        switchReduceNetworkLatency.setChecked(fs.isReduceNetworkLatencyEnabled());
+        switchReduceNetworkLatency.setOnCheckedChangeListener((btn, checked) -> {
+            fs.setReduceNetworkLatencyEnabled(checked);
+            if (checked) {
+                LowLatencyNetworkManager.prefetchDnsOnBackground();
+            }
+        });
     }
 
     private void setupPersonalizeSection() {
@@ -788,6 +798,14 @@ public class SettingsActivity extends BaseActivity {
             switchGxCore.setThumbTintList(new ColorStateList(states, new int[]{accent, 0xFFAAAAAA}));
             int trackChecked = Color.argb(100, Color.red(accent), Color.green(accent), Color.blue(accent));
             switchGxCore.setTrackTintList(new ColorStateList(states, new int[]{trackChecked, 0xFF555555}));
+        }
+
+        SwitchMaterial switchReduceNetworkLatency = findViewById(R.id.switch_reduce_network_latency);
+        if (switchReduceNetworkLatency != null && accent != 0) {
+            int[][] states = {{android.R.attr.state_checked}, {}};
+            switchReduceNetworkLatency.setThumbTintList(new ColorStateList(states, new int[]{accent, 0xFFAAAAAA}));
+            int trackChecked = Color.argb(100, Color.red(accent), Color.green(accent), Color.blue(accent));
+            switchReduceNetworkLatency.setTrackTintList(new ColorStateList(states, new int[]{trackChecked, 0xFF555555}));
         }
 
         TextView navAppName = findViewById(R.id.nav_app_name);

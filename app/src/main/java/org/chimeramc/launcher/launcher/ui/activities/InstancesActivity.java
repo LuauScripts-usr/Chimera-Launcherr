@@ -35,6 +35,7 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.chimeramc.launcher.R;
+import org.chimeramc.launcher.core.minecraft.MinecraftLauncher;
 import org.chimeramc.launcher.core.versions.GameVersion;
 import org.chimeramc.launcher.util.PersonalizationManager;
 import org.chimeramc.launcher.core.versions.VersionManager;
@@ -1014,6 +1015,11 @@ public class InstancesActivity extends BaseActivity {
                 if (listener != null) listener.onClick(v);
             });
 
+            long playtimeMs = org.chimeramc.launcher.core.minecraft.PlaytimeManager.getTotalMs(
+                    MinecraftLauncher.getStorageProfileId(v));
+            vh.playtime.setText(holder.itemView.getContext().getString(R.string.playtime_label,
+                    org.chimeramc.launcher.core.minecraft.PlaytimeManager.formatPlaytime(playtimeMs)));
+
             DynamicAnim.applyPressScale(holder.itemView);
         }
 
@@ -1037,7 +1043,7 @@ public class InstancesActivity extends BaseActivity {
         }
 
         static class VH extends RecyclerView.ViewHolder {
-            TextView versionCode, typeTag, displayName;
+            TextView versionCode, typeTag, displayName, playtime;
             ImageView settingsIcon;
 
             VH(View v) {
@@ -1045,6 +1051,7 @@ public class InstancesActivity extends BaseActivity {
                 versionCode = v.findViewById(R.id.card_version_code);
                 typeTag = v.findViewById(R.id.card_type_tag);
                 displayName = v.findViewById(R.id.card_display_name);
+                playtime = v.findViewById(R.id.card_playtime);
                 settingsIcon = v.findViewById(R.id.card_settings_icon);
             }
         }

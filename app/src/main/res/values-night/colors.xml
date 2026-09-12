@@ -36,4 +36,17 @@
     <color name="text_primary">#FFFFFF</color>
     <color name="text_secondary">#AAAAAA</color>
     <color name="qa_icon_color">#FFFFFF</color>
+
+    <!-- Gradient accent palette (dark theme: keep accents bright, black on_primary text stays readable) -->
+    <color name="grad_hero_start">#3ECF9E</color>
+    <color name="grad_hero_end">#2BB4A8</color>
+    <color name="grad_launch_start">#34C486</color>
+    <color name="grad_launch_end">#26A69A</color>
+    <color name="grad_versions_start">#3342A5F5</color>
+    <color name="grad_versions_end">#1442A5F5</color>
+    <color name="grad_mods_start">#337C4DFF</color>
+    <color name="grad_mods_end">#147C4DFF</color>
+    <color name="grad_content_start">#3300ACC1</color>
+    <color name="grad_content_end">#1400ACC1</color>
+    <color name="grad_pulse_glow">#444AE0A0</color>
 </resources>

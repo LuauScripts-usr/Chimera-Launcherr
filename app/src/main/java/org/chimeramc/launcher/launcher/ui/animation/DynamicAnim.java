@@ -7,6 +7,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AccelerateInterpolator;
+import android.view.animation.PathInterpolator;
 import androidx.recyclerview.widget.RecyclerView;
 
 import androidx.annotation.Nullable;
@@ -82,26 +83,43 @@ public final class DynamicAnim {
     }
 
     /**
-     * Apply press-scale feedback to a view. Does not consume touch, keeping click works.
+     * Apply press-scale + elevation feedback to a view. Does not consume touch,
+     * keeping click works. Skipped entirely when animations are disabled.
      */
     public static void applyPressScale(View view) {
         if (view == null) return;
         view.setOnTouchListener((v, event) -> {
+            if (!animationsEnabled) return false;
             switch (event.getAction()) {
                 case MotionEvent.ACTION_DOWN: {
                     springScaleXTo(v, 0.96f).start();
                     springScaleYTo(v, 0.96f).start();
+                    animateElevation(v, 6f, 8f);
                     break;
                 }
                 case MotionEvent.ACTION_UP:
                 case MotionEvent.ACTION_CANCEL: {
                     springScaleXTo(v, 1f).start();
                     springScaleYTo(v, 1f).start();
+                    animateElevation(v, 0f, 8f);
                     break;
                 }
             }
             return false;
         });
+    }
+
+    private static void animateElevation(View view, float target, float durationMs) {
+        try {
+            view.animate().cancel();
+            view.animate()
+                    .translationZ(dp(view.getContext(), target))
+                    .setDuration((long) durationMs)
+                    .setInterpolator(getDefaultInterpolator())
+                    .start();
+        } catch (Throwable ignored) {
+            // Elevation is purely cosmetic; never break touch handling.
+        }
     }
 
     /**
@@ -175,5 +193,9 @@ public final class DynamicAnim {
 
     private static float dp(Context ctx, float value) {
         return value * ctx.getResources().getDisplayMetrics().density;
+    }
+
+    public static android.view.animation.Interpolator getDefaultInterpolator() {
+        return new PathInterpolator(0.22f, 1f, 0.36f, 1f);
     }
 }

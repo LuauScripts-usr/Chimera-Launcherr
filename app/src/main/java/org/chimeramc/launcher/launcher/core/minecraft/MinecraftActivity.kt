@@ -4,6 +4,8 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.res.AssetManager
+import android.os.Handler
+import android.os.Looper
 import android.graphics.Color
 import android.os.Bundle
 import android.provider.OpenableColumns
@@ -44,6 +46,13 @@ class MinecraftActivity : MainActivity(), PojavControlsHost {
     private var gameRuntimeStarted = false
     private var preloaderTextInput: PreloaderTextInput? = null
     private var previousInputFocus: View? = null
+    private val playtimeHeartbeat = object : Runnable {
+        override fun run() {
+            PlaytimeManager.heartbeat()
+            playtimeHeartbeatHandler.postDelayed(this, PlaytimeManager.HEARTBEAT_INTERVAL_MS)
+        }
+    }
+    private val playtimeHeartbeatHandler by lazy { Handler(Looper.getMainLooper()) }
 
     private class PreloaderTextInput(context: Context) : AppCompatEditText(context) {
         override fun onCreateInputConnection(outAttrs: EditorInfo): InputConnection? {
@@ -141,12 +150,24 @@ class MinecraftActivity : MainActivity(), PojavControlsHost {
             PreloaderInput.setActivity(this)
             ControllerInputProcessor.detectAndLoad(this)
             MinecraftActivityState.onCreated(this)
+            startPlaytimeSession(intent.getStringExtra(MinecraftLauncher.EXTRA_STORAGE_PROFILE_ID))
         } catch (throwable: Throwable) {
             trace.error("Post-init hook failed", formatLaunchFailure(throwable))
         }
         trace.mark("MinecraftActivity onCreate finished")
     }
 
+
+    private fun startPlaytimeSession(profileId: String?) {
+        PlaytimeManager.startSession(profileId)
+        playtimeHeartbeatHandler.removeCallbacks(playtimeHeartbeat)
+        playtimeHeartbeatHandler.postDelayed(playtimeHeartbeat, PlaytimeManager.HEARTBEAT_INTERVAL_MS)
+    }
+
+    private fun stopPlaytimeSession() {
+        playtimeHeartbeatHandler.removeCallbacks(playtimeHeartbeat)
+        PlaytimeManager.stopSession()
+    }
 
     private fun configureMinecraftFirebase() {
         val appId = gameManager.getGameStringResource("google_app_id")
@@ -463,6 +484,7 @@ class MinecraftActivity : MainActivity(), PojavControlsHost {
         MinecraftActivityState.onDestroyed(this)
         MinecraftLaunchSession.clear()
         stopInbuiltModServices()
+        stopPlaytimeSession()
         MinecraftForegroundService.stop(this)
 
         try {

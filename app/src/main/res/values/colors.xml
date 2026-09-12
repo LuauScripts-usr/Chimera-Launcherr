@@ -48,6 +48,19 @@
     <color name="glass_background_elevated">#44FFFFFF</color>
     <color name="glass_border">#55FFFFFF</color>
 
+    <!-- Gradient accent palette (light theme: deeper tones, white text reads well) -->
+    <color name="grad_hero_start">#1B5E20</color>
+    <color name="grad_hero_end">#00796B</color>
+    <color name="grad_launch_start">#2E7D32</color>
+    <color name="grad_launch_end">#00897B</color>
+    <color name="grad_versions_start">#1A42A5F5</color>
+    <color name="grad_versions_end">#0742A5F5</color>
+    <color name="grad_mods_start">#1A7C4DFF</color>
+    <color name="grad_mods_end">#0A7C4DFF</color>
+    <color name="grad_content_start">#1A00ACC1</color>
+    <color name="grad_content_end">#0A00ACC1</color>
+    <color name="grad_pulse_glow">#2B4AE0A0</color>
+
     <!-- Additional UI Colors -->
     <color name="background_dark">#121212</color>
     <color name="surface_dark">#1E1E1E</color>

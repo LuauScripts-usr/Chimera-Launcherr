@@ -1,5 +1,7 @@
 package org.chimeramc.launcher.core.news;
 
+import org.chimeramc.launcher.settings.LowLatencyNetworkManager;
+
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
@@ -26,7 +28,9 @@ public final class LauncherNewsMessagingService extends FirebaseMessagingService
         if (body == null) body = "Open Chimera Launcher to read the latest news.";
 
         NewsState.recordPush(this, id, publishedAt);
-        NewsRepository.refresh(this, null);
+        if (!LowLatencyNetworkManager.isGameSessionActive()) {
+            NewsRepository.refresh(this, null);
+        }
         NewsNotificationHelper.show(this, id, title, body, url);
     }
 }

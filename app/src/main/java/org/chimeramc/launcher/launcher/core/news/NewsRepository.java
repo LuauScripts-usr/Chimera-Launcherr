@@ -8,6 +8,8 @@ import android.text.TextUtils;
 
 import com.google.gson.Gson;
 
+import org.chimeramc.launcher.settings.LowLatencyNetworkManager;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -37,7 +39,18 @@ public final class NewsRepository {
     private static final String KEY_LAST_REFRESH = "last_refresh";
     private static final long REFRESH_INTERVAL_MS = 5L * 60L * 1000L;
     private static final Gson GSON = new Gson();
-    private static final OkHttpClient HTTP = new OkHttpClient();
+    private static final OkHttpClient HTTP = buildHttpClient();
+
+    private static OkHttpClient buildHttpClient() {
+        OkHttpClient.Builder builder = new OkHttpClient.Builder();
+        try {
+            if (LowLatencyNetworkManager.isEnabled()) {
+                builder.socketFactory(LowLatencyNetworkManager.createSocketFactory());
+            }
+        } catch (Throwable ignored) {
+        }
+        return builder.build();
+    }
     private static final ExecutorService EXECUTOR = Executors.newSingleThreadExecutor();
     private static final Handler MAIN = new Handler(Looper.getMainLooper());
     private static final Object REFRESH_LOCK = new Object();
@@ -54,6 +67,11 @@ public final class NewsRepository {
     }
 
     public static void refreshIfStale(Context context, Callback callback) {
+        if (LowLatencyNetworkManager.isGameSessionActive()) {
+            // Pause non-essential polling while a session is running (Reduce Network Latency).
+            loadCached(context, callback);
+            return;
+        }
         SharedPreferences prefs = context.getApplicationContext().getSharedPreferences(PREFS, Context.MODE_PRIVATE);
         long elapsed = System.currentTimeMillis() - prefs.getLong(KEY_LAST_REFRESH, 0L);
         if (elapsed < REFRESH_INTERVAL_MS) {

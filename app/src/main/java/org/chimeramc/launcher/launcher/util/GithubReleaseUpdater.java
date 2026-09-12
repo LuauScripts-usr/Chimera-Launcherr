@@ -15,6 +15,7 @@ import androidx.core.content.FileProvider;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.chimeramc.launcher.R;
+import org.chimeramc.launcher.settings.LowLatencyNetworkManager;
 import org.chimeramc.launcher.ui.dialogs.CustomAlertDialog;
 
 import java.io.File;
@@ -36,7 +37,15 @@ public class GithubReleaseUpdater {
     private final Activity activity;
     private final String owner;
     private final String repo;
-    private final OkHttpClient client = new OkHttpClient();
+    private final OkHttpClient client;
+
+    {
+        OkHttpClient.Builder builder = new OkHttpClient.Builder();
+        if (LowLatencyNetworkManager.isEnabled()) {
+            builder.socketFactory(LowLatencyNetworkManager.createSocketFactory());
+        }
+        client = builder.build();
+    }
     private ActivityResultLauncher<Intent> permissionResultLauncher;
 
     public GithubReleaseUpdater(Activity activity, String owner, String repo,
@@ -106,6 +115,10 @@ public class GithubReleaseUpdater {
     }
 
     public void checkUpdateOnLaunch() {
+        if (LowLatencyNetworkManager.isGameSessionActive()) {
+            // Skip the automatic update check while a session is running (Reduce Network Latency).
+            return;
+        }
         String url = String.format(GITHUB_LATEST_API, owner, repo);
         Request request = new Request.Builder().url(url).build();
         client.newCall(request).enqueue(new Callback() {
