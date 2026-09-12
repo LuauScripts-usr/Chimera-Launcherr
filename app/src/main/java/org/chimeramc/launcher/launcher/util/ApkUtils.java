@@ -15,7 +15,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Enumeration;
 import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
 
 public class ApkUtils {
@@ -120,6 +122,27 @@ public class ApkUtils {
             default:
                 return abi;
         }
+    }
+
+    /**
+     * Returns true if any of the given APK/XAPK entries carry 64-bit native
+     * libraries (arm64-v8a). This launcher only supports 64-bit instances, so
+     * archives that ship only 32-bit libraries must be rejected at import time.
+     */
+    public static boolean containsArm64NativeLibs(Iterable<File> apkFiles) {
+        for (File apkFile : apkFiles) {
+            if (apkFile == null || !apkFile.isFile()) continue;
+            try (ZipFile zip = new ZipFile(apkFile)) {
+                Enumeration<? extends ZipEntry> entries = zip.entries();
+                while (entries.hasMoreElements()) {
+                    ZipEntry entry = entries.nextElement();
+                    if (entry.isDirectory()) continue;
+                    String name = entry.getName();
+                    if (name.startsWith("lib/arm64-v8a/")) return true;
+                }
+            } catch (IOException ignored) {}
+        }
+        return false;
     }
 
     public static void unzipLibsToSystemAbi(File libBaseDir, ZipInputStream zis) throws IOException {

@@ -74,6 +74,7 @@
     <string name="illegal_apk_title">APK ilegal</string>
     <string name="not_mc_apk">Bukan APK Minecraft</string>
     <string name="not_apk_or_apks">Silakan pilih file APK atau APKS.</string>
+    <string name="import_error_32bit_only">Versi ini hanya berisi pustaka 32-bit (armeabi-v7a). Peluncur hanya mendukung versi 64-bit (arm64), sehingga tidak dapat diinstal.</string>
 
     <string name="not_found_version">Tidak ada versi yang ditemukan</string>
 

@@ -114,11 +114,7 @@ public class InstanceSettingsActivity extends BaseActivity {
         tabLaunchOptions.setOnClickListener(v -> selectTab(tabLaunchOptions));
         tabManagement.setOnClickListener(v -> selectTab(tabManagement));
 
-        // Hide shader compatibility toggle for 32-bit instances
-        boolean is32BitOnly = version.abiList != null && version.abiList.equals("armeabi-v7a");
-        if (is32BitOnly && shaderCompatContainer != null) {
-            shaderCompatContainer.setVisibility(View.GONE);
-        } else if (shaderCompatContainer != null) {
+        if (shaderCompatContainer != null) {
             shaderCompatContainer.setVisibility(View.VISIBLE);
         }
 
@@ -213,9 +209,7 @@ public class InstanceSettingsActivity extends BaseActivity {
         switchIsolation.setChecked(version.versionIsolation);
         switchLaunchVertically.setChecked(version.launchVertically);
         
-        // Set shader compat toggle state (only for 64-bit)
-        boolean is32BitOnly = version.abiList != null && version.abiList.equals("armeabi-v7a");
-        if (!is32BitOnly && switchShaderCompat != null) {
+        if (switchShaderCompat != null) {
             switchShaderCompat.setChecked(version.shaderCompatEnabled);
         }
         

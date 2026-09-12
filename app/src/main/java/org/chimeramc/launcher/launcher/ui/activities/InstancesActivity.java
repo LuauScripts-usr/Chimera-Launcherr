@@ -47,21 +47,12 @@ import org.chimeramc.launcher.util.InstanceBackupManager;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Locale;
 
 public class InstancesActivity extends BaseActivity {
     public static final String EXTRA_RESTORE_BACKUP_ON_OPEN = "restore_backup_on_open";
 
     private static final int FILTER_ALL = 0;
     private static final int FILTER_CUSTOM = 1;
-    private static final int FILTER_ARCH64 = 2;
-    private static final int FILTER_ARCH32 =  3;
-    private static final int FILTER_ARCH_UNKNOWN = 4;
-    private static final int ARCH_ARM64 = 0;
-    private static final int ARCH_ARM32 =  1;
-    private static final int ARCH_X86_64 =  2;
-    private static final int ARCH_X86 =  3;
-    private static final int ARCH_UNKNOWN =  4;
     private static final int REQUEST_BATCH_BACKUP_STORAGE = 4301;
     private static final int CARD_GLASS_ALPHA_LIGHT = 48;
     private static final int CARD_GLASS_ALPHA_DARK = 58;
@@ -74,7 +65,7 @@ public class InstancesActivity extends BaseActivity {
     private VersionManager versionManager;
     private RecyclerView recyclerView;
     private InstanceCardAdapter adapter;
-    private TextView filterAll, filterCustom, filterArch64, filterArch32, filterArchUnknown;
+    private TextView filterAll, filterCustom;
     private TextView instanceCountBadge;
     private EditText searchInput;
     private int currentFilter = FILTER_ALL;
@@ -143,9 +134,6 @@ public class InstancesActivity extends BaseActivity {
         recyclerView = findViewById(R.id.instances_recycler);
         filterAll = findViewById(R.id.filter_all);
         filterCustom = findViewById(R.id.filter_custom);
-        filterArch64 = findViewById(R.id.filter_arch64);
-        filterArch32 = findViewById(R.id.filter_arch32);
-        filterArchUnknown = findViewById(R.id.filter_arch_unknown);
         instanceCountBadge = findViewById(R.id.instance_count_badge);
         searchInput = findViewById(R.id.search_input);
 
@@ -164,7 +152,7 @@ public class InstancesActivity extends BaseActivity {
         layoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
             @Override
             public int getSpanSize(int position) {
-                return adapter.isHeader(position) ? spanCount : 1;
+                return 1;
             }
         });
 
@@ -239,27 +227,12 @@ public class InstancesActivity extends BaseActivity {
             updateFilterUI();
             applyFilters();
         });
-        filterArch64.setOnClickListener(v -> {
-            currentFilter = FILTER_ARCH64;
-            updateFilterUI();
-            applyFilters();
-        });
-        filterArch32.setOnClickListener(v -> {
-            currentFilter = FILTER_ARCH32;
-            updateFilterUI();
-            applyFilters();
-        });
-        filterArchUnknown.setOnClickListener(v -> {
-            currentFilter = FILTER_ARCH_UNKNOWN;
-            updateFilterUI();
-            applyFilters();
-        });
     }
 
     private void updateFilterUI() {
         PersonalizationManager pm = new PersonalizationManager(this);
         int accent = pm.getAccentColor();
-        TextView[] tabs = {filterAll, filterCustom, filterArch64, filterArch32, filterArchUnknown};
+        TextView[] tabs = {filterAll, filterCustom};
         for (int i = 0; i < tabs.length; i++) {
             boolean selected = (i == currentFilter);
             tabs[i].setSelected(selected);
@@ -808,11 +781,6 @@ public class InstancesActivity extends BaseActivity {
 
         for (GameVersion v : allVersions) {
             if (currentFilter == FILTER_CUSTOM && v.isInstalled) continue;
-            if (currentFilter == FILTER_ARCH64 && getArchGroup(v) != ARCH_ARM64
-                    && getArchGroup(v) != ARCH_X86_64) continue;
-            if (currentFilter == FILTER_ARCH32 && getArchGroup(v) != ARCH_ARM32
-                    && getArchGroup(v) != ARCH_X86) continue;
-            if (currentFilter == FILTER_ARCH_UNKNOWN && getArchGroup(v) != ARCH_UNKNOWN) continue;
 
             if (!query.isEmpty()) {
                 String name = v.displayName != null ? v.displayName.toLowerCase() : "";
@@ -826,63 +794,13 @@ public class InstancesActivity extends BaseActivity {
             filtered.add(v);
         }
 
-        List<GameVersion>[] buckets = new List[5];
-        for (int i = 0; i < buckets.length; i++) {
-            buckets[i] = new ArrayList<>();
-        }
-        for (GameVersion v : filtered) {
-            buckets[getArchGroup(v)].add(v);
-        }
-
-        List<Object> flat = new ArrayList<>();
-        int[] order = {ARCH_ARM64, ARCH_ARM32, ARCH_X86_64, ARCH_X86, ARCH_UNKNOWN};
-        for (int group : order) {
-            List<GameVersion> bucket = buckets[group];
-            if (bucket.isEmpty()) continue;
-            String header = String.format(Locale.getDefault(), getString(R.string.instances_section_count),
-                    getArchLabel(group), bucket.size());
-            flat.add(header);
-            flat.addAll(bucket);
-        }
-        adapter.updateData(flat);
+        adapter.updateData(filtered);
         visibleInstanceCount = filtered.size();
         updateCount();
 
         View emptyView = findViewById(R.id.empty_instances);
         if (emptyView != null) {
             emptyView.setVisibility(filtered.isEmpty() ? View.VISIBLE : View.GONE);
-        }
-    }
-
-    private int getArchGroup(GameVersion v) {
-        String abi = v != null ? v.abiList : null;
-        if (abi == null) return ARCH_UNKNOWN;
-        switch (abi) {
-            case "arm64-v8a":
-                return ARCH_ARM64;
-            case "armeabi-v7a":
-                return ARCH_ARM32;
-            case "x86_64":
-                return ARCH_X86_64;
-            case "x86":
-                return ARCH_X86;
-            default:
-                return ARCH_UNKNOWN;
-        }
-    }
-
-    private String getArchLabel(int group) {
-        switch (group) {
-            case ARCH_ARM64:
-                return getString(R.string.instances_section_arm64);
-            case ARCH_ARM32:
-                return getString(R.string.instances_section_arm32);
-            case ARCH_X86_64:
-                return getString(R.string.instances_section_x86_64);
-            case ARCH_X86:
-                return getString(R.string.instances_section_x86);
-            default:
-                return getString(R.string.instances_section_unknown);
         }
     }
 
@@ -957,10 +875,9 @@ public class InstancesActivity extends BaseActivity {
     }
 
     private static class InstanceCardAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
-        static final int TYPE_HEADER = 0;
         static final int TYPE_ITEM = 1;
 
-        private List<Object> items = new ArrayList<>();
+        private List<GameVersion> items = new ArrayList<>();
         private GameVersion selectedVersion;
         private OnItemClickListener listener;
         private OnSettingsClickListener settingsListener;
@@ -989,39 +906,26 @@ public class InstancesActivity extends BaseActivity {
             this.selectedVersion = v;
         }
 
-        void updateData(List<Object> newItems) {
+        void updateData(List<GameVersion> newItems) {
             this.items = new ArrayList<>(newItems);
             notifyDataSetChanged();
         }
 
-        boolean isHeader(int position) {
-            return position >= 0 && position < items.size() && items.get(position) instanceof String;
-        }
-
         @Override
         public int getItemViewType(int position) {
-            return isHeader(position) ? TYPE_HEADER : TYPE_ITEM;
+            return TYPE_ITEM;
         }
 
         @NonNull
         @Override
         public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-            if (viewType == TYPE_HEADER) {
-                View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_instance_section_header, parent, false);
-                return new HeaderVH(v);
-            }
             View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_instance_card, parent, false);
             return new VH(v);
         }
 
         @Override
         public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
-            Object item = items.get(position);
-            if (isHeader(position)) {
-                ((HeaderVH) holder).title.setText((String) item);
-                return;
-            }
-            GameVersion v = (GameVersion) item;
+            GameVersion v = items.get(position);
             VH vh = (VH) holder;
             boolean isSelected = selectedVersion != null
                     && selectedVersion.directoryName != null
@@ -1130,15 +1034,6 @@ public class InstancesActivity extends BaseActivity {
         @Override
         public int getItemCount() {
             return items.size();
-        }
-
-        static class HeaderVH extends RecyclerView.ViewHolder {
-            TextView title;
-
-            HeaderVH(View v) {
-                super(v);
-                title = v.findViewById(R.id.instance_section_title);
-            }
         }
 
         static class VH extends RecyclerView.ViewHolder {

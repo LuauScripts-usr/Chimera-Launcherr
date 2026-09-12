@@ -568,10 +568,6 @@ public class VersionManager {
 
     public void setInstanceShaderCompatEnabled(GameVersion version, boolean enabled) {
         if (version == null) return;
-        // Only allow for 64-bit instances
-        boolean is32BitOnly = version.abiList != null && version.abiList.equals("armeabi-v7a");
-        if (is32BitOnly) return;
-        
         version.shaderCompatEnabled = enabled;
         updateCachedInstance(version, cached -> cached.shaderCompatEnabled = enabled);
         try {

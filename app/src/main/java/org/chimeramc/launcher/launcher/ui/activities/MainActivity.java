@@ -669,23 +669,10 @@ import okhttp3.OkHttpClient;
 
     private void initModsSection() {
         if (versionManager == null || viewModel == null) return;
-        
-        // Check if current version is 32-bit only - hide mod UI entirely
-        GameVersion selectedVersion = versionManager.getSelectedVersion();
-        boolean is32BitOnly = selectedVersion != null && selectedVersion.abiList != null 
-            && "armeabi-v7a".equals(selectedVersion.abiList);
-        
+
         modsListContainer = binding.modsListContainer;
-        
-        if (is32BitOnly) {
-            // Hide the entire mods section for 32-bit only versions
-            if (modsListContainer != null) {
-                modsListContainer.setVisibility(View.GONE);
-            }
-            return;
-        }
-        
-        // Show mods section for non-32-bit versions
+
+        // Show mods section (all instances are 64-bit)
         if (modsListContainer != null) {
             modsListContainer.setVisibility(View.VISIBLE);
         }
@@ -1407,16 +1394,6 @@ import okhttp3.OkHttpClient;
     }
 
     private void openModsFullscreen() {
-        // Check if current version is 32-bit only - reject mod access
-        GameVersion selectedVersion = versionManager.getSelectedVersion();
-        boolean is32BitOnly = selectedVersion != null && selectedVersion.abiList != null 
-            && "armeabi-v7a".equals(selectedVersion.abiList);
-        
-        if (is32BitOnly) {
-            Toast.makeText(this, getString(R.string.mods_not_supported_32bit), Toast.LENGTH_SHORT).show();
-            return;
-        }
-        
         Intent intent = new Intent(this, ModsFullscreenActivity.class);
         startActivity(intent);
     }

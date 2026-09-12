@@ -85,6 +85,7 @@
     <string name="illegal_apk_title">File APK không hợp pháp</string>
     <string name="not_mc_apk">Không phải file Minecraft APK</string>
     <string name="not_apk_or_apks">Vui lòng chọn file APK hoặc APKS.</string>
+    <string name="import_error_32bit_only">Phiên bản này chỉ chứa thư viện 32-bit (armeabi-v7a). Trình khởi chạy chỉ hỗ trợ phiên bản 64-bit (arm64), vì vậy không thể cài đặt.</string>
 
     <string name="not_found_version">Không tìm thấy phiên bản</string>
 

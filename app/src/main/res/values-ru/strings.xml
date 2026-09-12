@@ -74,6 +74,7 @@
     <string name="illegal_apk_title">Нелегальный APK</string>
     <string name="not_mc_apk">Не APK Minecraft</string>
     <string name="not_apk_or_apks">Пожалуйста, выберите файл APK или APKS</string>
+    <string name="import_error_32bit_only">Эта версия содержит только 32-битные (armeabi-v7a) библиотеки. Лаунчер поддерживает только 64-битные (arm64) версии, поэтому установка невозможна.</string>
 
     <string name="not_found_version">Версия не найдена</string>
 
@@ -665,9 +666,6 @@
     <string name="select_instance_title">Выбрать экземпляр</string>
     <string name="filter_all">Все</string>
     <string name="filter_custom">Пользовательские</string>
-    <string name="filter_arch64">Фильтр : 64-битные</string>
-    <string name="filter_arch32">Фильтр : 32-битные</string>
-    <string name="filter_arch_unknown">Фильтр : неизвестно</string>
     <string name="sort_version_newest">Версия (новейшая)</string>
     <string name="tag_installed">Установлено</string>
     <string name="tag_custom">Пользовательская</string>

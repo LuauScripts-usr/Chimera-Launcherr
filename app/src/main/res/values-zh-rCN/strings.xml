@@ -85,6 +85,7 @@
     <string name="illegal_apk_title">非法APK</string>
     <string name="not_mc_apk">不是Minecraft APK</string>
     <string name="not_apk_or_apks">请选择 APK 或 APKS 文件</string>
+    <string name="import_error_32bit_only">此版本仅包含 32 位 (armeabi-v7a) 库。启动器仅支持 64 位 (arm64) 版本，因此无法安装。</string>
 
     <string name="not_found_version">未发现版本</string>
 
@@ -767,9 +768,6 @@
     <string name="select_instance_title">选择实例</string>
     <string name="filter_all">全部</string>
     <string name="filter_custom">自定义</string>
-    <string name="filter_arch64">筛选：64 位</string>
-    <string name="filter_arch32">筛选：32 位</string>
-    <string name="filter_arch_unknown">筛选：未知</string>
     <string name="sort_version_newest">版本（最新）</string>
     <string name="tag_installed">已安装</string>
     <string name="tag_custom">自定义</string>

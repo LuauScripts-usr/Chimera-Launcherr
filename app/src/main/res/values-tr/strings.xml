@@ -84,6 +84,7 @@
     <string name="illegal_apk_title">Geçersiz APK</string>
     <string name="not_mc_apk">Bu bir Minecraft APK\'sı değil</string>
     <string name="not_apk_or_apks">Lütfen bir APK veya APKS dosyası seçin</string>
+    <string name="import_error_32bit_only">Bu sürüm yalnızca 32 bit (armeabi-v7a) kitaplık içeriyor. Başlatıcı yalnızca 64 bit (arm64) sürümlerini desteklediğinden kurulamaz.</string>
 
     <string name="not_found_version">Sürüm bulunamadı</string>
 

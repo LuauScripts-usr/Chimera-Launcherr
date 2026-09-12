@@ -85,6 +85,7 @@
     <string name="illegal_apk_title">APK Ilegal</string>
     <string name="not_mc_apk">Não é um APK do Minecraft</string>
     <string name="not_apk_or_apks">Por favor, selecione um arquivo APK ou APKS</string>
+    <string name="import_error_32bit_only">Esta versão contém apenas bibliotecas de 32 bits (armeabi-v7a). O launcher suporta apenas versões de 64 bits (arm64), portanto não pode ser instalado.</string>
 
     <string name="not_found_version">Nenhuma versão encontrada</string>
 

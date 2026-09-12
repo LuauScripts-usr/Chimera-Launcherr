@@ -85,6 +85,7 @@
     <string name="illegal_apk_title">APK Ilegal</string>
     <string name="not_mc_apk">No es un APK de Minecraft</string>
     <string name="not_apk_or_apks">Por favor, selecciona un archivo APK o APKS</string>
+    <string name="import_error_32bit_only">Esta versión solo contiene bibliotecas de 32 bits (armeabi-v7a). El launcher solo admite versiones de 64 bits (arm64), por lo que no se puede instalar.</string>
 
     <string name="not_found_version">No se encontró versión</string>
 
@@ -638,9 +639,6 @@ La migración debe completarse antes de continuar con Chimera Launcher.</string>
     <string name="select_instance_title">Seleccionar Instancia</string>
     <string name="filter_all">Todas</string>
     <string name="filter_custom">Personalizadas</string>
-    <string name="filter_arch64">Filtro: 64 bits</string>
-    <string name="filter_arch32">Filtro: 32 bits</string>
-    <string name="filter_arch_unknown">Filtro: Desconocido</string>
     <string name="sort_version_newest">Versión (Más Reciente)</string>
     <string name="tag_installed">Instalada</string>
     <string name="tag_custom">Personalizada</string>

@@ -183,25 +183,7 @@ public class ModManager {
 
     public synchronized void setCurrentVersion(GameVersion version) {
         if (Objects.equals(currentVersion, version)) return;
-        
-        // Check if version is 32-bit only - disable mod support entirely
-        boolean is32BitOnly = version != null && version.abiList != null 
-            && "armeabi-v7a".equals(version.abiList);
-        
-        if (is32BitOnly) {
-            // For 32-bit only versions, disable all mod functionality
-            stopFileObserver();
-            currentVersion = version;
-            invalidateDescriptorCache();
-            modsDir = null;
-            configFile = null;
-            enabledMap.clear();
-            modOrder.clear();
-            invalidateDescriptorCache();
-            notifyModsChanged();
-            return;
-        }
-        
+
         stopFileObserver();
         currentVersion = version;
         invalidateDescriptorCache();

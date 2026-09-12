@@ -11,6 +11,7 @@ import android.provider.OpenableColumns;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 
+import org.chimeramc.launcher.R;
 import org.chimeramc.launcher.core.minecraft.MinecraftLauncher;
 import org.chimeramc.launcher.core.versions.VersionProfileMetadataStore;
 
@@ -170,6 +171,14 @@ public class ApkInstaller {
                 }
 
                 postProgress(PROGRESS_COPY_DONE);
+
+                // Reject 32-bit-only APK/XAPK: this launcher ships arm64-v8a only,
+                // and a 64-bit process cannot load 32-bit native libraries.
+                if (!ApkUtils.containsArm64NativeLibs(apkFilesToExtract)) {
+                    postError(context.getString(R.string.import_error_32bit_only));
+                    return;
+                }
+
                 extractNativeLibsWithProgress(apkFilesToExtract, libTargetDir);
 
                 String versionName = extractVersionName(apkOrApksUri, baseDir, dirName);

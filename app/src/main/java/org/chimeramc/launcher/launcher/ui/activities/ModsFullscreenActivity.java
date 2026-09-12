@@ -87,40 +87,23 @@ public class ModsFullscreenActivity extends BaseActivity {
 
     private void setupViews() {
         Button addModButton = findViewById(R.id.add_mod_fullscreen_button);
-        
-        // Check if current version is 32-bit only - disable mod support entirely
-        org.chimeramc.launcher.core.versions.GameVersion selectedVersion = VersionManager.get(this).getSelectedVersion();
-        boolean is32BitOnly = selectedVersion != null && selectedVersion.abiList != null 
-            && selectedVersion.abiList.equals("armeabi-v7a");
-        
-        if (is32BitOnly) {
-            // Hide mod management UI completely for 32-bit instances
-            addModButton.setVisibility(View.GONE);
-            findViewById(R.id.mod_menu_button).setVisibility(View.GONE);
-            
-            // Show a message explaining mods aren't supported
-            TextView noModsMessage = findViewById(R.id.no_mods_message_32bit);
-            if (noModsMessage != null) {
-                noModsMessage.setVisibility(View.VISIBLE);
-            }
-        } else {
-            addModButton.setVisibility(View.VISIBLE);
-            addModButton.setOnClickListener(v -> {
-                startFilePicker();
-            });
-            DynamicAnim.applyPressScale(addModButton);
 
-            Button modMenuButton = findViewById(R.id.mod_menu_button);
-            boolean isMenuEnabled = inbuiltModManager.isModMenuEnabled();
-            modMenuButton.setText(getString(R.string.mod_menu) + ": " + (isMenuEnabled ? "ON" : "OFF"));
-            modMenuButton.setOnClickListener(v -> {
-                boolean current = inbuiltModManager.isModMenuEnabled();
-                inbuiltModManager.setModMenuEnabled(!current);
-                modMenuButton.setText(getString(R.string.mod_menu) + ": " + (!current ? "ON" : "OFF"));
-                Toast.makeText(this, !current ? R.string.mod_menu_enabled : R.string.mod_menu_disabled, Toast.LENGTH_SHORT).show();
-            });
-            DynamicAnim.applyPressScale(modMenuButton);
-        }
+        addModButton.setVisibility(View.VISIBLE);
+        addModButton.setOnClickListener(v -> {
+            startFilePicker();
+        });
+        DynamicAnim.applyPressScale(addModButton);
+
+        Button modMenuButton = findViewById(R.id.mod_menu_button);
+        boolean isMenuEnabled = inbuiltModManager.isModMenuEnabled();
+        modMenuButton.setText(getString(R.string.mod_menu) + ": " + (isMenuEnabled ? "ON" : "OFF"));
+        modMenuButton.setOnClickListener(v -> {
+            boolean current = inbuiltModManager.isModMenuEnabled();
+            inbuiltModManager.setModMenuEnabled(!current);
+            modMenuButton.setText(getString(R.string.mod_menu) + ": " + (!current ? "ON" : "OFF"));
+            Toast.makeText(this, !current ? R.string.mod_menu_enabled : R.string.mod_menu_disabled, Toast.LENGTH_SHORT).show();
+        });
+        DynamicAnim.applyPressScale(modMenuButton);
 
         totalModsCount = findViewById(R.id.total_mods_count);
         enabledModsCount = findViewById(R.id.enabled_mods_count);
