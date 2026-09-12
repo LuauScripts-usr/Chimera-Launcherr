@@ -208,7 +208,11 @@ val modsDir = modManager.currentVersion?.modsDir?.absolutePath
         val mcInfo: ApplicationInfo = if (version.isInstalled) {
             gameManager.getPackageContext().applicationInfo
         } else {
-            MinecraftLauncher(context).createFakeApplicationInfo(version, MinecraftLauncher.MC_PACKAGE_NAME)
+            MinecraftLauncher(context).createFakeApplicationInfo(
+                version,
+                MinecraftLauncher.MC_PACKAGE_NAME,
+                gameManager.getLaunchAbi()
+            )
         }
         launchIntent.putExtra("MC_SRC", mcInfo.sourceDir)
         val splitSourceDirs = mcInfo.splitSourceDirs

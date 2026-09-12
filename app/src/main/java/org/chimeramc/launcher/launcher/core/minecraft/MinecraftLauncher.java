@@ -49,13 +49,35 @@ public class MinecraftLauncher {
         return new File(getRuntimeLibDir(context, profileId), abiToSystemLibDir(abi));
     }
 
+    /**
+     * Resolves the ABI a version must be launched with, preferring the version's declared
+     * ABI ({@code abiList}) over the device's primary ABI. The entire native-library
+     * loading path (extraction folder + load path) derives from this value, so a
+     * 32-bit-only version loads its 32-bit libraries from the {@code arm} folder instead
+     * of defaulting to the device's (64-bit) {@code arm64} folder.
+     */
+    public static String resolveLaunchAbi(GameVersion version) {
+        String abiList = version != null ? version.abiList : null;
+        if (abiList != null && !abiList.isBlank()) {
+            String abi = abiList.trim();
+            if ("arm64-v8a".equals(abi) || "armeabi-v7a".equals(abi) || "x86_64".equals(abi) || "x86".equals(abi)) {
+                return abi;
+            }
+        }
+        return Build.SUPPORTED_ABIS[0];
+    }
+
     public ApplicationInfo createFakeApplicationInfo(GameVersion version, String packageName) {
+        return createFakeApplicationInfo(version, packageName, resolveLaunchAbi(version));
+    }
+
+    public ApplicationInfo createFakeApplicationInfo(GameVersion version, String packageName, String launchAbi) {
         ApplicationInfo fakeInfo = new ApplicationInfo();
         File apkFile = new File(version.versionDir, "base.apk.chimera");
         fakeInfo.sourceDir = apkFile.getAbsolutePath();
         fakeInfo.publicSourceDir = fakeInfo.sourceDir;
-        String systemAbi = abiToSystemLibDir(Build.SUPPORTED_ABIS[0]);
-        File dstLibDir = getRuntimeLibAbiDir(context, getStorageProfileId(version), systemAbi);
+        String rawAbi = (launchAbi != null && !launchAbi.isBlank()) ? launchAbi : resolveLaunchAbi(version);
+        File dstLibDir = getRuntimeLibAbiDir(context, getStorageProfileId(version), rawAbi);
         fakeInfo.nativeLibraryDir = dstLibDir.getAbsolutePath();
         fakeInfo.packageName = packageName;
         fakeInfo.dataDir = LauncherStorage.getProfileDataRoot(context, getStorageProfileId(version)).getAbsolutePath();

@@ -9,7 +9,6 @@ import android.os.Build
 import android.os.SystemClock
 import android.util.Log
 import org.chimeramc.launcher.core.versions.GameVersion
-import org.chimeramc.launcher.util.LauncherStorage
 import org.levimc.launcher.util.NativeBridgeHelper
 import org.levimc.launcher.util.NativeImageGuard
 import java.io.File
@@ -29,6 +28,7 @@ class GamePackageManager private constructor(
     private val assetManager: AssetManager
     private val nativeLibDir: String
     private val applicationInfo: ApplicationInfo
+    private var launchAbi: String? = null
 
     private val knownPackages = arrayOf(MinecraftLauncher.MC_PACKAGE_NAME)
 
@@ -71,12 +71,24 @@ class GamePackageManager private constructor(
         
         if (version != null && !version.isInstalled) {
             applicationInfo = MinecraftLauncher(context).createFakeApplicationInfo(version, MinecraftLauncher.MC_PACKAGE_NAME)
-            nativeLibDir = applicationInfo.nativeLibraryDir
         } else {
             applicationInfo = packageContext.applicationInfo
-            nativeLibDir = resolveNativeLibDir()
         }
-        
+        // The entire native-library path (extraction + loading) must derive from the
+        // version's own ABI, not the device's primary ABI, so 32-bit-only versions load
+        // their 32-bit libraries consistently from the matching architecture folder.
+        launchAbi = getDeviceAbi(collectApkFiles())
+        nativeLibDir = MinecraftLauncher.getRuntimeLibAbiDir(
+            context,
+            MinecraftLauncher.getStorageProfileId(version),
+            launchAbi!!
+        ).absolutePath
+        File(nativeLibDir).mkdirs()
+        if (version != null && !version.isInstalled) {
+            // Keep the fake ApplicationInfo aligned with the version-aware native lib dir.
+            applicationInfo.nativeLibraryDir = nativeLibDir
+        }
+
         extractLibraries()
         report("Creating AssetManager")
         assetManager = createAssetManager()
@@ -98,15 +110,9 @@ class GamePackageManager private constructor(
         }
     }
 
-    private fun resolveNativeLibDir(): String {
-        val profileId = if (version != null) {
-            MinecraftLauncher.getStorageProfileId(version)
-        } else {
-            LauncherStorage.INSTALLED_MINECRAFT_PROFILE_ID
-        }
-        val cacheLibDir = MinecraftLauncher.getRuntimeLibAbiDir(context, profileId, getDeviceAbi())
-        cacheLibDir.mkdirs()
-        return cacheLibDir.absolutePath
+    /** ABI (e.g. arm64-v8a / armeabi-v7a) this launch uses for extracting and loading native libraries. */
+    fun getLaunchAbi(): String {
+        return launchAbi ?: getDeviceAbi(collectApkFiles()).also { launchAbi = it }
     }
 
     private fun getDeviceAbi(apkFiles: List<File> = emptyList()): String {
@@ -207,7 +213,7 @@ class GamePackageManager private constructor(
             val missingLibs = cacheRequiredLibs.filter { lib -> !File(outputDir, lib).exists() }
             if (missingLibs.isNotEmpty()) {
                 throw IllegalStateException(
-                    "Required native libraries for ABI ${getDeviceAbi()} are missing from this version's APK/splits."
+                    "Required native libraries for ABI ${getDeviceAbi(apkFiles)} are missing from this version's APK/splits."
                 )
             }
         } else {
@@ -521,6 +527,25 @@ class GamePackageManager private constructor(
         }
     }
 
+    /**
+     * A 32-bit-only version must run as a 32-bit process end-to-end. When it is launched
+     * from a 64-bit process, any 32-bit library will fail to dlopen; surface that clearly
+     * instead of reporting a generic "is 32-bit instead of 64-bit" error.
+     */
+    private fun processBitnessMismatchDetail(e: UnsatisfiedLinkError): String? {
+        val abi = getLaunchAbi()
+        val is32BitAbi = abi == "armeabi-v7a" || abi == "x86"
+        if (!is32BitAbi) return null
+        val processIs64Bit = try {
+            android.os.Process.is64Bit()
+        } catch (_: Throwable) {
+            false
+        }
+        if (!processIs64Bit) return null
+        return "${e.message ?: e.javaClass.simpleName} - 32-bit version ($abi) requires a 32-bit process, " +
+            "but the current process is 64-bit"
+    }
+
     @SuppressLint("UnsafeDynamicallyLoadedCode")
     fun loadLibrary(name: String): Boolean {
         return loadLibraryDetailed(name).loaded
@@ -586,7 +611,7 @@ class GamePackageManager private constructor(
                 System.load(libFile.absolutePath)
                 LibraryLoadResult(normalizedName, fileName, source, true, elapsedSince(startedAt), libFile.absolutePath)
             } catch (e: UnsatisfiedLinkError) {
-                val detail = e.message ?: e.javaClass.simpleName
+                val detail = processBitnessMismatchDetail(e) ?: (e.message ?: e.javaClass.simpleName)
                 mirrorLogcat('E', "Failed to load $fileName from ${libFile.absolutePath}: $detail")
                 LibraryLoadResult(normalizedName, fileName, source, false, elapsedSince(startedAt), detail)
             } catch (e: Exception) {
@@ -748,7 +773,8 @@ class GamePackageManager private constructor(
                 version.packageName.orEmpty(),
                 version.versionCode.orEmpty(),
                 version.directoryName.orEmpty(),
-                version.versionDir?.absolutePath.orEmpty()
+                version.versionDir?.absolutePath.orEmpty(),
+                version.abiList.orEmpty()
             ).joinToString("|")
         }
 
