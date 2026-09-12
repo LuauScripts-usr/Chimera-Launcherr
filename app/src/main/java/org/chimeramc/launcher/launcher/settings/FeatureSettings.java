@@ -11,6 +11,7 @@ public class FeatureSettings {
     private boolean lowInputDelayEnabled = false;
     private Boolean crashUploadEnabled = true;
     private boolean foregroundServiceEnabled = false;
+    private Boolean gxcoreEnabled = true;
 
     public enum StorageType {
         INTERNAL,
@@ -55,6 +56,9 @@ public class FeatureSettings {
 
     public boolean isForegroundServiceEnabled() { return foregroundServiceEnabled; }
     public void setForegroundServiceEnabled(boolean enabled) { this.foregroundServiceEnabled = enabled; autoSave(); }
+
+    public boolean isGxCoreEnabled() { return gxcoreEnabled == null || gxcoreEnabled; }
+    public void setGxCoreEnabled(boolean enabled) { this.gxcoreEnabled = enabled; autoSave(); }
 
 
     private void autoSave() {

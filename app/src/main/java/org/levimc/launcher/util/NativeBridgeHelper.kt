@@ -113,6 +113,25 @@ object NativeBridgeHelper {
         }
     }
 
+    /**
+     * Whether gxcore's native verification/bootstrap stack should run.
+     *
+     * On devices where the closed-source libgxcore cannot complete its license/anti-tamper
+     * verification (e.g. no Google Play Services / XAL auth), its ELF init silently
+     * calls `_exit(0)` — killing the process with no tombstone or logcat entry, right in the
+     * middle of `System.loadLibrary("gxcore")`。 Disabling this flag makes the launcher skip
+     * the gxcore bootstrap and native-image guard ( verify/rewrite( entirely — mirroring the
+     * `LeviLaunchroid_no_verification` approach — so the game still launches ( unverified(.
+     */
+    @JvmStatic
+    fun isGxCoreEnabled(): Boolean {
+        return try {
+            org.chimeramc.launcher.settings.FeatureSettings.getInstance().isGxCoreEnabled()
+        } catch (t: Throwable) {
+            true
+        }
+    }
+
     @JvmStatic
     fun isLauncherManagedLoginEnabled(): Boolean {
         return try {
