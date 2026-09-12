@@ -69,7 +69,7 @@ Before proceeding with Chimera Launcher installation, ensure that you have the o
 
 ### Installation Steps
 
-1. Visit the [Releases Page](https://github.com/LuauScripts-usr/Chimera-Launcherr/releases)and download the latest APK build
+1. Visit the [Releases Page](https://github.com/LuauScripts-usr/Chimera-Launcherr/releases)and download the latest Apk/Zip build (extract it)
 2. Open your device Settingsand navigate to Security or Applications
 3. Enable"Unknown Sources" or "Allow installation from unknown sources" to permit APK installation
 4. Locate the downloaded APK file using your file manager,and tap to install
