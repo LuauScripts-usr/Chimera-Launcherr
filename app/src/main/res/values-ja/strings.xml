@@ -85,6 +85,7 @@
     <string name="illegal_apk_title">不正な APK</string>
     <string name="not_mc_apk">Minecraft の APK ではありません</string>
     <string name="not_apk_or_apks">APK または APKS ファイルを選択してください</string>
+    <string name="import_error_32bit_only">このバージョンには 32 ビット (armeabi-v7a) ライブラリのみが含まれています。ランチャーは 64 ビット (arm64) バージョンのみ対応しているため、インストールできません。</string>
 
     <string name="not_found_version">バージョンが見つかりません</string>
 

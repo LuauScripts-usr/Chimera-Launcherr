@@ -92,6 +92,7 @@
     <string name="illegal_apk_title">Illegal APK</string>
     <string name="not_mc_apk">Not a Minecraft APK</string>
     <string name="not_apk_or_apks">Please select an APK or APKS file</string>
+    <string name="import_error_32bit_only">This version only contains 32-bit (armeabi-v7a) libraries. The launcher only supports 64-bit (arm64) versions, so it cannot be installed.</string>
 
     <string name="not_found_version">No version found</string>
 
@@ -751,7 +752,6 @@ Migration must complete before Chimera Launcher can continue.</string>
     <string name="mod_menu_version">v1.0</string>
     <string name="mod_menu_enabled">Mod Menu enabled</string>
     <string name="mod_menu_disabled">Mod Menu disabled</string>
-    <string name="mods_not_supported_32bit">Mods are not supported on 32-bit (armeabi-v7a) versions</string>
     <string name="empty_instances_title">No instances yet</string>
     <string name="empty_instances_message">Import one to get started — it will show up here, ready to launch.</string>
     <string name="empty_mods_title">No mods yet</string>
@@ -940,15 +940,6 @@ Migration must complete before Chimera Launcher can continue.</string>
     <string name="select_instance_title">Select Instance</string>
     <string name="filter_all">All</string>
     <string name="filter_custom">Custom</string>
-    <string name="filter_arch64">64-bit</string>
-    <string name="filter_arch32">32-bit</string>
-    <string name="filter_arch_unknown">Unknown arch</string>
-    <string name="instances_section_arm64">ARM64</string>
-    <string name="instances_section_arm32">ARM (32-bit)</string>
-    <string name="instances_section_x86_64">x86_64</string>
-    <string name="instances_section_x86">x86</string>
-    <string name="instances_section_unknown">Unknown architecture</string>
-    <string name="instances_section_count">%1$s (%2$d)</string>
     <string name="sort_version_newest">Version (Newest)</string>
     <string name="tag_installed">Installed</string>
     <string name="tag_custom">Custom</string>

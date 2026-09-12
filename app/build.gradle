@@ -45,8 +45,10 @@ android {
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         buildConfigField "String", "CURSEFORGE_API_KEY", "\"${localProperties.getProperty('curseforge.api_key', '')}\""
         ndk {
-            //noinspection ChromeOsAbiSupport
-            abiFilters 'arm64-v8a', 'armeabi-v7a'
+            // 64-bit only: 32-bit (armeabi-v7a) instances cannot run in this app
+            // (Android processes lock in one bitness), so only ship arm64-v8a.
+            // A separate 32-bit-focused launcher is planned for the future.
+            abiFilters 'arm64-v8a'
         }
         externalNativeBuild {
             cmake {

@@ -85,6 +85,7 @@
     <string name="illegal_apk_title">अवैध APK</string>
     <string name="not_mc_apk">Minecraft APK नहीं है</string>
     <string name="not_apk_or_apks">कृपया APK या APKS फ़ाइल चुनें</string>
+    <string name="import_error_32bit_only">इस संस्करण में केवल 32-बिट (armeabi-v7a) लाइब्रेरी हैं। यह लॉन्चर केवल 64-बिट (arm64) संस्करणों का समर्थन करता है, इसलिए इसे इंस्टॉल नहीं किया जा सकता।</string>
 
     <string name="not_found_version">कोई संस्करण नहीं मिला</string>
 
